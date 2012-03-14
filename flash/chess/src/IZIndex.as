@@ -1,7 +1,7 @@
 package  
 {
-	public interface IZIndex 
-	{
-		function get zIndex():int;
-	}
+    public interface IZIndex 
+    {
+        function get zIndex():int;
+    }
 }

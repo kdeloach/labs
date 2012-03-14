@@ -32,38 +32,38 @@
 
 package com.adobe.protocols.dict.events
 {
-	import flash.events.Event;
+    import flash.events.Event;
 
-	public class DefinitionHeaderEvent extends Event
-	{	
-		public static const DEFINITION_HEADER:String = "definitionHeader";
-		
-		private var _definitionCount:uint;
-		
-		public function DefinitionHeaderEvent(type:String, bubbles:Boolean = false,
-													cancelable:Boolean = false)
-		{
-			super(type, bubbles, cancelable);
-		}
-		
-		public function set definitionCount(definitionCount:uint):void
-		{
-			this._definitionCount = definitionCount;
-		}
-		
-		public function get definitionCount():uint
-		{
-			return this._definitionCount;
-		}
-		
-		public override function clone():Event
-		{
-			var out:DefinitionHeaderEvent = new DefinitionHeaderEvent(type, 
-															bubbles, cancelable);
-															
-			out.definitionCount = _definitionCount;
-			
-			return out;
-		}
-	}
+    public class DefinitionHeaderEvent extends Event
+    {    
+        public static const DEFINITION_HEADER:String = "definitionHeader";
+        
+        private var _definitionCount:uint;
+        
+        public function DefinitionHeaderEvent(type:String, bubbles:Boolean = false,
+                                                    cancelable:Boolean = false)
+        {
+            super(type, bubbles, cancelable);
+        }
+        
+        public function set definitionCount(definitionCount:uint):void
+        {
+            this._definitionCount = definitionCount;
+        }
+        
+        public function get definitionCount():uint
+        {
+            return this._definitionCount;
+        }
+        
+        public override function clone():Event
+        {
+            var out:DefinitionHeaderEvent = new DefinitionHeaderEvent(type, 
+                                                            bubbles, cancelable);
+                                                            
+            out.definitionCount = _definitionCount;
+            
+            return out;
+        }
+    }
 }

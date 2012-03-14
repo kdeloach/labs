@@ -33,16 +33,16 @@
 
 package com.adobe.webapis 
 {
-	import flash.events.EventDispatcher;
+    import flash.events.EventDispatcher;
 
-	/**
-	* Base class for remote service classes.
-	*/
-	public class ServiceBase extends EventDispatcher
-	{
-		public function ServiceBase()
-		{
-		}
-		
-	}
+    /**
+    * Base class for remote service classes.
+    */
+    public class ServiceBase extends EventDispatcher
+    {
+        public function ServiceBase()
+        {
+        }
+        
+    }
 }

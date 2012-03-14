@@ -108,7 +108,7 @@ package com.adobe.crypto
                 if ( input == null )
                 {
                     throw new Error("null input to complete without prior call to update. At least an empty bytearray must be passed.");
-                }		 		
+                }                 
             }
             
             if ( input != null )
@@ -122,7 +122,7 @@ package com.adobe.crypto
             hashRemainingChunks(false);
             
             var res:String = IntUtil.toHex( a ) + IntUtil.toHex( b ) + 
-            				 IntUtil.toHex( c ) + IntUtil.toHex( d );
+                             IntUtil.toHex( c ) + IntUtil.toHex( d );
             resetFields();
             
             return res;
@@ -195,7 +195,7 @@ package com.adobe.crypto
                 /* AS Arrays in sparse arrays. arr[2002] can exist 
                  * without values for arr[0] - arr[2001] */
                 for ( var j:int = arrProcessIndex; j < arr.length; j++ )
-                {						
+                {                        
                     newarr[j] = arr[j];
                 }
                 
@@ -235,7 +235,7 @@ package com.adobe.crypto
 
             
             for ( var i:int = arrProcessIndex; i < len ; i += 16, arrProcessIndex += 16) 
-            {            	
+            {                
                 // save previous values
                 aa = a;
                 bb = b;
@@ -324,7 +324,7 @@ package com.adobe.crypto
         }
         
         private function padArray(len:int):void
-        {	 		
+        {             
             arr[ int(len >> 5) ] |= 0x80 << ( len % 32 );
             arr[ int(( ( ( len + 64 ) >>> 9 ) << 4 ) + 14) ] = len;
             arrLen = arr.length;

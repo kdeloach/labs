@@ -32,39 +32,39 @@
 
 package com.adobe.protocols.dict.events
 {
-	import com.adobe.protocols.dict.Definition;
-	
-	import flash.events.Event;
-	
+    import com.adobe.protocols.dict.Definition;
+    
+    import flash.events.Event;
+    
 
-	public class DefinitionEvent extends Event
-	{
-		public static const DEFINITION:String = "definition";		
-		
-		private var _definition:Definition;
-		
-		public function DefinitionEvent(type:String, bubbles:Boolean = false,
-													cancelable:Boolean = false)
-		{
-			super(type, bubbles, cancelable);
-		}
-		
-		public function set definition(definition:Definition):void
-		{
-			this._definition = definition;
-		}
-		
-		public function get definition():Definition
-		{
-			return this._definition;
-		}
-		
-		public override function clone():Event
-		{
-			var out:DefinitionEvent = new DefinitionEvent(type, bubbles, cancelable);
-			out.definition = _definition;
-			
-			return out;
-		}
-	}
+    public class DefinitionEvent extends Event
+    {
+        public static const DEFINITION:String = "definition";        
+        
+        private var _definition:Definition;
+        
+        public function DefinitionEvent(type:String, bubbles:Boolean = false,
+                                                    cancelable:Boolean = false)
+        {
+            super(type, bubbles, cancelable);
+        }
+        
+        public function set definition(definition:Definition):void
+        {
+            this._definition = definition;
+        }
+        
+        public function get definition():Definition
+        {
+            return this._definition;
+        }
+        
+        public override function clone():Event
+        {
+            var out:DefinitionEvent = new DefinitionEvent(type, bubbles, cancelable);
+            out.definition = _definition;
+            
+            return out;
+        }
+    }
 }

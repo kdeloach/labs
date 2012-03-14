@@ -32,153 +32,153 @@
 
 package com.adobe.air.filesystem
 {
-	import flash.events.EventDispatcher;
-	import flash.utils.Timer;
-	import flash.events.TimerEvent;
-	import flash.filesystem.File;
-	import flash.utils.Dictionary;
-	import com.adobe.air.filesystem.events.FileMonitorEvent;
-	import com.adobe.utils.ArrayUtil;
+    import flash.events.EventDispatcher;
+    import flash.utils.Timer;
+    import flash.events.TimerEvent;
+    import flash.filesystem.File;
+    import flash.utils.Dictionary;
+    import com.adobe.air.filesystem.events.FileMonitorEvent;
+    import com.adobe.utils.ArrayUtil;
 
-	/**
-	* Dispatched when a volume is added to the system.
-	*
-	* @eventType com.adobe.air.filesystem.events.FileMonitor.ADD_VOLUME
-	*/
-	[Event(name="ADD_VOLUME", type="com.adobe.air.filesystem.events.FileMonitor")]	
+    /**
+    * Dispatched when a volume is added to the system.
+    *
+    * @eventType com.adobe.air.filesystem.events.FileMonitor.ADD_VOLUME
+    */
+    [Event(name="ADD_VOLUME", type="com.adobe.air.filesystem.events.FileMonitor")]    
 
-	/**
-	* Dispatched when a volume is removed from the system.
-	*
-	* @eventType com.adobe.air.filesystem.events.FileMonitor.REMOVE_VOLUME
-	*/
-	[Event(name="REMOVE_VOLUME", type="com.adobe.air.filesystem.events.FileMonitor")]	
+    /**
+    * Dispatched when a volume is removed from the system.
+    *
+    * @eventType com.adobe.air.filesystem.events.FileMonitor.REMOVE_VOLUME
+    */
+    [Event(name="REMOVE_VOLUME", type="com.adobe.air.filesystem.events.FileMonitor")]    
 
-	/**
-	 * Class that monitors changes to the File volumes attached to the operating
-	 * system.
-	 */ 
-	public class VolumeMonitor extends EventDispatcher
-	{
-		private var timer:Timer;
-		private var _interval:Number;
-		private static const DEFAULT_MONITOR_INTERVAL:Number = 2000;
-		
-		private var volumes:Dictionary;
-		
-		/**
-		 * 	Constructor.
-		 * 
-		 * 	@param interval How often in milliseconds the system is polled for
-		 * 	volume change events. Default value is 2000, minimum value is 1000
-		 */
-		public function VolumeMonitor(interval:Number = -1)
-		{
-			if(interval != -1)
-			{
-				if(interval < 1000)
-				{
-					_interval = 1000;
-				}
-				else
-				{
-					_interval = interval;
-				}
-			}
-			else
-			{
-				_interval = DEFAULT_MONITOR_INTERVAL;
-			}
-		}
-		
-		/**
-		 * 	How often the system is polled for Volume change events.
-		 */
-		public function get interval():Number
-		{
-			return _interval;
-		}
-		
-		/**
-		 * Begins the monitoring of changes to the attached File volumes.
-		 */
-		public function watch():void
-		{
-			if(!timer)
-			{
-				timer = new Timer(_interval);
-				timer.addEventListener(TimerEvent.TIMER, onTimerEvent,false,0, true);
-			}
-			
-			//we reinitialize the hash everytime we start watching
-			volumes = new Dictionary();
-			
-			var v:Array = FileUtil.getRootDirectories();
-			for each(var f:File in v)
-			{
-				//null or undefined
-				if(volumes[f.url] == null)
-				{
-					volumes[f.url] = f;
-				}
-			}			
-			
-			timer.start();
-		}
-		
-		/**
-		 * Stops monitoring for changes to the attached File volumes.
-		 */
-		public function unwatch():void
-		{
-			timer.stop();
-			timer.removeEventListener(TimerEvent.TIMER, onTimerEvent);
-		}
-		
-		private function onTimerEvent(e:TimerEvent):void
-		{
-			var v:Array = FileUtil.getRootDirectories();
-			
-			var outEvent:FileMonitorEvent;
-			var found:Boolean = false;
-			for(var key:String in volumes)
-			{
-				for each(var f:File in v)
-				{
-					//trace("--\n" + key);
-					//trace(f.url);
-					if(f.url == key)
-					{
-						found = true;
-						break;
-					}
-				}
-				
-				if(!found)
-				{
-					outEvent = new FileMonitorEvent(FileMonitorEvent.REMOVE_VOLUME);
-					outEvent.file = volumes[key];
-					dispatchEvent(outEvent);
-					delete volumes[key];
-				}
-				
-				found  = false;
-			}
-			
-			for each(var f2:File in v)
-			{
-				//null or undefined
-				if(volumes[f2.url] == null)
-				{
-					volumes[f2.url] = f2;
-					outEvent = new FileMonitorEvent(FileMonitorEvent.ADD_VOLUME);
-					outEvent.file = f2;
-					
-					dispatchEvent(outEvent);
-				}
-			}
-		}
-		
+    /**
+     * Class that monitors changes to the File volumes attached to the operating
+     * system.
+     */ 
+    public class VolumeMonitor extends EventDispatcher
+    {
+        private var timer:Timer;
+        private var _interval:Number;
+        private static const DEFAULT_MONITOR_INTERVAL:Number = 2000;
+        
+        private var volumes:Dictionary;
+        
+        /**
+         *     Constructor.
+         * 
+         *     @param interval How often in milliseconds the system is polled for
+         *     volume change events. Default value is 2000, minimum value is 1000
+         */
+        public function VolumeMonitor(interval:Number = -1)
+        {
+            if(interval != -1)
+            {
+                if(interval < 1000)
+                {
+                    _interval = 1000;
+                }
+                else
+                {
+                    _interval = interval;
+                }
+            }
+            else
+            {
+                _interval = DEFAULT_MONITOR_INTERVAL;
+            }
+        }
+        
+        /**
+         *     How often the system is polled for Volume change events.
+         */
+        public function get interval():Number
+        {
+            return _interval;
+        }
+        
+        /**
+         * Begins the monitoring of changes to the attached File volumes.
+         */
+        public function watch():void
+        {
+            if(!timer)
+            {
+                timer = new Timer(_interval);
+                timer.addEventListener(TimerEvent.TIMER, onTimerEvent,false,0, true);
+            }
+            
+            //we reinitialize the hash everytime we start watching
+            volumes = new Dictionary();
+            
+            var v:Array = FileUtil.getRootDirectories();
+            for each(var f:File in v)
+            {
+                //null or undefined
+                if(volumes[f.url] == null)
+                {
+                    volumes[f.url] = f;
+                }
+            }            
+            
+            timer.start();
+        }
+        
+        /**
+         * Stops monitoring for changes to the attached File volumes.
+         */
+        public function unwatch():void
+        {
+            timer.stop();
+            timer.removeEventListener(TimerEvent.TIMER, onTimerEvent);
+        }
+        
+        private function onTimerEvent(e:TimerEvent):void
+        {
+            var v:Array = FileUtil.getRootDirectories();
+            
+            var outEvent:FileMonitorEvent;
+            var found:Boolean = false;
+            for(var key:String in volumes)
+            {
+                for each(var f:File in v)
+                {
+                    //trace("--\n" + key);
+                    //trace(f.url);
+                    if(f.url == key)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if(!found)
+                {
+                    outEvent = new FileMonitorEvent(FileMonitorEvent.REMOVE_VOLUME);
+                    outEvent.file = volumes[key];
+                    dispatchEvent(outEvent);
+                    delete volumes[key];
+                }
+                
+                found  = false;
+            }
+            
+            for each(var f2:File in v)
+            {
+                //null or undefined
+                if(volumes[f2.url] == null)
+                {
+                    volumes[f2.url] = f2;
+                    outEvent = new FileMonitorEvent(FileMonitorEvent.ADD_VOLUME);
+                    outEvent.file = f2;
+                    
+                    dispatchEvent(outEvent);
+                }
+            }
+        }
+        
 
-	}
+    }
 }

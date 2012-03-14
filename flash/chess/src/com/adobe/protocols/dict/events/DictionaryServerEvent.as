@@ -32,38 +32,38 @@
 
 package com.adobe.protocols.dict.events
 {
-	import flash.events.Event;
+    import flash.events.Event;
 
-	public class DictionaryServerEvent extends Event
-	{
-		public static const SERVERS:String = "servers";		
-		
-		private var _servers:Array;
-		
-		public function DictionaryServerEvent(type:String, bubbles:Boolean = false,
-													cancelable:Boolean = false)
-		{
-			super(type, bubbles, cancelable);
-		}
-		
-		public function set servers(servers:Array):void
-		{
-			this._servers = servers;
-		}
-		
-		public function get servers():Array
-		{
-			return this._servers;
-		}
-		
-		public override function clone():Event
-		{
-			var out:DictionaryServerEvent = new DictionaryServerEvent(type, 
-															bubbles, cancelable);
-															
-			out.servers = _servers;
-			
-			return out;
-		}
-	}
+    public class DictionaryServerEvent extends Event
+    {
+        public static const SERVERS:String = "servers";        
+        
+        private var _servers:Array;
+        
+        public function DictionaryServerEvent(type:String, bubbles:Boolean = false,
+                                                    cancelable:Boolean = false)
+        {
+            super(type, bubbles, cancelable);
+        }
+        
+        public function set servers(servers:Array):void
+        {
+            this._servers = servers;
+        }
+        
+        public function get servers():Array
+        {
+            return this._servers;
+        }
+        
+        public override function clone():Event
+        {
+            var out:DictionaryServerEvent = new DictionaryServerEvent(type, 
+                                                            bubbles, cancelable);
+                                                            
+            out.servers = _servers;
+            
+            return out;
+        }
+    }
 }

@@ -31,24 +31,24 @@
 */
 package com.adobe.fileformats.vcard
 {
-	import flash.utils.ByteArray;
+    import flash.utils.ByteArray;
 
-	public class VCard
-	{
-		public var fullName:String;
-		public var orgs:Array;
-		public var title:String;
-		public var image:ByteArray;
-		public var phones:Array;
-		public var emails:Array;
-		public var addresses:Array;
-		
-		public function VCard()
-		{
-			orgs = new Array();
-			phones = new Array();
-			emails = new Array();
-			addresses = new Array();
-		}
-	}
+    public class VCard
+    {
+        public var fullName:String;
+        public var orgs:Array;
+        public var title:String;
+        public var image:ByteArray;
+        public var phones:Array;
+        public var emails:Array;
+        public var addresses:Array;
+        
+        public function VCard()
+        {
+            orgs = new Array();
+            phones = new Array();
+            emails = new Array();
+            addresses = new Array();
+        }
+    }
 }
