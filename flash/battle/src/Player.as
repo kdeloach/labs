@@ -42,7 +42,6 @@
         private function fireMissle():void {
             var bullet:Bullet = new Bullet(stage, arm.x, arm.y, FlxG.mouse.x, FlxG.mouse.y);
             stage.add(bullet);
-            trace("boom");
         }
     }
 }
