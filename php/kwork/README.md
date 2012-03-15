@@ -6,13 +6,13 @@ The project structure for implementations may look like this:
 
 * kwork
 * custom_app
-** Model
-** View 
-** Controller
-** config.xml
+    * Model
+    * View 
+    * Controller
+    * config.xml
 * www
-** .htaccess
-** index.php
+    * .htaccess
+    * index.php
 
 The index.php file establishes the include_path and invokes kwork/AppMain::handleRequest(). The config.xml file may look like this:
 
