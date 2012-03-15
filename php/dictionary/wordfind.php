@@ -13,10 +13,10 @@ function wordfind($query, $exclude)
     $range = implode('', $range);
 
     $query = trim($query);
-    $pattern = preg_replace('/[^a-z]/i', '*', $query);
-    $pattern = '/'.str_replace('*', "[$range]", $pattern).'/i';
+    $pattern = preg_replace('/[^a-z]/i', "[$range]", $query);
+    $pattern = "/$pattern/i";
 
-    $words = file('words.txt');
+    $words = file(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'words.txt');
     $result = array();
 
     foreach($words as $word)
