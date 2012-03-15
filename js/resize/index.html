@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script type="text/javascript">
+    
+        window.onload = function() {
+            var target = util.getElementsByClassName('resizable');
+            util.each(target, function(elem) {
+                elem.appendChild(createGrip(elem));
+            });
+        };
+        
+        function createGrip(target) {
+            var mouseDown = false;
+            var elemPos = {};
+            
+            util.addEventHandler(document, 'mousemove', function(evt) {
+                if(mouseDown) {
+                    var mouse = util.getPosition(evt);
+                    target.style.width = mouse.x - elemPos.left + 'px';
+                    target.style.height = mouse.y - elemPos.top + 'px';
+                }
+            });
+            util.addEventHandler(document, 'mousedown', function(evt) {
+                if(evt.target.className == 'grip' && evt.target.parentNode == target) {
+                    elemPos = util.getOffset(target);
+                    mouseDown = true;
+                }
+            });
+            util.addEventHandler(document, 'mouseup', function(evt) {
+                mouseDown = false;
+            });
+            
+            var grip = document.createElement('div');
+            grip.className = 'grip';
+            return grip;
+        }
+    
+        var util = {
+            each: function(lst, fn) {
+                var len = lst.length;
+                for(var i = 0; i < len; i++) {
+                    fn(lst[i], i);
+                }
+            },
+            addEventHandler: function(elem, evt, handler) {
+                if(document.addEventListener) {
+                    elem.addEventListener(evt, handler, false);
+                } else if (document.attachEvent) {
+                    elem.attachEvent(evt, handler);
+                }
+            },
+            // Source: http://snipplr.com/view/1696/get-elements-by-class-name/
+            getElementsByClassName: function(classname, node) {
+                if(!node)
+                    node = document.getElementsByTagName("body")[0];
+                var a = [];
+                var re = new RegExp('\\b' + classname + '\\b');
+                var els = node.getElementsByTagName("*");
+                for(var i=0,j=els.length; i<j; i++)
+                    if(re.test(els[i].className))
+                        a.push(els[i]);
+                return a;
+            },
+            // Source: http://stackoverflow.com/questions/442404/dynamically-retrieve-html-element-x-y-position-with-javascript
+            getOffset: function (el) {
+                var _x = 0;
+                var _y = 0;
+                while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+                    _x += el.offsetLeft - el.scrollLeft;
+                    _y += el.offsetTop - el.scrollTop;
+                    el = el.offsetParent;
+                }
+                return { top: _y, left: _x };
+            },
+            // Source: http://stackoverflow.com/questions/2500863/getting-javascript-mouse-position-relative-to-website-prefferably-without-jquery
+            getPosition: function (e) {
+                e = e || window.event;
+                var cursor = {x:0, y:0};
+                if (e.pageX || e.pageY) {
+                  cursor.x = e.pageX;
+                  cursor.y = e.pageY;
+                } 
+                else {
+                  cursor.x = e.clientX + 
+                    (document.documentElement.scrollLeft || 
+                     document.body.scrollLeft) - 
+                     document.documentElement.clientLeft;
+                  cursor.y = e.clientY + 
+                    (document.documentElement.scrollTop ||
+                     document.body.scrollTop) - 
+                     document.documentElement.clientTop;
+                }
+                return cursor;
+            }
+        };
+    </script>
+    <style type="text/css">
+        .box { border: 1px solid #bbb; padding: 5px; }
+        .resizable { background: url(handle.png) right bottom no-repeat; position: relative;
+                     -webkit-user-select:none; -moz-user-select:none; }
+        .grip { display: block; width: 16px; height: 16px; position: absolute; right: 0; bottom: 0; 
+                cursor: se-resize;  }
+    </style>
+</head>
+<body>
+<div class="box resizable">
+    <p>Drag the bottom right corner to resize this div.</p>
+</div>
+<div class="box resizable" style="margin:20px auto;width:300px;">
+    <p>Drag the bottom right corner to resize this div.</p>
+</div>
+</body>
+</html>
