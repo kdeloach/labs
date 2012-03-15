@@ -4,13 +4,13 @@ Some aspects I copied from .NET, such as structured config files and user contro
 
 The project structure for implementations may be organized like this:
 
-    / kwork
-    / custom_app
-        / Model
-        / View 
-        / Controller
+    /kwork
+    /custom_app
+        /Model
+        /View 
+        /Controller
         config.xml
-    / www
+    /www
         .htaccess
         index.php
 
