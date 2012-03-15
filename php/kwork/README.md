@@ -2,19 +2,26 @@ This is the prototype of a framework I designed a long time ago for a personal p
 
 Some aspects I copied from .NET, such as structured config files and user controls (kind of). The project that I implemented this on used Twig for templating, PDO for data access, and some minor event based control flow commonly found in .NET applications.
 
-The project structure for implementations may be organized like this:
+I thought this may be worth preserving just in case I ever decide to resume this project.
+
+Example of project structure:
 
     /kwork
+        ...
     /custom_app
         /Model
         /View 
         /Controller
         config.xml
+        ...
     /www
         .htaccess
         index.php
+        ...
 
-The index.php file establishes the include_path and invokes kwork/AppMain::handleRequest(). Example of a config.xml file:
+The index.php file establishes the include_path and invokes kwork/AppMain::handleRequest(). 
+
+Example of a config.xml file:
 
     <?xml version="1.0" ?>
     <config>
@@ -35,4 +42,4 @@ The index.php file establishes the include_path and invokes kwork/AppMain::handl
         </routes>
     </config>
     
-I thought this may be worth preserving just in case I ever decide to resume this project.
+
