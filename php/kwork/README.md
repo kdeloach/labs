@@ -4,15 +4,15 @@ Some aspects I copied from .NET, such as structured config files and user contro
 
 The project structure for implementations may be organized like this:
 
-* kwork
-* custom_app
-    * Model
-    * View 
-    * Controller
-    * config.xml
-* www
-    * .htaccess
-    * index.php
+    / kwork
+    / custom_app
+        / Model
+        / View 
+        / Controller
+        config.xml
+    / www
+        .htaccess
+        index.php
 
 The index.php file establishes the include_path and invokes kwork/AppMain::handleRequest(). Example of a config.xml file:
 
