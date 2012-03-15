@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" href="site.css">
+<link rel="Stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/base/jquery-ui.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+<script type="text/javascript" src="site.js"></script>
+<script type="text/javascript">
+var app = new minwage();
+$(function() {
+    app.init();
+});
+</script>
+</head>
+<body>
+
+<div class="widget">
+    <div class="inner">
+        <p>Supply of labor: <span id="laborSupply"></span></p>
+        <div id="laborSupplySlider" class="slider"></div>
+    </div>
+</div>
+
+<div class="widget">
+    <div class="inner">
+        <p>Minimum wage: <span id="minWage"></span></p>
+        <div id="minWageSlider" class="slider"></div>
+    </div>
+</div>
+
+<div class="widget" style="width:auto">
+    <div class="inner">
+        <p><button id="randomize">Random</button></p>
+    </div>
+</div>
+
+<div class="widget" style="width:auto">
+    <div class="inner">
+        <p>
+            <button id="less" style="font-size:16px">-</button> /
+            <button id="more" style="font-size:16px">+</button>
+        </p>
+    </div>
+</div>
+
+<div id="workers"></div>
+<div id="companies"></div>
+
+</body>
+</html>

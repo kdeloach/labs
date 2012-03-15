@@ -1,0 +1,69 @@
+
+body {
+    background: #eee;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.clear, #workers, #companies { clear: both; }
+
+.widget {
+    float: left;
+    width: 250px;
+    background: #fff;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    margin: 10px;
+    font-size: 12px;
+}
+.widget .inner { margin: 10px; }
+
+.widget button {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+}
+
+#workers {
+    margin: 10px;
+}
+
+.company { 
+    float: left;
+    overflow: hidden;
+    background: #fff;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    margin: 10px;
+}
+.company .inner {
+    margin: 10px;
+}
+.company .icon {
+    float: left;
+    margin: 0 0 0 0;
+    padding-top: 87px;
+    padding-right: 10px;
+    background: url(company.png) 0 0 no-repeat;
+}
+.company .workers {
+    float: left;
+    max-width: 250px;
+    max-height: 50px;
+    margin-left: 5px;
+}
+.company .note {
+    font-size: 10px;
+    color: #666;
+    margin-top: 3px;
+}
+.wage {
+    font-weight: bold;
+    color: #216C2A;
+}
