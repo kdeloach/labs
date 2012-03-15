@@ -2,6 +2,6 @@
 
 interface IRequestHandler
 {
-	function requestPattern();
-	function handleRequest();
+    function requestPattern();
+    function handleRequest();
 }

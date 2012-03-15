@@ -28,10 +28,10 @@ class ConfigurationManager
             $className = ucfirst($node->getName()) . 'ConfigParser';
             if(!class_exists($className))
             {
-            	throw new Exception("No ConfigurationParser called $className was found");
+                throw new Exception("No ConfigurationParser called $className was found");
             }
-			$parser = new $className($this);
-			$parser->evaluate($node);
+            $parser = new $className($this);
+            $parser->evaluate($node);
         }
     }
     
@@ -48,18 +48,18 @@ class ConfigurationManager
         return false;
     }
     
-	/***
-	 * Multiple results
-	 */
+    /***
+     * Multiple results
+     */
     function settings($xpath)
     {
         return $this->settings->xpath($xpath);
     }
     
     function section($name)
-	{
-		if(isset($this->{$name}))
-			return $this->{$name};
-		return false;
-	}
+    {
+        if(isset($this->{$name}))
+            return $this->{$name};
+        return false;
+    }
 }

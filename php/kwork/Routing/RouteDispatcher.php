@@ -19,7 +19,7 @@ class RouteDispatcher
         }
         catch(ReflectionException $ex)
         {
-        	throw new Exception('Could not load controller class', 0, $ex);
+            throw new Exception('Could not load controller class', 0, $ex);
         }
 
         try
@@ -30,7 +30,7 @@ class RouteDispatcher
         }
         catch(ReflectionException $ex)
         {
-			throw new Exception('Could not load controller action', 0, $ex);
+            throw new Exception('Could not load controller action', 0, $ex);
         }
     }
     

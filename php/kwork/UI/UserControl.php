@@ -9,13 +9,13 @@ abstract class UserControl extends TemplateControl
     
     function templateFileName($templateName)
     {
-    	$filename = parent::templateFileName($templateName);
-    	$filename = 'Controls' . DIRECTORY_SEPARATOR . $filename;
-    	return $filename;
+        $filename = parent::templateFileName($templateName);
+        $filename = 'Controls' . DIRECTORY_SEPARATOR . $filename;
+        return $filename;
     }
     
     function __toString()
     {
-    	return $this->render();
+        return $this->render();
     }
 }

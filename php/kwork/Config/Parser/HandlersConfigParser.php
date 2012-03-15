@@ -11,14 +11,14 @@ class HandlersConfigParser implements IConfigParser
     
     function evaluate($node)
     {
-		foreach($node as $child)
-		{
-			$attrs = $child->attributes();
-			$className = (string)$attrs['name'];
-			$pattern = (string)$attrs['pattern'];
-			$rcHandler = new ReflectionClass($className);
-			$handler = $rcHandler->newInstanceArgs(array($pattern));
-			$this->config->handlers[] = $handler;
-		}
+        foreach($node as $child)
+        {
+            $attrs = $child->attributes();
+            $className = (string)$attrs['name'];
+            $pattern = (string)$attrs['pattern'];
+            $rcHandler = new ReflectionClass($className);
+            $handler = $rcHandler->newInstanceArgs(array($pattern));
+            $this->config->handlers[] = $handler;
+        }
     }
 }
