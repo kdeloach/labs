@@ -1,0 +1,23 @@
+{
+    "initial": [
+        {"name": "create", "title": "Begin", "nextstep": "basic"}
+    ],
+    "basic": [
+        {"name": "add", "title": "Add 1"},
+        {"name": "mul", "title": "Multiply 2"},
+        {"name": "div", "title": "Divide 2"},
+        {"name": "adv", "title": "Advanced options", "nextstep": "advanced"},
+        {"name": "restart", "title": "Start over", "nextstep": "initial"}
+    ],
+    "advanced": [
+        {"name": "pow", "title": "n^3"},
+        {"name": "sqrt", "title": "sqrt"},
+        {"name": "round", "title": "Round"},
+        {"name": "basic", "title": "Basic options", "nextstep": "basic"},
+        {"name": "restart", "title": "Start over", "nextstep": "initial"},
+        {"name": "final", "title": "Final step", "nextstep": "finish"}
+    ],
+    "finish": [
+        {"name": "restart", "title": "Start over", "nextstep": "initial"}
+    ]
+}
