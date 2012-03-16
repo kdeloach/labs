@@ -8,7 +8,6 @@
             <node title="Add User" url="users/adduser" name="adduser"/>
             <node title="My Profile" url="users/profile" name="myprofile"/>
         </node>
-
         <node title="Design" url="design" name="design">
             <node title="New Design" url="design/newdesign" name="newdesign"/>
         </node>
