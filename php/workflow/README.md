@@ -4,9 +4,8 @@ This is a combination of several experiments:
     * The inspiration for this was the old Blizzard WoW Armory
 * Handling postbacks
     * Have input fields and other form elements preserve their values after a form submission
-    * Event based object oriented approach
 * Workflow
-    * Configurable workflow that can be used to manipulate data
+    * Configurable workflow which can trigger actions to manipulate content
 * Event listeners
     * To allow arbitrary objects the ability to contextually react to workflow actions, instead of hard-coding custom logic for every possible consumer within the workflow action itself
 
