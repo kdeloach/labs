@@ -1,0 +1,23 @@
+<?xml-stylesheet type="text/xsl" href="template.xsl"?>
+<document siteUrl="http://kevinx.local/labs/php/xsltest/" debug="true">
+    <sitemap>
+        <node title="Content" url="default" name="content">
+            <node title="New Page" url="default/newpage" name="newpage"/>
+        </node>
+        <node title="Users" url="users" name="users">
+            <node title="Add User" url="users/adduser" name="adduser"/>
+            <node title="My Profile" url="users/profile" name="myprofile"/>
+        </node>
+
+        <node title="Design" url="design" name="design">
+            <node title="New Design" url="design/newdesign" name="newdesign"/>
+        </node>
+        <node title="Customize" url="custom" name="custom" active="true">
+            <node title="New Template" url="custom/newtemplate" name="newtemplate"/>
+            <node title="New Element" url="custom/newelement" name="newelement"/>
+        </node>
+        <node title="Logout" url="default/logout" name="logout"/>
+    </sitemap>
+    <content name="custom" title="Customize">
+    </content>
+</document>
