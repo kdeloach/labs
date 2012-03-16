@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table', 'corechart']});
+      google.setOnLoadCallback(function() {
+        $.get('changes.json', function(data) {
+            $('#changes').html('');
+            $.each(data, function(i, row) {
+                drawTable(row.d1, row.changes);
+            });
+        });
+      });
+      function drawTable(d1, changes) {
+        var dt = new google.visualization.DataTable();
+        dt.addColumn('string', 'Name');
+        dt.addColumn('number', 'Price');
+        dt.addColumn('number', 'Change');
+        dt.addRows(changes.length);
+        for(i in changes) {
+            i = parseInt(i);
+            var row = changes[i];
+            dt.setCell(i, 0, formatName(row));
+            dt.setCell(i, 1, row.price);
+            dt.setCell(i, 2, row.change);
+        }
+        var d = new Date(d1 * 1000);
+        var cl = document.createElement('div');
+        cl.cssName = 'changelist';
+        $(cl).html('<h2>' + d.toDateString() + '</h2>');
+        $('#changes').append(cl);
+        var ph = document.createElement('div');
+        $(cl).append(ph);
+        var table = new google.visualization.Table(ph);
+        table.draw(dt, {width: 600});
+      }
+      function formatName(row) {
+        var result = row.name;
+        switch(row.type) {
+            case 1:
+                result = 'Strange ' + result;
+                break;
+            case 2:
+                result = 'Vintage ' + result;
+                break;
+            case 3:
+                result = 'Genuine ' + result;
+                break;
+            case 4:
+                result = 'Haunted ' + result;
+                break;
+        }
+        return result;
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+        <p>
+            <a href="prices" style="padding:2px 5px;margin-right:5px;background:#fff;border:1px solid #bbb;">Prices</a>
+            <a href="pricespivot" style="padding:2px 5px;margin-right:5px;background:#fff;border:1px solid #bbb;">Prices (pivoted)</a>
+            <a href="changes" style="padding:2px 5px;margin-right:5px;background:#fff;border:1px solid #bbb;">Changes</a>
+        </p>
+    </div>
+    <div id="changes">Loading...</div>
+    <p><small><strong>Raw data:</strong> <a href="changes.json">changes.json</a></small></p>
+  </body>
+</html>

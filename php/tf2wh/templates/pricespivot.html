@@ -1,0 +1,103 @@
+<html>
+  <head>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table', 'corechart']});
+      google.setOnLoadCallback(function() {
+        $.get('pricespivot.json', function(data) {
+            drawTable(data);
+        });
+      });
+      function drawTable(data) {
+        var dt = new google.visualization.DataTable();
+        dt.addColumn('string', 'Name');
+        dt.addColumn('number', 'Unique');
+        dt.addColumn('number', 'Strange');
+        dt.addColumn('number', 'Vintage');
+        dt.addColumn('number', 'Genuine');
+        dt.addColumn('number', 'Haunted');
+        dt.addRows(data.length);
+        for(i in data){
+            i = parseInt(i);
+            var row = data[i];
+            dt.setCell(i, 0, row.name);
+            if(row.price) {
+                dt.setCell(i, 1, row.price);
+            }
+            if(row.strangePrice) {
+                dt.setCell(i, 2, row.strangePrice);
+            }
+            if(row.vintagePrice) {
+                dt.setCell(i, 3, row.vintagePrice);
+            }
+            if(row.genuinePrice) {
+                dt.setCell(i, 4, row.genuinePrice);
+            }
+            if(row.hauntedPrice) {
+                dt.setCell(i, 5, row.hauntedPrice);
+            }
+        }
+        
+        var formatter = new google.visualization.ColorFormat();
+        formatter.addRange(null, null, '#000', '#ff9966');
+        formatter.format(dt, 2); 
+        var formatter = new google.visualization.ColorFormat();
+        formatter.addRange(null, null, '#000', '#6699cc');
+        formatter.format(dt, 3); 
+        var formatter = new google.visualization.ColorFormat();
+        formatter.addRange(null, null, '#000', '#99cc99');
+        formatter.format(dt, 4); 
+        var formatter = new google.visualization.ColorFormat();
+        formatter.addRange(null, null, '#000', '#cc99cc');
+        formatter.format(dt, 5); 
+        
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(dt, {width: 800, allowHtml: true});
+
+        google.visualization.events.addListener(table, 'select', function(evt) {
+            var result = [];
+            var selection = table.getSelection();
+            for(var i = 0; i < Math.min(5, selection.length); i++) {
+                var row = data[selection[i].row];
+                result.push(row.itemID);
+            }
+            var file = result.join('+') + '.json';
+            $.get(file, function(data) {
+                drawChart(data);
+            });
+        });
+      }
+      function drawChart(data) {
+        if(!data.entries || data.entries.length == 0) {
+            return;
+        }
+        if(!data.legend || data.legend.length == 0) {
+            return;
+        }
+        var dt = new google.visualization.DataTable();
+        for(i in data.legend) {
+            dt.addColumn(data.legend[i].type, data.legend[i].title);
+        }
+        for(i = 0; i < data.entries.length; i++) {
+            data.entries[i][0] = new Date(data.entries[i][0] * 1000);
+        }
+        dt.addRows(data.entries);
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(dt, {width: 800, height: 240});
+      }
+    </script>
+  </head>
+  <body style="padding-top:285px;">
+    <div style="position:fixed;top:0;z-index:999;background:#fff;">
+        <p>
+            <a href="prices" style="padding:2px 5px;margin-right:5px;background:#fff;border:1px solid #bbb;">Prices</a>
+            <a href="pricespivot" style="padding:2px 5px;margin-right:5px;background:#fff;border:1px solid #bbb;">Prices (pivoted)</a>
+            <a href="changes" style="padding:2px 5px;margin-right:5px;background:#fff;border:1px solid #bbb;">Changes</a>
+        </p>
+        <div id='chart_div'><span style="color:gray">Select up to five items (use shift and ctrl to select multiple items)</span></div>
+    </div>
+    <div id='table_div'></div>
+    <p><small><strong>Raw data:</strong> <a href="pricespivot.json">pricespivot.json</a></small></p>
+  </body>
+</html>

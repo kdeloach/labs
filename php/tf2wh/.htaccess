@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteCond $1 !^(index\.php|content|robots\.txt)
+RewriteRule ^(.[^\.]*)?\.json$ index.php?page=$1&context=json [L]
+RewriteCond $1 !^(index\.php|content|robots\.txt)
+RewriteRule ^(.*)$ index.php?page=$1 [L]
