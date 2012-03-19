@@ -23,9 +23,8 @@ The code for pulling rules from a data source has been omitted. Further refactor
 
 ### Matching single values
 
-    $url = 'http://kevinx.local/PA';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]');
-    $data = $rule->match($url);
+    $data = $rule->match('http://kevinx.local/PA');
     print_r($data);
 
     Array
@@ -35,13 +34,12 @@ The code for pulling rules from a data source has been omitted. Further refactor
 
 ### Matching against multiple values
 
-    $url = 'http://kevinx.local/PA,NJ';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]');
     $rule->MetaData = array(
         new UrlRewriteRuleMetaData('blah', 'test'),
         new UrlRewriteRuleMetaData('ArrayField', 'state')
     );
-    $data = $rule->match($url);
+    $data = $rule->match('http://kevinx.local/PA,NJ');
     print_r($data);
 
     Array
@@ -60,13 +58,12 @@ The code for pulling rules from a data source has been omitted. Further refactor
 
 ### Matching against multiple values
 
-    $url = 'http://kevinx.local/PA,NJ/Philadelphia,Camden';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]/[city]');
     $rule->MetaData = array(
         new UrlRewriteRuleMetaData('ArrayField', 'state'),
         new UrlRewriteRuleMetaData('ArrayField', 'city')
     );
-    $data = $rule->match($url);
+    $data = $rule->match('http://kevinx.local/PA,NJ/Philadelphia,Camden');
     print_r($data);
 
     Array
