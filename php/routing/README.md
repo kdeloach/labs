@@ -2,7 +2,26 @@ This is a basic url router written for a personal project. The synax is very sim
 
 The code for pulling rules from a data source has been omitted. Further refactorings may be needed for general use.
 
-Examples:
+1. General matching
+
+    $rw = new UrlRewriter();
+    if(($data = $rw->match($url)) !== false)
+    {
+        var_dump($data);
+    }
+
+2. Modifying current URL
+    
+    $data = array('page' => $data['page'] + 1);
+    if(($rule = $rw->findRule($url)) !== false)
+    {
+        if(($url = $rule->url($data)) !== false)
+        {
+            header('Location: ' . $url);
+        }
+    }
+
+3. Matching single values
 
     $url = 'http://kevinx.local/PA';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]');
@@ -13,7 +32,8 @@ Examples:
     (
         [state] => 'PA'
     )
-    
+
+4. Matching against multiple values
 
     $url = 'http://kevinx.local/PA,NJ';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]');
@@ -37,7 +57,9 @@ Examples:
                 [1] => NJ
             )
     )
-    
+
+5. Matching against multiple values
+
     $url = 'http://kevinx.local/PA,NJ/Philadelphia,Camden';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]/[city]');
     $rule->MetaData = array(
@@ -65,19 +87,3 @@ Examples:
                 [1] => Camden
             )
     )
-
-
-    $rw = new UrlRewriter();
-    if(($data = $rw->match($url)) !== false)
-    {
-        var_dump($data);
-    }
-
-    $data = array('page' => $data['page'] + 1);
-    if(($rule = $rw->findRule($url)) !== false)
-    {
-        if(($url = $rule->url($data)) !== false)
-        {
-            header('Location: ' . $url);
-        }
-    }
