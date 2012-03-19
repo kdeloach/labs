@@ -2,7 +2,7 @@ This is a basic url router written for a personal project. The synax is very sim
 
 The code for pulling rules from a data source has been omitted. Further refactorings may be needed for general use.
 
-1. General matching
+## General matching
 
     $rw = new UrlRewriter();
     if(($data = $rw->match($url)) !== false)
@@ -10,7 +10,7 @@ The code for pulling rules from a data source has been omitted. Further refactor
         var_dump($data);
     }
 
-2. Modifying current URL
+## Modifying current URL
     
     $data = array('page' => $data['page'] + 1);
     if(($rule = $rw->findRule($url)) !== false)
@@ -21,7 +21,7 @@ The code for pulling rules from a data source has been omitted. Further refactor
         }
     }
 
-3. Matching single values
+## Matching single values
 
     $url = 'http://kevinx.local/PA';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]');
@@ -33,7 +33,7 @@ The code for pulling rules from a data source has been omitted. Further refactor
         [state] => 'PA'
     )
 
-4. Matching against multiple values
+## Matching against multiple values
 
     $url = 'http://kevinx.local/PA,NJ';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]');
@@ -58,7 +58,7 @@ The code for pulling rules from a data source has been omitted. Further refactor
             )
     )
 
-5. Matching against multiple values
+## Matching against multiple values
 
     $url = 'http://kevinx.local/PA,NJ/Philadelphia,Camden';
     $rule = new UrlRewriteRule('http://kevinx.local/[state]/[city]');
