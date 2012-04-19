@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Kevin's Netflix</title>
+    <style type="text/css">
+        body { margin: 0; padding: 0; background: #333; }
+        .rating {  }
+        .rating-5 .stars { background: #4d8f40; }
+        .rating-4 .stars { background: #718f40; }
+        .rating-3 .stars { background: #8b8b3f; }
+        .rating-2 .stars { background: #8f7140; }
+        .rating-1 .stars { background: #8f4e40; }
+        .movies { font-size: 0; line-height: 0; padding: 4px 5px 8px; overflow: auto; }
+        .movie { float: left; margin: 1px 1px 0 0; }
+        a img { border: 0; }
+        .stars { font-size: 35px; line-height: 35px; color: white; padding: 5px; border-bottom: 3px solid #222; }
+    </style>
+</head>
+<body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    function stars(n) {
+        var result = '';
+        switch(n) {
+            case 5:
+                result += 'Great';
+                break;
+            case 4:
+                result += 'Really Good';
+                break;
+            case 3:
+                result += 'Good';
+                break;
+            case 2:
+                result += 'Bad';
+                break;
+            case 1:
+                result += 'Terrible';
+                break;
+        }
+        for(var i = 0; i < n; i++) {
+            result += ' <img src="star.png" alt="" /> ';
+        }
+
+        return result;
+    }
+    function sortyByYearDesc(a, b) {
+        return b.year - a.year;
+    }
+    $.getJSON('netflix.json', function(data) {
+        var groupRating = {
+            '5': [], '4': [], '3': [], '2': [], '1': []
+        };
+        $.each(data, function(i, item) {
+            groupRating[item.rating].push(item);
+        });
+        for(var rating = 5; rating > 0; rating--) {
+            items = groupRating[rating];
+            if(items.length == 0) {
+                continue;
+            }
+            items.sort(sortyByYearDesc);
+            divRating = $('<div class="rating rating-' + rating + '"></div>');
+            divRating.append($('<div class="stars">' + stars(rating) + '</div>'));
+            var children = $('<div class="movies"></div>');
+            divRating.append(children);
+            $.each(items, function(i, item) {
+                elem = $('<div class="movie"><a href="' + item.url + '"><img src="' + item.cover + '" alt="" width="110" height="150" /></a></div>');
+                $(children).append(elem);
+            });
+            $('body').append(divRating);
+        }
+    });
+});
+</script>
+</body>
+</html>

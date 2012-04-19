@@ -1,0 +1,24 @@
+
+API request: /catalog/titles/full
+This will throw an exception but give URL to file with full list of titles
+
+Example:
+curl http://cdn-api.netflix.com/api/full_catalog_3.xml?token= > netflix.txt
+
+Create a file containing all movie URL's:
+grep '<id>' netflix.txt | grep -Po 'http://.[^<]*' > netflix-titles.txt
+
+Split the file into parts (API limitation):
+split -l 50 -a 3 netflix-titles.txt titles/
+
+Retrieve ratings from Netflix:
+find titles/* -exec python ratings.py {} \; >> ratings.txt
+
+Monitor progress in real time:
+tail -f ratings.txt
+
+Output final results:
+grep '{' ratings.txt > final-ratings.txt
+
+Put lines from final-ratings.txt into tojson.py to generate the JSON
+python tojson.py > netflix.json
