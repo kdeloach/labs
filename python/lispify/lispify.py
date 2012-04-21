@@ -30,19 +30,18 @@ def simplify(expr):
     if type(expr) is ast.Num:
         return expr.n
     elif type(expr) is ast.BinOp:
-        fn = opfn(expr.op)
-        return fn(simplify(expr.left), simplify(expr.right))
+        return evalop(expr.op, simplify(expr.left), simplify(expr.right))
     raise Exception('unable to simplify')
     
-def opfn(op):
+def evalop(op, a, b):
     if type(op) is ast.Add:
-        return lambda a, b: a + b
+        return a + b
     elif type(op) is ast.Sub:
-        return lambda a, b: a - b
+        return a - b
     elif type(op) is ast.Mult:
-        return lambda a, b: a * b
+        return a * b
     elif type(op) is ast.Div:
-        return lambda a, b: a / b
+        return a / b
     raise NotImplementedError(type(op).__name__)
     
 class SimplifyNode(ast.NodeTransformer):
