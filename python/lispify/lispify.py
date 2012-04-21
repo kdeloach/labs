@@ -25,7 +25,6 @@ def _lispify(expr):
         return '/'
     elif type(expr) is ast.BinOp:
         return '(%s %s %s)' % (_lispify(expr.op), _lispify(expr.left), _lispify(expr.right))
-    print type(expr).__name__
     
 def simplify(expr):
     if type(expr) is ast.Num:
