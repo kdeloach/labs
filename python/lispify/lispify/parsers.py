@@ -11,14 +11,29 @@ def simpleparser(str):
     return _simpleparser(tokens)
     
 def _simpleparser(tokens):
+    while tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
+        if not validparens(tokens[1:-1]):
+            break
+        tokens = tokens[1:-1]
     if len(tokens) == 1:
         return token2obj(tokens[0])
-    while tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
-        tokens = tokens[1:-1]
     i = indexOfLowestOrderOp(tokens)
     return BinOp(op=token2obj(tokens[i]),
                  left=_simpleparser(tokens[0:i]),
                  right=_simpleparser(tokens[i + 1:]))
+    
+def validparens(tokens):
+    """Check if all parens are closed properly"""
+    parens = 0
+    for n in range(len(tokens)):
+        if parens < 0:
+            return False
+        token = tokens[n]
+        if token == '(':
+            parens += 1
+        elif token == ')':
+            parens -= 1
+    return parens == 0
     
 def indexOfLowestOrderOp(tokens):
     """Lowest order of precedence operator in str (ignore anything between parens)"""
