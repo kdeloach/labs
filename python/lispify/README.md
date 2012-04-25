@@ -5,10 +5,10 @@ to LISP syntax. Also, there is an option to simplify expressions as much as poss
     Usage: main.py [options] filename
 
     Options:
-      -h, --help  show this help message and exit
-      -r          simplify expressions as much as possible
-      -t          run tests
-      -a          use AST for parsing expression
+      -h, --help      show this help message and exit
+      -r, --simplify  simplify expressions as much as possible
+      -t, --test      run tests
+      -a, --ast       use AST for parsing expression
       
 Run the sample expressions from a text file:
 
