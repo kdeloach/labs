@@ -1,4 +1,4 @@
-Small script I wrote to experiment with AST to convert basic Python expressions
+Small script I wrote to experiment with parsing basic Python expressions and converting them 
 to LISP syntax. Also, there is an option to simplify expressions as much as possible by evaluation.
 
     $ python main.py
