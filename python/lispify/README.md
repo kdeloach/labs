@@ -8,7 +8,7 @@ to LISP syntax. Also, there is an option to simplify expressions as much as poss
       -h, --help  show this help message and exit
       -r          simplify expressions as much as possible
       -t          run tests
-      -p          use homemade parser instead of ast
+      -a          use AST for parsing expression
       
 Run the sample expressions from a text file:
 

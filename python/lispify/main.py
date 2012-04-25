@@ -9,11 +9,11 @@ parser.add_option('-r', action='store_true', dest='simplify', default=False,
                   help='simplify expressions as much as possible')
 parser.add_option('-t', action='store_true', dest='runtests', default=False,
                   help='run tests')
-parser.add_option('-p', action='store_true', dest='customparser', default=False,
-                  help='use homemade parser instead of ast')
+parser.add_option('-a', action='store_true', dest='use_ast', default=False,
+                  help='use AST for parsing expression')
 (options, args) = parser.parse_args()
 
-treeparser = simpleparser if options.customparser else astparser 
+treeparser = astparser if options.use_ast else simpleparser 
 
 if options.runtests:
     runtests(simplify=options.simplify, parser=treeparser)
