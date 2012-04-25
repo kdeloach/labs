@@ -16,10 +16,9 @@ def _simpleparser(tokens):
     while tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
         tokens = tokens[1:-1]
     i = indexOfHighestOrderOp(tokens)
-    op = token2obj(tokens[i])
-    left = _simpleparser(tokens[0:i])
-    right = _simpleparser(tokens[i + 1:])
-    return BinOp(op=op, left=left, right=right);
+    return BinOp(op=token2obj(tokens[i]),
+                 left=_simpleparser(tokens[0:i]),
+                 right=_simpleparser(tokens[i + 1:]))
     
 def indexOfHighestOrderOp(tokens):
     """Highest order of precedence operator in str (ignore anything between parens)"""
