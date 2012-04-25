@@ -5,11 +5,11 @@ from lispify.tests import runtests
 from lispify.parsers import astparser, simpleparser
 
 parser = OptionParser(usage='Usage: %prog [options] filename')
-parser.add_option('-r', action='store_true', dest='simplify', default=False,
+parser.add_option('-r', '--simplify', action='store_true', dest='simplify', default=False,
                   help='simplify expressions as much as possible')
-parser.add_option('-t', action='store_true', dest='runtests', default=False,
+parser.add_option('-t', '--test', action='store_true', dest='runtests', default=False,
                   help='run tests')
-parser.add_option('-a', action='store_true', dest='use_ast', default=False,
+parser.add_option('-a', '--ast', action='store_true', dest='use_ast', default=False,
                   help='use AST for parsing expression')
 (options, args) = parser.parse_args()
 
