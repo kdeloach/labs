@@ -1,6 +1,7 @@
 import ast
 from ast import Num, Name, Add, Sub, Mult, Div, BinOp
 from collections import defaultdict
+import re
 
 def astparser(str):
     tree = ast.parse(str)
@@ -11,6 +12,8 @@ def simpleparser(str):
     return _simpleparser(tokens)
     
 def _simpleparser(tokens):
+    if len(tokens) == 0:
+        return None
     while tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
         if not validparens(tokens[1:-1]):
             break
@@ -77,4 +80,5 @@ def token2obj(token):
     return Name(id=token)
     
 def tokenize(str):
-    return [n for n in list(str) if n != ' ']
+    return re.findall('(\d+|[+\-*/\(\)]|\w+)', str)
+            
