@@ -36,4 +36,4 @@ with open(filename) as fd:
             print lispify(line, simplify=options.simplify, parser=treeparser)
         except:
             print 'Unable to parse expression'
-        print '\n'
+        print ''

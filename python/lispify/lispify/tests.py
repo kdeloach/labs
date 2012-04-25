@@ -22,4 +22,4 @@ def runtests(simplify=False, parser=None):
                 print 'Expected: %s, Actual: %s' % (expected_simplified, result)
         elif result != expected:
             print 'Expected: %s, Actual: %s' % (expected, result)
-        print ""
+        print ''

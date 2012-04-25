@@ -13,7 +13,7 @@ def simpleparser(str):
 def _simpleparser(tokens):
     if len(tokens) == 1:
         return token2obj(tokens[0])
-    elif tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
+    while tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
         tokens = tokens[1:-1]
     i = indexOfHighestOrderOp(tokens)
     op = token2obj(tokens[i])
@@ -38,14 +38,11 @@ def indexOfHighestOrderOp(tokens):
         # ignore anything between parens
         if parens > 0:
             continue
-        if token in list('-+/*'):
+        if token in list('+-/*'):
             ops[token] = n
-    for op in list('-+/*'):
+    for op in list('+-/*'):
         if ops[op]:
             return ops[op]
-    
-def isOp(char):
-    return char in list('+-*/')
     
 class InvalidExpressionFormat(Exception):
     pass
