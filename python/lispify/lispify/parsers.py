@@ -15,13 +15,13 @@ def _simpleparser(tokens):
         return token2obj(tokens[0])
     while tokens[0] == '(' and tokens[len(tokens) - 1] == ')':
         tokens = tokens[1:-1]
-    i = indexOfHighestOrderOp(tokens)
+    i = indexOfLowestOrderOp(tokens)
     return BinOp(op=token2obj(tokens[i]),
                  left=_simpleparser(tokens[0:i]),
                  right=_simpleparser(tokens[i + 1:]))
     
-def indexOfHighestOrderOp(tokens):
-    """Highest order of precedence operator in str (ignore anything between parens)"""
+def indexOfLowestOrderOp(tokens):
+    """Lowest order of precedence operator in str (ignore anything between parens)"""
     # track of open/closed parnes
     parens = 0
     # store index of each op found
