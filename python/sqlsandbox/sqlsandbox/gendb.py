@@ -60,8 +60,10 @@ def create_tables(schema):
                 coltype = Integer
                 args.append(ForeignKey(col['foreign_key']))
             elif '_' in colname:
-                coltype = Integer
-                args.append(ForeignKey(colname.replace('_', '.')))
+                srctbl = colname.split('_')[0]
+                if srctbl in schema:
+                    coltype = Integer
+                    args.append(ForeignKey(colname.replace('_', '.')))
             kwargs.update(nullable=col.get('nullable', True))
             kwargs.update(unique=col.get('unique', False))
             if primary_key:

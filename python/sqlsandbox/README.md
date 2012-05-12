@@ -9,3 +9,5 @@ Other ideas I may implement:
   * a unique URL for each "sandbox" so you can share SQL snippets with others
   * add support for other SQL dialects
   * seeds for consistent test data per "sandbox"
+
+![](https://github.com/kdeloach/labs/raw/master/python/sqlsandbox/static/preview2.PNG)
