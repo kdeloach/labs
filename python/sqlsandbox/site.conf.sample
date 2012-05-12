@@ -1,0 +1,6 @@
+port = 80
+dsn = 'sqlite:///db.sq3'
+cookie_secret = ''
+debug = True
+static_path = '/static'
+template_path = '/templates'

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>sqlsandbox</title>
+    <link href="{{ static_url('bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+    <style type="text/css">
+        .navbar { margin-bottom: 0; }
+    </style>
+  </head>
+  <body>
+  
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">sqlsandbox</a>
+            <ul class="nav">
+              <li><a href="/">New Sandbox</a></li>
+              <li><a href="/example">Example</a></li>
+            </ul>
+        </div>
+      </div>
+    </div>
+  
+<div style="padding:0 15px;">
+{% block content %}
+{% end %}
+</div>
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="{{ static_url('jquery.autosize-min.js') }}"></script>
+{% block scripts %}
+{% end %}
+  </body>
+</html>

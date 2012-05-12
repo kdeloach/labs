@@ -1,0 +1,84 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<table cellpadding="10" style="width:100%;">
+<tr>
+<td width="50%" valign="top">
+  <fieldset>
+    <legend>Query</legend>
+    <div class="control-group">
+      <div class="controls">
+        <textarea name="query" id="query" style="width:100%;font-family:Courier New, monospace;">{{ query }}</textarea>
+      </div>
+    </div>
+  </fieldset>
+</td>
+<td width="50%" valign="top">
+  <fieldset>
+    <legend>Schema <small>(JSON)</small></legend>
+    <div class="control-group">
+      <div class="controls">
+        <textarea name="schema" id="schema" style="width:100%;font-family:Courier New, monospace;">{{ schema }}</textarea>
+      </div>
+    </div>
+  </fieldset>
+</td>
+</tr>
+</table>
+
+<p><a href="" class="btn btn-primary btn-large btn-submit">Run</a> (shortcut: ctrl-s)</p>
+
+<div id="resultarea" style="display:none;">
+<hr />
+  <table class="table table-bordered table-striped table-condensed" id="results">
+    <tr><td>1</td></tr>
+    <tr><td>1</td></tr>
+    <tr><td>1</td></tr>
+  </table>
+  <div id="noresults" style="display:none">
+    <p>(No results)</p>
+  </div>
+</div>
+
+{% end %}
+
+{% block scripts %}
+<script type="text/javascript">
+function runQuery() {
+    $('#resultarea').show();
+    $.post('/', {query:$('#query').val(), schema:$('#schema').val()}, function(data) {
+        printResults(data);
+    });
+}
+function printResults(data) {
+    console.log(data);
+    if(!data) {
+        $('#results').hide();
+        $('#noresults').show();
+        return;
+    }
+    $('#results').show();
+    $('#noresults').hide();
+    $('#results tr').remove();
+    for(var row = 0; row < data.length; row++) {
+        $('#results').append($('<tr><td>' + data[row].join('</td><td>') + '</td></tr>'));
+    }
+}
+$(function() {
+    $('textarea').autosize();
+    $('#query').focus();
+    $('.btn-submit').click(function(e) {
+        e.preventDefault();
+        runQuery();
+    });
+    $(window).keydown(function(e) {
+        if(e.ctrlKey && (e.which == 115 || e.which == 83)) {
+            e.preventDefault();
+            runQuery();
+        }
+    });
+});
+</script>
+{% end %}
+
+
