@@ -1,4 +1,4 @@
-This is a prototype of an idea I had for a [jsFiddle](http://jsfiddle.net/)/[codepad](http://codepad.org/) style site for SQL. 
+This is a prototype of an idea I had for a [jsFiddle](http://jsfiddle.net/) / [codepad](http://codepad.org/) style site for SQL. 
 
 You can define a database schema using JSON and query arbitrary SQL against it. The database is also populated with randomized test data. 
 
