@@ -1,6 +1,6 @@
 <?php
 
-define('URL', 'http://kevinx.local/labs/php/grubhub');
+define('URL', 'http://www.kevinx.net/labs/php/grubhub');
 
 require 'simple_html_dom.php';
 
@@ -215,10 +215,10 @@ class GrubHubApp
                 $name = $htmlOrder->find('.restaurantName', 0)->text();
                 $name = trim($name);
 
-                $date = $htmlOrder->find('.yourGrubHubColumnInfo', 0)->plaintext;
+                $date = $htmlOrder->find('.yourGrubHubColumnWrapper', 0)->plaintext;
                 $date = trim($date);
-                list($year, $month, $day, $hour, $minute) = sscanf($date, 'Enjoyed On %d-%d-%d %d:%d:%d.%d');
-                $time = mktime($hour, $minute, 0, $month, $day, $year);
+                list($month, $day, $year, $hour, $minute, $ampm) = sscanf($date, 'Ordered On %s %d %d at %d:%d %s');
+                $time = strtotime("$month $day $year $hour:$minute $ampm");
                 $date = date('Y-m-d H:i', $time);
 
                 $total = $htmlOrder->find('.totalRow .amountColumn', 0)->plaintext;
