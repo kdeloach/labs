@@ -1,95 +1,114 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<head>
-<base href="<?php echo URL; ?>/" />
-<style type="text/css">
-form { margin: 0; padding: 0; }
-table { border-collapse: collapse; border-color: #eee; }
-h3 { margin-top: 0; padding-top: 0; }
-</style>
-</head>
-<body>
+<?php include 'header.php'; ?>
+
 <table>
     <tr>
         <td>
             <form method="post" action="import">
-                <input type="submit" name="import" value="Import Past Orders" />
+                <?php
+                    if(count($pastOrders) == 0)
+                    {
+                        echo '<strong>Start here &dash;&gt;</strong>';
+                    }
+                ?>
+                <input type="submit" name="import" value="Import Past Orders" class="btn" />
             </form>
         </td>
         <td>
             <form method="post" action="clear">
-                <input type="submit" name="clear" value="Clear All Data" style="font-weight: bold;" />
+                <input type="submit" name="clear" value="Clear All Data" style="font-weight: bold;" class="btn" />
             </form>
         </td>
         <td>
-            <a href="disclaimer">Disclaimer</a>
+            <a href="disclaimer" class="btn">Disclaimer</a>
         </td>
         <td>
-            <a href="logout">Logout</a>
+            <a href="logout" class="btn">Logout</a>
         </td>
+
     </tr>
 </table>
-<table cellpadding="15"><tr>
-<td valign="top">
-    <h3>Past Orders</h3>
-    <table border="1" cellpadding="3">
+
+<p>&nbsp;</p>
+
+<ul class="nav nav-tabs" id="myTab">
+    <li class="active"><a href="#aggregate">Aggregate</a></li>
+    <li><a href="#history">Order History</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="aggregate">
+    <table class="table">
         <tr>
-            <th>Date</th>
             <th>Name</th>
+            <th>Orders Placed</th>
+            <th>Days Ago</th>
+            <th>Total Spent</th>
+        </tr>
+    <?php
+    foreach($aggOrders as $order)
+    {
+        echo '<tr>';
+        echo '<td>' . $order->name() . '</td>';
+        echo '<td>' . $order->timesOrdered() . '</td>';
+        echo '<td>' . $order->daysAgo() . '</td>';
+        echo '<td style="text-align:right">' . $order->total() . '</td>';
+        echo "</tr>\n";
+    }
+    ?>
+    <?php
+        if(count($aggOrders) > 0)
+        {
+            echo '<tr>';
+            echo '<td>&nbsp;</td>';
+            echo '<td>&nbsp;</td>';
+            echo '<td>&nbsp;</td>';
+            echo '<td style="text-align:right"><strong>' . '$' . number_format($grandTotal, 2) . '</strong></td>';
+            echo "</tr>\n";
+        }
+    ?>
+    </table>
+  </div>
+  <div class="tab-pane" id="history">
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
             <th>Total</th>
         </tr>
     <?php
     foreach($pastOrders as $order)
     {
         echo '<tr>';
+        echo '<td>' . $order->name() . '</td>';
         echo '<td>' . $order->date() . '</td>';
-        echo '<td>' . $order->name() . '</td>';
-        echo '<td>' . $order->total() . '</td>';
+        echo '<td style="text-align:right">' . $order->total() . '</td>';
         echo "</tr>\n";
     }
     ?>
-    </table>
-</td>
-<td valign="top">
-    <h3>Aggregate</h3>
-    <table border="1" cellpadding="3">
-        <tr>
-            <th>Name</th>
-            <th>Orders Placed</th>
-            <th>Total Spent</th>
-        </tr>
     <?php
-    foreach($rankedOrders as $order)
-    {
-        echo '<tr>';
-        echo '<td>' . $order->name() . '</td>';
-        echo '<td>' . $order->timesOrdered() . '</td>';
-        echo '<td>' . $order->total() . '</td>';
-        echo "</tr>\n";
-    }
+        if(count($pastOrders) > 0)
+        {
+            echo '<tr>';
+            echo '<td>&nbsp;</td>';
+            echo '<td>&nbsp;</td>';
+            echo '<td style="text-align:right"><strong>' . '$' . number_format($grandTotal, 2) . '</strong></td>';
+            echo "</tr>\n";
+        }
     ?>
     </table>
+  </div>
+</div>
+    
+<p><a href="https://github.com/kdeloach/labs/tree/master/php/grubhub">Source Code</a></p>
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#myTab a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
 
-</td>
-<td valign="top">
-    <h3>Days since last order</h3>
-    <table border="1" cellpadding="3">
-        <tr>
-            <th>Name</th>
-            <th>Number of days ago</th>
-        </tr>
-    <?php
-    foreach($recentOrders as $order)
-    {
-        echo '<tr>';
-        echo '<td>' . $order->name() . '</td>';
-        echo '<td>' . ($order->daysAgo() == 0 ? 'Today!' : $order->daysAgo()) . '</td>';
-        echo "</tr>\n";
-    }
-    ?>
-    </table>
-
-</td>
-</tr></table>
-</body>
-</html>
+<?php include 'footer.php'; ?>

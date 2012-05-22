@@ -1,9 +1,4 @@
-<html>
-<head>
-<base href="<?php echo URL; ?>/" />
-</head>
-<body>
+<?php include 'header.php'; ?>
 <h2>Import Past Orders</h2>
 
 <pre>Loading...
-
