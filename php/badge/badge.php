@@ -5,7 +5,8 @@ if(!isset($_GET['txt']))
     die('Missing parameter: txt');
 }
 $text = stripslashes(trim($_GET['txt']));
-switch(strtolower(trim($_GET['c'])))
+$c = isset($_GET['c']) ? strtolower(trim($_GET['c'])) : '';
+switch($c)
 {
     case 'g':
     case 'gold':
