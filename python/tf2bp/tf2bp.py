@@ -42,12 +42,11 @@ for item in extras:
         extras.remove(item)
         extrasWeaponCount[idx] -= 1
 
-byClass = dict(Scout=[], Sniper=[], Soldier=[], Demoman=[], Medic=[], Heavy=[], Pyro=[])
-for className, lst in byClass.iteritems():
-    for item in extras:
-        weapon = weapons[item['defindex']]
-        if className in weapon['used_by_classes']:
-            lst.append(weapon['name'])
+byClass = defaultdict(list)
+for item in extras:
+    weapon = weapons[item['defindex']]
+    for className in weapon['used_by_classes']:
+        byClass[className].append(weapon['name'])
 
 for className, lst in byClass.iteritems():
     print "%s:" % className
