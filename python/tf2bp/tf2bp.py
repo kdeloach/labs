@@ -35,13 +35,17 @@ extrasWeaponCount = defaultdict(int)
 for item in extras:
     extrasWeaponCount[item['defindex']] += 1    
     
-# Always want to retain at least 1 of each type of weapon
-for item in extras:
-    idx = item['defindex']
-    if extrasWeaponCount[idx] == bpWeaponCount[idx]:
-        extras.remove(item)
-        extrasWeaponCount[idx] -= 1
+def preserveAtLeastOne(items):
+    """ Always want to retain at least 1 of each type of weapon """
+    for item in items:
+        i = item['defindex']
+        if extrasWeaponCount[i] == bpWeaponCount[i]:
+            extrasWeaponCount[i] -= 1
+            continue
+        yield item
 
+extras = list(preserveAtLeastOne(extras))
+     
 byClass = defaultdict(list)
 for item in extras:
     weapon = weapons[item['defindex']]
