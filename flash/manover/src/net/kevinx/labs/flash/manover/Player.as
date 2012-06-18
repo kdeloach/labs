@@ -1,23 +1,23 @@
 package net.kevinx.labs.flash.manover 
 {
-	import org.flixel.FlxPoint;
+    import org.flixel.FlxPoint;
     import org.flixel.FlxSprite;
     import org.flixel.FlxG;
     import org.flixel.FlxObject;
-	import org.flixel.FlxState;
+    import org.flixel.FlxState;
 
     public class Player extends FlxSprite
     {
         [Embed(source = "assets/sprite.png")]
-		private var img:Class;
+        private var img:Class;
 
         public var xspeed:int;
         public var yspeed:int;
         public var jumpTicksLimit:int;
-		
-		private var jumping:Boolean = false;
-		private var attacking:Boolean = false;
-		
+        
+        private var jumping:Boolean = false;
+        private var attacking:Boolean = false;
+        
         private var movingLeft:Boolean = false;
         private var justJumped:Boolean = false;
         private var holdingJump:Boolean = false;
@@ -25,34 +25,34 @@ package net.kevinx.labs.flash.manover
         private var jumpTicks:int = 0;
         // number of animation frames which need to pass before jump is allowed
         private var jumpNumFramesDisabled:int = 0;
-		
-		public var controller:PlayerController;
-		
-		public var stage:FlxState;
+        
+        public var controller:PlayerController;
+        
+        public var stage:FlxState;
         private var particles:Array;
         private var missleDelay:int = 0;
 
         public function Player(stage:FlxState, controller:PlayerController)
-		{
+        {
             super();
 
-			this.stage = stage;
-			this.controller = controller;
-			
-            loadGraphic(img, true, false, 31, 30);			
-			addAnimation("run_left", [1, 0, 1, 2], 8);
-			addAnimation("run_right", [6, 7, 6, 5], 8);
-			addAnimation("idle_left", [3], 1);
-			addAnimation("idle_right", [4], 1);
-			addAnimation("jump_left", [11], 1);
-			addAnimation("jump_right", [12], 1);
-			addAnimation("attack_run_left", [19, 18, 19, 20], 8);
-			addAnimation("attack_run_right", [24, 25, 24, 23], 8);
-			addAnimation("attack_idle_left", [21], 1);
-			addAnimation("attack_idle_right", [22], 1);
-			addAnimation("attack_jump_left", [9], 1);
-			addAnimation("attack_jump_right", [14], 1);
-			
+            this.stage = stage;
+            this.controller = controller;
+            
+            loadGraphic(img, true, false, 31, 30);            
+            addAnimation("run_left", [1, 0, 1, 2], 8);
+            addAnimation("run_right", [6, 7, 6, 5], 8);
+            addAnimation("idle_left", [3], 1);
+            addAnimation("idle_right", [4], 1);
+            addAnimation("jump_left", [11], 1);
+            addAnimation("jump_right", [12], 1);
+            addAnimation("attack_run_left", [19, 18, 19, 20], 8);
+            addAnimation("attack_run_right", [24, 25, 24, 23], 8);
+            addAnimation("attack_idle_left", [21], 1);
+            addAnimation("attack_idle_right", [22], 1);
+            addAnimation("attack_jump_left", [9], 1);
+            addAnimation("attack_jump_right", [14], 1);
+            
             // hit box adjustments
             offset.x = 5;
             width = 15;
@@ -76,14 +76,14 @@ package net.kevinx.labs.flash.manover
                 velocity.x = xspeed;
             }
             if (!jumping) {
-				play(animationName("run"));
+                play(animationName("run"));
             }
         }
 
         private function idle():void
         {
             acceleration.x = 0;
-			play(animationName("idle"));
+            play(animationName("idle"));
         }
 
         private function jump():void
@@ -99,19 +99,19 @@ package net.kevinx.labs.flash.manover
         }
 
         public function dirfacing():String
-		{
+        {
             return movingLeft ? "left" : "right";
         }
 
-		private function animationName(name:String):String
-		{
-			return (attacking ? "attack_" : "") + name + "_" + dirfacing();
-		}
-		
+        private function animationName(name:String):String
+        {
+            return (attacking ? "attack_" : "") + name + "_" + dirfacing();
+        }
+        
         override public function update():void
         {
-			var moving:Boolean = false;
-		
+            var moving:Boolean = false;
+        
             jumping = !isTouching(FlxObject.FLOOR);
             justJumped = justTouched(FlxObject.FLOOR);
 
@@ -154,8 +154,8 @@ package net.kevinx.labs.flash.manover
             if (controller.moveRight) {
                 moving = true;
             }
-			
-			attacking = controller.attack;
+            
+            attacking = controller.attack;
 
             if (moving) {
                 move();
@@ -168,7 +168,7 @@ package net.kevinx.labs.flash.manover
             if (!moving && !jumping) {
                 idle();
             }
-			
+            
             if (attacking) {
                 if (missleDelay % 3 == 0) {
                     fireMissle();
@@ -176,15 +176,15 @@ package net.kevinx.labs.flash.manover
                 }
                 missleDelay++;
             }
-			
+            
             super.update();
         }
-		
+        
         private function fireMissle():void
-		{
-			var offset:FlxPoint = new FlxPoint(movingLeft ? -20 : 20, jumping ? 6 : 12);
-			var src:FlxPoint = new FlxPoint(x + offset.x, y + offset.y);
-			var dest:FlxPoint = new FlxPoint(movingLeft ? -1000 : 1000, y);
+        {
+            var offset:FlxPoint = new FlxPoint(movingLeft ? -20 : 20, jumping ? 6 : 12);
+            var src:FlxPoint = new FlxPoint(x + offset.x, y + offset.y);
+            var dest:FlxPoint = new FlxPoint(movingLeft ? -1000 : 1000, y);
             stage.add(new Bullet(stage, src.x, src.y, dest.x, dest.y));
         }
     }
