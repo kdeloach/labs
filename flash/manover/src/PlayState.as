@@ -1,7 +1,7 @@
-package net.kevinx.labs.flash.manover
+package 
 {
-    import net.kevinx.labs.flash.manover.pieces.*;
     import org.flixel.*;
+    import pieces.*;
 
     public class PlayState extends FlxState
     {

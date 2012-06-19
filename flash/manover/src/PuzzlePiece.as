@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.manover
+package 
 {
     import flash.display.BitmapData;
     import flash.display.Graphics;
@@ -7,7 +7,12 @@ package net.kevinx.labs.flash.manover
     import flash.text.engine.FontMetrics;
     import flash.text.TextField;
     import flash.text.TextLineMetrics;
-    import org.flixel.*;
+    import org.flixel.FlxG;
+    import org.flixel.FlxGroup;
+    import org.flixel.FlxPoint;
+    import org.flixel.FlxRect;
+    import org.flixel.FlxSprite;
+    import org.flixel.FlxText;
 
     public class PuzzlePiece extends FlxGroup
     {

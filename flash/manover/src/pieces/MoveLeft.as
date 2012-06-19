@@ -1,10 +1,8 @@
-package net.kevinx.labs.flash.manover.pieces 
+package pieces 
 {
-    import net.kevinx.labs.flash.manover.PlayerController;
-    import net.kevinx.labs.flash.manover.PuzzlePiece;
     import org.flixel.FlxG;
     
-    public class MoveLeft extends PuzzlePiece 
+    public class MoveLeft extends PuzzlePiece
     {
         public function MoveLeft() 
         {

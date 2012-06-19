@@ -1,18 +1,17 @@
-package net.kevinx.labs.flash.manover.pieces 
+package pieces 
 {
-    import net.kevinx.labs.flash.manover.PuzzlePiece;
     import org.flixel.FlxG;
     
-    public class S extends PuzzlePiece 
+    public class A extends PuzzlePiece 
     {
-        public function S() 
+        public function A() 
         {
-            super("S", 2);
+            super("A", 2);
         }
         
         override public function get emitting():Boolean 
         {
-            return FlxG.keys.S;
+            return FlxG.keys.A;
         }
         
         override public function set emitting(val:Boolean):void 

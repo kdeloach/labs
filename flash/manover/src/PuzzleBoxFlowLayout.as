@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.manover 
+package  
 {
     import flash.utils.Dictionary;
     import org.flixel.FlxBasic;

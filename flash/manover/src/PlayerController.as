@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.manover 
+package  
 {
     public class PlayerController 
     {

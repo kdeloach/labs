@@ -1,8 +1,12 @@
-package net.kevinx.labs.flash.manover
+package 
 {
     import flash.display.BitmapData;
     import flash.display.Sprite;
-    import org.flixel.*;
+    import org.flixel.FlxBasic;
+    import org.flixel.FlxG;
+    import org.flixel.FlxGroup;
+    import org.flixel.FlxRect;
+    import org.flixel.FlxSprite;
 
     public class PuzzleBox extends FlxGroup
     {

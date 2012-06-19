@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.manover 
+package  
 {
     import org.flixel.FlxPoint;
     import org.flixel.FlxSprite;

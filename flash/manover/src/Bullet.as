@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.manover 
+package  
 {
     import org.flixel.FlxG;
     import org.flixel.FlxGroup;

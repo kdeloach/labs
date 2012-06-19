@@ -1,7 +1,6 @@
 package 
 {
-    import net.kevinx.labs.flash.manover.PlayState;
-    import org.flixel.*;
+    import org.flixel.FlxGame;
     
     [SWF(width = "640", height = "480", backgroundColor = "#FFFFFF")]
     public class Main extends FlxGame

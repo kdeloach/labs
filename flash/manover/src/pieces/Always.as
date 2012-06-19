@@ -1,6 +1,5 @@
-package net.kevinx.labs.flash.manover.pieces 
+package pieces 
 {
-    import net.kevinx.labs.flash.manover.PuzzlePiece;
     import org.flixel.FlxG;
     
     public class Always extends PuzzlePiece 
