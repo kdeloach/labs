@@ -2,7 +2,6 @@
 import re
 import string
 from optparse import OptionParser
-from pprint import pprint
 
 NUM_COLS = 7
 SCRAP_VALUE = 0.11
@@ -109,8 +108,6 @@ def make_row_funcs(rows):
 # F - Notes
 # G - Color
 
-
-
 def run_tests(rows):
     find_unit_value, metal_value = make_row_funcs(rows)
     
@@ -164,13 +161,3 @@ if __name__ == '__main__':
     total_keys = total / key_metal_value
     
     print "Total: {0:.2f} refined ({1:.2f} keys)".format(total, total_keys)
-
-    
-    
-    
-    
-    
-    
-    
-    
-
