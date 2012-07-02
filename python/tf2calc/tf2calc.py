@@ -59,7 +59,7 @@ def parse_value(value):
         
 def parse_unit(value):
     result = re.search("(keys?|buds?|bills?|ref|refined|wep|weapon|scrap)", value)
-    unit = 'metal'
+    unit = 'refined'
     if result:
         match, = result.groups()
         unit = match if match else unit
