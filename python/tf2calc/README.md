@@ -4,7 +4,7 @@ The prices are based on the standard [TF2 Spreadsheet Prices](http://tf2spreadsh
 
 Example usage:
 
-    $ python tf2calc.py  "strange rocket" "strange submachine" "bill's" max earbuds
+    $ python tf2calc.py "strange rocket" "strange submachine" "bill's" max earbuds
     Strange Rocket Launcher 2.55
     Strange Submachine Gun 0.66
     Unique / Ltd. Bill's Hat 25.50
