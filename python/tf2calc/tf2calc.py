@@ -46,7 +46,7 @@ def to_rows(spreadsheet):
         yield (A, C, D, E)
         
 def parse_value(value):
-    if value.strip() == '-':
+    if not value or value.strip() == '-':
         return None
     result = re.match("(\d+(?:\.\d+)?)(?:x)?(?: - ?(\d+(?:\.\d+)?)(?:x)?)?", value)
     if not result:
@@ -58,6 +58,8 @@ def parse_value(value):
     return max(float(a or 0), float(b or 0))
         
 def parse_unit(value):
+    if not value:
+        return None
     result = re.search("(keys?|buds?|bills?|ref|refined|weps?|weapons?|scraps?)", value)
     unit = 'refined'
     if result:
