@@ -129,6 +129,7 @@ def run_tests(rows):
 
 if __name__ == '__main__':
     parser = OptionParser()
+    parser.add_option('-e', '--exact', action='store_true', dest='exact')
     opts, args = parser.parse_args()
     
     # Spreadsheet columns:
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     total = 0
     
     for query in args:            
-        result = find(query)
+        result = find(query, exact=opts.exact)
         try:
             first = next(result)
             quality, item_name, value, dirty_value = first
