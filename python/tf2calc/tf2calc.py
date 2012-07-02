@@ -18,7 +18,9 @@ def load_spreadsheet():
         return NUM_COLS * item_row(item) + item_col(item)
     def item_content(item):
         return item['content']['$t']
-    data = json.loads(open('tf2prices.json').read())
+    # TODO: Read directly from website; For now, use:
+    # curl https://spreadsheets.google.com/feeds/cells/0AnM9vQU7XgF9dFM2cldGZlhweWFEUURQU2pmOGJVMlE/od6/public/basic?alt=json > prices.json
+    data = json.loads(open('prices.json').read())
     spreadsheet = ((item_index(item), item_content(item)) for item in data['feed']['entry'])
     # Use dict instead of array because there may be skipped rows
     return dict(spreadsheet)
@@ -42,17 +44,6 @@ def to_rows(spreadsheet):
         if not A and not C and not D and not E:
             continue
         yield (A, C, D, E)
-
-def find(rows, query, exact=False):
-    query = query.lower()
-    def test(col, term):
-        if exact:
-            return col and term == col.lower()    
-        return col and term in col.lower()
-    for row in rows:
-        # All search terms should match at least one column
-        if all(any(test(col, term) for col in row) for term in query.split(' ')):
-            yield row
         
 def parse_value(value):
     result = re.match("(\d+(?:\.\d+)?)(?:x)?(?: - ?(\d+(?:\.\d+)?)(?:x)?)?", value)
@@ -75,7 +66,7 @@ def parse_unit(value):
 def make_row_funcs(rows):
     def find_unit_value(unit, exact=True):
         if unit not in find_unit_value.cache:
-            find_unit = find(rows, unit, exact=exact)
+            find_unit = find(unit, exact=exact)
             first = next(find_unit)
             _, _, value, _ = first
             find_unit_value.cache[unit] = metal_value(value)
@@ -97,19 +88,22 @@ def make_row_funcs(rows):
             # Defining weapon as half scrap, which is good enough for our purposes
             return amount * (SCRAP_VALUE / 2)
         return amount
+        
+    def find(query, exact=False):
+        query = query.lower()
+        def test(col, term):
+            if exact:
+                return col and term == col.lower()    
+            return col and term in col.lower()
+        for row in rows:
+            # All search terms should match at least one column
+            if all(any(test(col, term) for col in row) for term in query.split(' ')):
+                yield row
     
-    return find_unit_value, metal_value
-
-# A - Quality
-# B - Class
-# C - Item Name
-# D - Value in ref(ined), key(s), bud(s), weap(on)
-# E - Value if non-vintage, non-strange, non-genuine, non-haunted, or dirty
-# F - Notes
-# G - Color
+    return find_unit_value, metal_value, find
 
 def run_tests(rows):
-    find_unit_value, metal_value = make_row_funcs(rows)
+    find_unit_value, metal_value, find = make_row_funcs(rows)
     
     key_metal_value = find_unit_value('key')
     bud_metal_value = find_unit_value('earbuds')
@@ -137,16 +131,25 @@ if __name__ == '__main__':
     parser = OptionParser()
     opts, args = parser.parse_args()
     
+    # Spreadsheet columns:
+    # A - Quality
+    # B - Class
+    # C - Item Name
+    # D - Value in refined, keys, buds, or bills
+    # E - Value if non-vintage, non-strange, non-genuine, non-haunted, or dirty
+    # F - Notes
+    # G - Color
+    
     spreadsheet = load_spreadsheet()
     rows = list(to_rows(spreadsheet))
-    find_unit_value, metal_value = make_row_funcs(rows)
+    find_unit_value, metal_value, find = make_row_funcs(rows)
     
     run_tests(rows)
 
     total = 0
     
     for query in args:            
-        result = find(rows, query)
+        result = find(query)
         try:
             first = next(result)
             quality, item_name, value, dirty_value = first
