@@ -46,6 +46,8 @@ def to_rows(spreadsheet):
         yield (A, C, D, E)
         
 def parse_value(value):
+    if value.strip() == '-':
+        return None
     result = re.match("(\d+(?:\.\d+)?)(?:x)?(?: - ?(\d+(?:\.\d+)?)(?:x)?)?", value)
     if not result:
         # If no amount specified, assume at least 1
@@ -76,6 +78,8 @@ def make_row_funcs(rows):
     def metal_value(value):
         amount = parse_value(value)
         unit = parse_unit(value)
+        if not amount:
+            return None
         if 'key' in unit:
             return amount * find_unit_value('key')
         if 'bud' in unit:
@@ -159,7 +163,10 @@ if __name__ == '__main__':
             quality, item_name, value, dirty_value = first
             value = metal_value(value)
             dirty_value = metal_value(dirty_value)
-            print "%s %s, %s, %s (dirty)" % (quality, item_name, value, dirty_value)
+            line = "{0} {1} {2:.2f}".format(quality, item_name, value)
+            if dirty_value:
+                line += ", {0:.2f} (dirty)".format(dirty_value)
+            print line
             total += value
         except StopIteration:
             print "%s -- NOT FOUND" % query
