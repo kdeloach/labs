@@ -134,8 +134,10 @@ def run_tests(rows):
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option('-e', '--exact', action='store_true', dest='exact', default=False)
-    parser.add_option('-s', '--skip-tests', action='store_true', dest='skip_tests', default=False)
+    parser.add_option('-e', '--exact', action='store_true', dest='exact', 
+                      default=False, help="perform exact name matches")
+    parser.add_option('-s', '--skip-tests', action='store_true', dest='skip_tests', 
+                      default=False, help="skip tests")
     opts, args = parser.parse_args()
     
     # Spreadsheet columns:

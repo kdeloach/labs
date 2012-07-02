@@ -4,11 +4,13 @@ The prices are based on the standard [TF2 Spreadsheet Prices](http://tf2spreadsh
 
 Example usage:
 
-    $ python tf2calc.py "strange rocket" "strange submachine" mack
-    Strange Rocket Launcher, 2.55, 1 (dirty)
-    Strange Submachine Gun, 0.66, 1 (dirty)
-    Strange Holy Mackerel, 15.3, 0.11 (dirty)
-    Total: 18.51 refined (7.26 keys)
+    $ python tf2calc.py  "strange rocket" "strange submachine" "bill's" max earbuds
+    Strange Rocket Launcher 2.55
+    Strange Submachine Gun 0.66
+    Unique / Ltd. Bill's Hat 25.50
+    Unique / Ltd. Max's Severed Head 122.40
+    Unique / Ltd. Earbuds 61.20
+    Total: 212.31 refined (83.26 keys)
 
 To use this you need to download the prices spreadsheet separately:
 
