@@ -9,3 +9,8 @@ Example usage:
     Strange Submachine Gun, 0.66, 1 (dirty)
     Strange Holy Mackerel, 15.3, 0.11 (dirty)
     Total: 18.51 refined (7.26 keys)
+
+To use this you need to download the prices spreadsheet separately:
+
+    curl https://spreadsheets.google.com/feeds/cells/0AnM9vQU7XgF9dFM2cldGZlhweWFEUURQU2pmOGJVMlE/od6/public/basic?alt=json > prices.json
+
