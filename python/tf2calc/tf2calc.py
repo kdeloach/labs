@@ -58,7 +58,7 @@ def parse_value(value):
     return max(float(a or 0), float(b or 0))
         
 def parse_unit(value):
-    result = re.search("(keys?|buds?|bills?|ref|refined|wep|weapon|scrap)", value)
+    result = re.search("(keys?|buds?|bills?|ref|refined|weps?|weapons?|scraps?)", value)
     unit = 'refined'
     if result:
         match, = result.groups()
