@@ -126,10 +126,12 @@ def run_tests(rows):
     assert metal_value('wep') == SCRAP_VALUE / 2
     assert metal_value('0.25 wep') == (SCRAP_VALUE / 2) * 0.25
     assert metal_value('2 weapons') == SCRAP_VALUE
+    assert metal_value(' - ') == None
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option('-e', '--exact', action='store_true', dest='exact')
+    parser.add_option('-e', '--exact', action='store_true', dest='exact', default=False)
+    parser.add_option('-s', '--skip-tests', action='store_true', dest='skip_tests', default=False)
     opts, args = parser.parse_args()
     
     # Spreadsheet columns:
@@ -145,7 +147,8 @@ if __name__ == '__main__':
     rows = list(to_rows(spreadsheet))
     find_unit_value, metal_value, find = make_row_funcs(rows)
     
-    run_tests(rows)
+    if not opts.skip_tests:
+        run_tests(rows)
 
     total = 0
     
