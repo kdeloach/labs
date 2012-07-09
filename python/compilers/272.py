@@ -1,6 +1,4 @@
-﻿import traceback
-
-class exercise(object):
+﻿class exercise(object):
     """
     program -> block
     block   -> { decls stmts }
@@ -112,13 +110,11 @@ class exercise(object):
             type = 'undeclared'
         self.writer.append('{0}:{1};'.format(id, type))
 
-
 class InvalidSyntax(Exception):
     pass
 
 class ParsingComplete(Exception):
     pass
-        
 
 class symboltable(object):
     """ Store lexeme name and value information for a given scope """
@@ -136,7 +132,6 @@ class symboltable(object):
         
     def put(self, key, value):
         self.table.update({key: value})
-
 
 def tokenize(target):
     i = 0
