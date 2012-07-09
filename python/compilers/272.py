@@ -33,13 +33,13 @@
         self.Program()
         return ' '.join(self.writer)
         
+    def snapshot(self):
+        return (self.at, len(self.writer))
+        
     def rewind(self, snapshot):
         old_at, old_writer_len = snapshot
         self.at = old_at
         self.writer = self.writer[:old_writer_len]
-        
-    def snapshot(self):
-        return (self.at, len(self.writer))
         
     def Program(self):
         self.Block()
