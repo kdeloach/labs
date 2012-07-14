@@ -1,4 +1,8 @@
-﻿class exercise(object):
+﻿from collections import namedtuple
+
+Token = namedtuple('Token', ['type', 'value'])
+
+class Exercise(object):
     """
     program -> block
     block   -> { decls stmts }
@@ -13,18 +17,16 @@
     """
 
     def __init__(self, target):
-        self.target = target
         self.at = 0
         self.tokens = list(tokenize(target))
         self.writer = []
-        self.symbols = symboltable()
+        self.symbols = SymbolTable()
         
     def match(self, value=None, type='symbol'):
         token = self.tokens[self.at]
-        t_type, t_value = token
-        if t_type != type or (value and t_value != value):
+        if token.type != type or (value and token.value != value):
             raise InvalidSyntax('Expected {0} "{1}" but received {2} "{3}"'. \
-                format(type, value, t_type, t_value))
+                format(type, value, token.type, token.value))
         self.at += 1
         return token
         
@@ -47,67 +49,57 @@
     def Block(self):
         self.match('{')
         self.writer.append('{')
-        self.symbols = symboltable(self.symbols)
-        try:
-            self.Decls()
-        except ParsingComplete:
-            pass
-        try:
-            self.Stmts()
-        except ParsingComplete:
-            pass
+        self.symbols = SymbolTable(self.symbols)
+        self.Decls()
+        self.Stmts()
         self.match('}')
         self.writer.append('}')
         self.symbols = self.symbols.parent
+        return True
         
     def Decls(self):
-        self.Decls_b()
-        #self.Decl()
-        
-    def Decls_b(self):
-        self.Decl()
-        self.Decls()
-        
+        while True:
+            snapshot = self.snapshot()
+            try:
+                self.Decl()
+            except:
+                self.rewind(snapshot)
+                break
+            
     def Decl(self):
-        snapshot = self.snapshot()
-        try:
-            _, type = self.match(type='word')
-            _, id = self.match(type='word')
-            self.symbols.put(id, type)
-            self.match(';')
-            return
-        except:
-            self.rewind(snapshot)
-        raise ParsingComplete()
+        type = self.match(type='word').value
+        id = self.match(type='word').value
+        self.symbols.put(id, type)
+        self.match(';')
         
     def Stmts(self):
-        self.Stmts_b()
-        #self.Stmt()
-        
-    def Stmts_b(self):
-        self.Stmt()
-        self.Stmts()
+        keepGoing = True
+        while keepGoing:
+            try:
+                keepGoing = self.Stmt()
+            except ParsingComplete:
+                break
+            except:
+                raise
         
     def Stmt(self):
         snapshot = self.snapshot()
         try:
-            self.Block()
-            return
-        except:
+            if self.Block():
+                return True
+        except InvalidSyntax:
             self.rewind(snapshot)
         try:
             self.Factor()
             self.match(';')
-            return
-        except:
+            return True
+        except InvalidSyntax:
             self.rewind(snapshot)
-        raise ParsingComplete()
+        return False
         
     def Factor(self):
-        _, id = self.match(type='word')
+        id = self.match(type='word').value
         type = self.symbols.get(id)
-        if not type:
-            type = 'undeclared'
         self.writer.append('{0}:{1};'.format(id, type))
 
 class InvalidSyntax(Exception):
@@ -115,8 +107,11 @@ class InvalidSyntax(Exception):
 
 class ParsingComplete(Exception):
     pass
+    
+class UndeclaredVariable(Exception):
+    pass
 
-class symboltable(object):
+class SymbolTable(object):
     """ Store lexeme name and value information for a given scope """
     
     def __init__(self, parent=None):
@@ -124,14 +119,16 @@ class symboltable(object):
         self.table = dict()
         
     def get(self, key):
-        if key in self.table:
+        try:
             return self.table[key]
-        if not self.parent:
-            return None
-        return self.parent.get(key)
+        except KeyError:
+            if not self.parent:
+                raise UndeclaredVariable(key)
+            else:
+                return self.parent.get(key)
         
     def put(self, key, value):
-        self.table.update({key: value})
+        self.table[key] = value
 
 def tokenize(target):
     i = 0
@@ -147,7 +144,7 @@ def tokenize(target):
                 if not c.isdigit():
                     break
                 i += 1
-            yield ('number', n)
+            yield Token('number', n)
         elif c.isalpha():
             letters = []
             while True:
@@ -157,12 +154,15 @@ def tokenize(target):
                     break
                 i += 1
             word = ''.join(letters)
-            yield ('word', word)
+            yield Token('word', word)
         else:
-            yield('symbol', c)
+            yield Token('symbol', c)
         i += 1
 
 input = '{ int x; char y; { bool y; x; y; } x; y; }'
 expected = '{ { x:int; y:bool; } x:int; y:char; }'
-actual = exercise(input).parse()
+actual = Exercise(input).parse()
+
+print actual
+
 assert actual == expected
