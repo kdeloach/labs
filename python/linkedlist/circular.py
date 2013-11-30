@@ -27,7 +27,7 @@ def print_list(node):
         print n
         n = n.next
 
-        
+
 if __name__ == '__main__':
     A = Node('A')
     B = Node('B')
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     B.next = C
     C.next = D
     D.next = E
-    E.next = F
+    E.next = A # Whoops
 
     if is_circular(A):
         print "Cycle detected!"
