@@ -1,13 +1,18 @@
+import sys
 
 class Node(object):
-
     def __init__(self, value, next=None):
         self.value = value
         self.next = next
 
+    def __iter__(self):
+        n = self
+        while n:
+            yield n
+            n = n.next
+
     def __str__(self):
         return '<' + self.value + '>'
-
 
 def is_circular(node):
     slow = node
@@ -21,14 +26,7 @@ def is_circular(node):
         slow = slow.next
     return False
 
-def print_list(node):
-    n = A
-    while n:
-        print n
-        n = n.next
-
-
-if __name__ == '__main__':
+def main():
     A = Node('A')
     B = Node('B')
     C = Node('C')
@@ -40,9 +38,16 @@ if __name__ == '__main__':
     B.next = C
     C.next = D
     D.next = E
-    E.next = A # Whoops
+    E.next = F
+
+    if len(sys.argv) > 1 and sys.argv[1] == 'cycle':
+        E.next = A # Whoops
 
     if is_circular(A):
         print "Cycle detected!"
     else:
-        print_list(A)
+        for node in A:
+            print node
+
+if __name__ == '__main__':
+    main()
