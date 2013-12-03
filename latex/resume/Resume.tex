@@ -4,10 +4,15 @@
 \usepackage[a4paper,nohead,nofoot,hmargin=1.5cm,vmargin=2cm]{geometry}
 \pagestyle{empty}
 
+\usepackage{graphicx}
+\usepackage{epstopdf}
 \usepackage{mdwlist}
 \usepackage{tabto}
 \usepackage{enumitem}
 \usepackage[final]{hyperref}
+\usepackage{pifont}
+\usepackage{marvosym}
+\usepackage{wasysym}
 
 \hypersetup{
     hidelinks = true,
@@ -15,57 +20,66 @@
     pdftitle = Kevin DeLoach
 }
 
+\epstopdfsetup{outdir=trash/}
+
 \newcommand{\sectionhead}{\normalfont\normalsize\scshape}
-\newcommand{\li}{\item[--]}
-%\newcommand{\workheader}[3]{#3 \tab \textbf{#1}, \emph{#2}}
 \newcommand{\workhead}[3]{\textbf{#1}, \emph{#2} \hfill #3}
+\newcommand{\li}{\item[--]}
 
 \begin{document}
 
-\NumTabs{20}
-
-\begin{center}
-\textsc{\huge{Kevin DeLoach}}
-\end{center}
+\noindent
+{\huge \textsc{Kevin DeLoach}}
 
 \noindent
-2308 Locust APT 1F
+1231 Race St. 2C
+%%
+% Author: Christopher McDonnell
+% Source: www.christophermcdonnell.com 
+\includegraphics[scale=0.035]{Liberty-Bell-301x251}
+%%
+Philadelphia, PA 19107
 \hfill
-\href{mailto:kdeloach@gmail.com}{\bfseries kdeloach@gmail.com}
-
-\noindent
-Philadelphia, PA 19103
-\hfill
-(215) 490-8269
+\Letter 
+\ \href{mailto:kdeloach@gmail.com}{\bfseries kdeloach@gmail.com}
+\Telefon 
+\ (215) 490-8269
 
 \section*{\sectionhead Work Experience}
-\begin{description}[leftmargin=1em] \itemsep10pt \parskip0pt
+\begin{description}[leftmargin=0em] 
+
+	\itemsep10pt
+	\parskip0pt
+
+    \item 
+        \workhead{Tealeaf Technology, IBM}{Software Engineer}{6/2012 -- 9/2013}
+        \begin{itemize*}
+            \li Placeholder
+        \end{itemize*}
 
     \item 
         \workhead{Elements, Inc.}{Software Developer}{8/2008 -- 12/2011}
         \begin{itemize*}
-            \li Developed content management and reporting software for use in franchise, health care, real estate, and private equity industries. Reported directly to VP.
-            \li Consolidated company framework into single codebase. Reduced software complexity, decreased development time needed for updates, and increased profitability.
-            \li Refactored company framework to support customization through a plugin architecture, and improved coding standards, while maintaining backwards compatibility.
-            \li Created utilities to automate data migration, daily builds, and SEO reports. 
-            \li Worked on proprietary franchise oriented CMS which generated thousands of search engine optimized location based websites.
+            \li Developed franchise-oriented content management system, data migration \& build automation tools, web services, business reports, and various other custom applications for use in franchise, health care, real estate, and private equity industries; Some technologies used include IIS, MS SQL Server, C\#/VB .NET, Apache, MySQL, PHP, Flash, Flex, and Adobe AIR.
+            \li Worked with corporate and local businesses owners from national franchises such as: \emph{Maaco Collision Repair \& Auto Painting}, \emph{CertaPro Painters}, \emph{Floor Coverings International}, \emph{Weed Man Lawn Care}, and others, to create email marketing campaigns, improve customer engagement, and generate thousands of search engine optimized local franchise websites.
+            \li Handled transition of data \& technology after former company was acquired by \emph{Elements, Inc.}
         \end{itemize*}
 
     \item 
         \workhead{Verve Internet Solutions}{Web Developer}{12/2007 -- 8/2008}
         \begin{itemize*}
-            \li Worked directly with non-profits in the Philadelphia area to provide technical support, maintenance, content updates, and website enhancements.
-            \li Developed features for custom CMS, performed maintenance on legacy projects, and produced websites using code generation. Reported directly to VP.
+            \li Developed features for proprietary CMS, performed maintenance on legacy software, and produced websites using dynamic code generation techniques.
+            \li Worked directly with non-profits in the Philadelphia area, such as: \emph{The Delaware Valley Green Building Council}, \emph{The Consumer Credit Counseling Service of Delaware Valley}, \emph{The Philadelphia Mummers Fancy Brigade Association}, and \emph{Merion Mercy Academy}, to provide technical support, maintenance, content updates, and website enhancements.
         \end{itemize*}
 
     \item
-        \workhead{Austin District Music Teachers Association}{Web Developer}{5/2008 -- 9/2008}
+        \workhead{Austin District Music Teachers Association}{Freelance Web Developer}{5/2008 -- 9/2008}
         \begin{itemize*}
             \li Developed online portal to schedule events, manage student enrollment, and generate PDFs for approximately 125 teachers.
         \end{itemize*}
 
     \item
-        \workhead{Eshilon Design Inc.}{Web Production Assistant}{1/2008 -- 3/2008}
+        \workhead{Eshilon Design Inc.}{Freelance Web Production Assistant}{1/2008 -- 3/2008}
         \begin{itemize*}
             \li Created cross-browser compatible XHTML/CSS templates from Photoshop PSDs that comply with accessibility and Section 508 standards.
         \end{itemize*}
@@ -73,22 +87,16 @@ Philadelphia, PA 19103
     \item
         \workhead{Central High School}{Technical Assistant \& Web Developer}{9/2005 -- 7/2006}
         \begin{itemize*}
-            \li Volunteered with IT department to manage computer labs, diagnose networking issues, and provide technical support for approximately 150 faculty members and 2,300 students.
-            \li Redesigned website to increase student engagement and developed content management system which featured ACLs, workflow, and extensive logging.
+            \li Volunteered with IT department to manage computer labs, diagnose networking issues, and provide technical support for approximately 150 faculty members and 2,300 
+students.
+            \li Designed website to improve availability of information \& increase student engagement, and created a custom CMS featuring role-based permissions, workflow, and extensive logging.
         \end{itemize*}
-
 \end{description}
 
 \section*{\sectionhead Technical Skills}
 \begin{description*}
-    \item Languages: C\#/VB .NET, MS SQL, MySQL, PHP, Python, Java, JavaScript, Flex, XSLT, \LaTeX
-    \item Software: Microsoft Visual Studio, SSMS, Photoshop, Flash
-    \item Source Control: Perforce, Subversion, Git
+    \item Languages: Python, C\#/VB .NET, Node.js, Java, JavaScript, PHP, MS SQL Server, MySQL, Flex, ActionScript AS3, XML \Smiley, XSLT, \LaTeX
+    \item Software: Linux, Windows, Apache, IIS, Microsoft Visual Studio, SSMS, Vim, Cygwin, Photoshop, Flash, Perforce, Git, Subversion
 \end{description*}
-
-\section*{\sectionhead Additional Information}
-\begin{itemize*}
-    \item \textbf{Pennsylvania Governor's School for Information:} (2005) Studied IT \& CS with approximately 50 other High School sophomores for a summer at Drexel University.
-\end{itemize*}
 
 \end{document}
