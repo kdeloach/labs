@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'12/9/2013'</value>
+      <value>'12/10/2013'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -42,7 +42,7 @@
     <path-element>C:\Users\kevin\Desktop\labs\flash\dicewars\src\Main.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
-  <default-frame-rate>60</default-frame-rate>
+  <default-frame-rate>30</default-frame-rate>
   <default-size>
     <width>800</width>
     <height>600</height>
