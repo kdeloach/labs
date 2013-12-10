@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.dicewars 
+package  
 {
 	public class Margin 
 	{

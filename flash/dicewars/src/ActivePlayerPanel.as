@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.dicewars 
+package  
 {
 	import flash.display.Sprite;
 	import flash.events.Event;

@@ -1,4 +1,4 @@
-package net.kevinx.labs.flash.dicewars
+package 
 {
 	import com.codecatalyst.promise.Deferred;
 	import com.codecatalyst.promise.Promise;
