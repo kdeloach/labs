@@ -2,19 +2,9 @@ class Main
 {
     public static function main()
     {
-        var started:Float;
-        var elapsed:Float;
-
-        elapsed = 0;
-        started = Date.now().getTime();
-        Primes.first(2000);
-        elapsed = Date.now().getTime() - started;
-        trace(elapsed + " MS elapsed");
-
-        elapsed = 0;
-        started = Date.now().getTime();
-        Primes.first(2000);
-        elapsed = Date.now().getTime() - started;
+        var start:Float = Date.now().getTime();
+        trace(Primes.first(20));
+        var elapsed = Date.now().getTime() - start;
         trace(elapsed + " MS elapsed");
     }
 }
@@ -25,7 +15,7 @@ class Primes
     {
         var result:Array<Int> = [];
         var iter:PrimesIter = new PrimesIter();
-        for (i in 1...n) {
+        for (i in 0...n) {
             result.push(iter.next());
         }
         return result;
@@ -35,10 +25,13 @@ class Primes
 class PrimesIter
 {
     var n:Int = 0;
+    var primesSoFar:Array<Int>;
+
     static var cache:Map<Int, Bool> = new Map<Int, Bool>();
 
     public function new()
     {
+        primesSoFar = new Array<Int>();
     }
 
     public function hasNext()
@@ -51,6 +44,7 @@ class PrimesIter
         while (true) {
             n++;
             if (memoized_isPrime(n)) {
+                primesSoFar.push(n);
                 return n;
             }
         }
@@ -60,12 +54,11 @@ class PrimesIter
     {
         if (n <= 0) throw "Invalid argument";
         if (n == 1 || n == 2) return true;
-        var i:Int = n - 1;
-        while (i > 1) {
-            if (n % i == 0) {
+        var i:Int = Math.ceil(n / 2);
+        for (i in 1...primesSoFar.length) {
+            if (n % primesSoFar[i] == 0) {
                 return false;
             }
-            i--;
         }
         return true;
     }

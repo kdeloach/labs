@@ -2,17 +2,9 @@
 var Main = function() { }
 Main.__name__ = true;
 Main.main = function() {
-	var started;
-	var elapsed;
-	elapsed = 0;
-	started = new Date().getTime();
-	Primes.first(2000);
-	elapsed = new Date().getTime() - started;
-	console.log(elapsed + " MS elapsed");
-	elapsed = 0;
-	started = new Date().getTime();
-	Primes.first(2000);
-	elapsed = new Date().getTime() - started;
+	var start = new Date().getTime();
+	console.log(Primes.first(20));
+	var elapsed = new Date().getTime() - start;
 	console.log(elapsed + " MS elapsed");
 }
 var Primes = function() { }
@@ -20,7 +12,7 @@ Primes.__name__ = true;
 Primes.first = function(n) {
 	var result = [];
 	var iter = new PrimesIter();
-	var _g = 1;
+	var _g = 0;
 	while(_g < n) {
 		var i = _g++;
 		result.push(iter.next());
@@ -29,6 +21,7 @@ Primes.first = function(n) {
 }
 var PrimesIter = function() {
 	this.n = 0;
+	this.primesSoFar = new Array();
 };
 PrimesIter.__name__ = true;
 PrimesIter.prototype = {
@@ -43,17 +36,21 @@ PrimesIter.prototype = {
 	,isPrime: function(n) {
 		if(n <= 0) throw "Invalid argument";
 		if(n == 1 || n == 2) return true;
-		var i = n - 1;
-		while(i > 1) {
-			if(n % i == 0) return false;
-			i--;
+		var i = Math.ceil(n / 2);
+		var _g1 = 1, _g = this.primesSoFar.length;
+		while(_g1 < _g) {
+			var i1 = _g1++;
+			if(n % this.primesSoFar[i1] == 0) return false;
 		}
 		return true;
 	}
 	,next: function() {
 		while(true) {
 			this.n++;
-			if(this.memoized_isPrime(this.n)) return this.n;
+			if(this.memoized_isPrime(this.n)) {
+				this.primesSoFar.push(this.n);
+				return this.n;
+			}
 		}
 	}
 	,hasNext: function() {
@@ -124,6 +121,16 @@ js.Boot.__instanceof = function(o,cl) {
 		return o.__enum__ == cl;
 	}
 }
+Math.__name__ = ["Math"];
+Math.NaN = Number.NaN;
+Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
+Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+Math.isFinite = function(i) {
+	return isFinite(i);
+};
+Math.isNaN = function(i) {
+	return isNaN(i);
+};
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.prototype.__class__ = Array;
