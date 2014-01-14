@@ -3,21 +3,33 @@ var Main = function() { }
 Main.__name__ = true;
 Main.main = function() {
 	var start = new Date().getTime();
-	console.log(Primes.first(20));
+	console.log(new Primes().take(10).toList());
 	var elapsed = new Date().getTime() - start;
 	console.log(elapsed + " MS elapsed");
 }
-var Primes = function() { }
+var Primes = function() {
+	this.iter = new PrimesIter();
+};
 Primes.__name__ = true;
-Primes.first = function(n) {
-	var result = [];
-	var iter = new PrimesIter();
-	var _g = 0;
-	while(_g < n) {
-		var i = _g++;
-		result.push(iter.next());
+Primes.prototype = {
+	toList: function() {
+		var result = [];
+		var $it0 = this.iter;
+		while( $it0.hasNext() ) {
+			var p = $it0.next();
+			result.push(p);
+		}
+		return result;
 	}
-	return result;
+	,take: function(n) {
+		this.iter = new TakeIter(n,this.iter);
+		return this;
+	}
+	,skip: function(n) {
+		this.iter = new SkipIter(n,this.iter);
+		return this;
+	}
+	,__class__: Primes
 }
 var PrimesIter = function() {
 	this.n = 0;
@@ -57,6 +69,36 @@ PrimesIter.prototype = {
 		return true;
 	}
 	,__class__: PrimesIter
+}
+var SkipIter = function(n,iter) {
+	this.n = n;
+	this.iter = iter;
+};
+SkipIter.__name__ = true;
+SkipIter.prototype = {
+	next: function() {
+		while(this.n-- > 0) this.iter.next();
+		return this.iter.next();
+	}
+	,hasNext: function() {
+		return this.iter.hasNext();
+	}
+	,__class__: SkipIter
+}
+var TakeIter = function(n,iter) {
+	this.n = n;
+	this.iter = iter;
+};
+TakeIter.__name__ = true;
+TakeIter.prototype = {
+	next: function() {
+		this.n--;
+		return this.iter.next();
+	}
+	,hasNext: function() {
+		return this.n > 0 && this.iter.hasNext();
+	}
+	,__class__: TakeIter
 }
 var IMap = function() { }
 IMap.__name__ = true;

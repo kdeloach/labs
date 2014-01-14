@@ -3,7 +3,7 @@ class Main
     public static function main()
     {
         var start:Float = Date.now().getTime();
-        trace(Primes.first(20));
+        trace(new Primes().take(10).toList());
         var elapsed = Date.now().getTime() - start;
         trace(elapsed + " MS elapsed");
     }
@@ -11,12 +11,30 @@ class Main
 
 class Primes
 {
-    public static function first(n:Int) : Array<Int>
+    var iter:Iterator<Int>;
+
+    public function new()
+    {
+        iter = new PrimesIter();
+    }
+
+    public function skip(n:Int) : Primes
+    {
+        iter = new SkipIter(n, iter);
+        return this;
+    }
+
+    public function take(n:Int) : Primes
+    {
+        iter = new TakeIter(n, iter);
+        return this;
+    }
+
+    public function toList() : Array<Int>
     {
         var result:Array<Int> = [];
-        var iter:PrimesIter = new PrimesIter();
-        for (i in 0...n) {
-            result.push(iter.next());
+        for (p in iter) {
+            result.push(p);
         }
         return result;
     }
@@ -34,12 +52,12 @@ class PrimesIter
         primesSoFar = new Array<Int>();
     }
 
-    public function hasNext()
+    public function hasNext() : Bool
     {
         return true;
     }
 
-    public function next()
+    public function next() : Int
     {
         while (true) {
             n++;
@@ -69,5 +87,53 @@ class PrimesIter
             cache[n] = isPrime(n);
         }
         return cache[n];
+    }
+}
+
+class SkipIter<T>
+{
+    var n:Int;
+    var iter:Iterator<T>;
+
+    public function new(n:Int, iter:Iterator<T>)
+    {
+        this.n = n;
+        this.iter = iter;
+    }
+
+    public function hasNext() : Bool
+    {
+        return iter.hasNext();
+    }
+
+    public function next() : T
+    {
+        while (n-- > 0) {
+            iter.next();
+        }
+        return iter.next();
+    }
+}
+
+class TakeIter<T>
+{
+    var n:Int;
+    var iter:Iterator<T>;
+
+    public function new(n:Int, iter:Iterator<T>)
+    {
+        this.n = n;
+        this.iter = iter;
+    }
+
+    public function hasNext() : Bool
+    {
+        return n > 0 && iter.hasNext();
+    }
+
+    public function next() : T
+    {
+        n--;
+        return iter.next();
     }
 }
