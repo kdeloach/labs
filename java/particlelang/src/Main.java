@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -15,11 +16,15 @@ public class Main
         sb.append("|(?<unknown>.)");
         sb.append(")");
         Pattern p = Pattern.compile(sb.toString());
-        String input = "pi*3";
-        System.out.println(input);
-        Tokenizer tz = new Tokenizer(p, input);
-        Parser parser = new Parser(tz);
-        System.out.println(parser.expression());
+        String[] samplePrograms = new String[] {
+            "2*7-1",
+            "2*(7-1)"
+        };
+        for (String input : Arrays.asList(samplePrograms)) {
+            System.out.println(input);
+            Parser parser = new Parser(new Tokenizer(p, input));
+            System.out.println(parser.expression(0));
+        }
     }
 }
 
@@ -49,8 +54,10 @@ class Tokenizer implements Iterator<Token>
             switch (matcher.group("op")) {
                 case "+": return new PlusToken();
                 case "-": return new MinusToken();
-                case "*": return new MultToken();
-                case "/": return new DivToken();
+                case "*": return new StarToken();
+                case "/": return new SlashToken();
+                case "(": return new LParenToken();
+                case ")": return new RParenToken();
             }
             throw new UnsupportedOperationException("Not implemented");
         } else if (matcher.group("whitespace") != null) {
@@ -103,11 +110,6 @@ class Parser
         return currentToken;
     }
 
-    public Token expression()
-    {
-        return expression(0);
-    }
-
     // Author: Fredrik Lundh
     // Source: http://effbot.org/zone/simple-top-down-parsing.htm
     public Token expression(int rbp)
@@ -142,7 +144,7 @@ abstract class Token
 
     public int lbp()
     {
-        throw new UnsupportedOperationException("Not implemented (" + tokenValue() + ")");
+        return 0;
     }
 
     public Token nud(Parser p)
@@ -261,11 +263,11 @@ class MinusToken extends Token
     }
 }
 
-class MultToken extends Token
+class StarToken extends Token
 {
     Token left, right;
 
-    public MultToken()
+    public StarToken()
     {
         super("*");
     }
@@ -291,11 +293,11 @@ class MultToken extends Token
     }
 }
 
-class DivToken extends Token
+class SlashToken extends Token
 {
     Token left, right;
 
-    public DivToken()
+    public SlashToken()
     {
         super("/");
     }
@@ -318,6 +320,30 @@ class DivToken extends Token
     public String toString()
     {
         return "(/ " + this.left + " " + this.right + ")";
+    }
+}
+
+class LParenToken extends Token
+{
+    public LParenToken()
+    {
+        super("(");
+    }
+
+    @Override
+    public Token nud(Parser p)
+    {
+        Token result = p.expression(0);
+        p.next(")");
+        return result;
+    }
+}
+
+class RParenToken extends Token
+{
+    public RParenToken()
+    {
+        super(")");
     }
 }
 
