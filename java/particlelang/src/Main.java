@@ -13,16 +13,20 @@ public class Main
         sb.append("(?:");
         sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[!\\-+,></*])");
         sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]+)");
-        sb.append("|(?<number>\\d+(?:\\.\\d+)?)");
+        sb.append("|(?<number>(?:0x[a-fA-F0-9]+|\\d+(?:\\.\\d+)?))");
         sb.append("|(?<whitespace>[\n\t ])");
         sb.append("|(?<unknown>.)");
         sb.append(")");
         Pattern p = Pattern.compile(sb.toString());
         String[] samplePrograms = new String[] {
-            "random(1, 360) * pi / 180"
+            //"random(1, 360) * pi / 180",
+            "random() * 0x55 + 0x33"
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
+            // for (Token t : new Tokenizer(p, input)) {
+                // System.out.println(t);
+            // }
             Parser parser = new Parser(new Tokenizer(p, input));
             System.out.println(parser.expression(0));
         }
@@ -55,7 +59,7 @@ class NotImplementedException extends UnsupportedOperationException
     }
 }
 
-class Tokenizer implements Iterator<Token>
+class Tokenizer implements Iterator<Token>, Iterable<Token>
 {
     final static Token WHITESPACE = new WhitespaceToken();
 
@@ -97,6 +101,11 @@ class Tokenizer implements Iterator<Token>
     public void remove()
     {
         throw new NotImplementedException();
+    }
+
+    public Iterator<Token> iterator()
+    {
+        return this;
     }
 }
 
@@ -189,6 +198,12 @@ abstract class Token
     public boolean isWhitespace()
     {
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Token('" + tokenValue() + "')";
     }
 }
 
