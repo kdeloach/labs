@@ -2,33 +2,40 @@ from __future__ import division
 import random
 from datetime import datetime
 
-"""This experiment is to compare the performance differences between array slicing with
-the list object and go-like slice structures.
+"""This experiment is to compare the performance differences between
+array slicing with the list object and go-like slice structures.
 
-My hypothesis is that performance benefits could be attained, in situations where
-many array slicing operations are involved, by substituting the python list object
-with a list-like wrapper, which prevents copies of the list from being created per slice.
+My hypothesis is that performance benefits could be attained, in
+situations where many array slicing operations are involved, by
+substituting the python list object with a list-like wrapper, which
+prevents copies of the list from being created per slice.
 
-To test this hypothesis I created a structure called nonlist, which holds a reference
-to a list, a start index, and a length. This object represents a slice of the list. When nonlist
-is sliced, it returns a new nonlist object, but does not copy the original list. Joining
-two nonlists together is accomplished by increasing the length of one nonlist to encompass the other.
+To test this hypothesis I created a structure called nonlist, which holds a
+reference to a list, a start index, and a length. This object represents a
+slice of the list. When nonlist is sliced, it returns a new nonlist object,
+but does not copy the original list. Joining two nonlists together is
+accomplished by increasing the length of one nonlist to encompass the other.
 
-I used a quicksort implementation which uses list slicing and concat operations to
-measure the performance differences between list and nonlist. I also used a linear_slice
-function which simply performs len(lst) number of slices to a list.
+I used a quicksort implementation which uses list slicing and concat
+operations to measure the performance differences between list and nonlist.
+I also used a linear_slice function which simply performs len(lst) number
+of slices to a list.
 
-For quicksort, the builtin list outperformed nonlist by 20% to 25% for all sizes of inputs I tested.
+For quicksort, the builtin list outperformed nonlist by 20% to 25% for all
+sizes of inputs I tested.
 
-For linear_slice, the builtin list object performs 3x to 5x faster than nonlist for input sizes
-less than 5,000. For input sizes >= 5,000, nonlist outperforms list by a wide margin.
-Running linear_slice with 10,0000 items took, on average, 60 seconds to complete for list, and
-1.5 seconds to complete for nonlist.
+For linear_slice, the builtin list object performs 3x to 5x faster than
+nonlist for input sizes less than 5,000. For input sizes >= 5,000, nonlist
+outperforms list by a wide margin. Running linear_slice with 10,0000 items
+took, on average, 60 seconds to complete for list, and 1.5 seconds to
+complete for nonlist.
 
-In conclusion, it seems that there could be performance benefits to using a nonlist-type structure
-when working with very large amounts of data that need to be processed and manipulated linearly.
-However, for small to medium quantities of data, and for situations when your data manipulation procedures
-have logorithmic or sub-linear running time, it seems that the builtin list object is more than adequate."""
+In conclusion, it seems that there could be performance benefits to using a
+nonlist-type structure when working with very large amounts of data that
+need to be processed and manipulated linearly. However, for small to
+medium quantities of data, and for situations when your data manipulation
+procedures have logorithmic or sub-linear running time, it seems that the
+builtin list object is more than adequate."""
 
 class nonlist(object):
     """Very limited implementation of a go-like slice object.
@@ -98,10 +105,10 @@ class nonlist(object):
 def quicksort(L):
     if len(L) > 1:
         pivot = random.randrange(len(L))
-        elements = L[:pivot]+L[pivot+1:]
-        left  = [element for element in elements if element < L[pivot]]
-        right =[element for element in elements if element >= L[pivot]]
-        return quicksort(left)+[L[pivot]]+quicksort(right)
+        elements = L[:pivot] + L[pivot + 1:]
+        left = [element for element in elements if element < L[pivot]]
+        right = [element for element in elements if element >= L[pivot]]
+        return quicksort(left) + [L[pivot]] + quicksort(right)
     return L
 
 
@@ -110,11 +117,12 @@ def linear_slice(L):
         L[0] += len(L)
         L = L[1:]
 
+
 def test(testlist, testproc, quantity):
     nums = range(quantity)
-    start = datetime.now()
+    random.shuffle(nums)
     x = testlist(nums)
-    random.shuffle(x)
+    start = datetime.now()
     testproc(x)
     c = datetime.now() - start
     ms = (c.days * 24 * 60 * 60 + c.seconds) * 1000 + c.microseconds / 1000.0
