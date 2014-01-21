@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -10,21 +12,46 @@ public class Main
         StringBuilder sb = new StringBuilder();
         sb.append("(?:");
         sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[!\\-+,></*])");
-        sb.append("|(?<ident>[a-z][a-z0-9]+)");
+        sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]+)");
         sb.append("|(?<number>\\d+(?:\\.\\d+)?)");
         sb.append("|(?<whitespace>[\n\t ])");
         sb.append("|(?<unknown>.)");
         sb.append(")");
         Pattern p = Pattern.compile(sb.toString());
         String[] samplePrograms = new String[] {
-            "2*7-1",
-            "2*(7-1)"
+            "random(1, 360) * pi / 180"
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
             Parser parser = new Parser(new Tokenizer(p, input));
             System.out.println(parser.expression(0));
         }
+    }
+}
+
+class SyntaxErrorException extends UnsupportedOperationException
+{
+    public SyntaxErrorException()
+    {
+        this("");
+    }
+
+    public SyntaxErrorException(String message)
+    {
+        super(message);
+    }
+}
+
+class NotImplementedException extends UnsupportedOperationException
+{
+    public NotImplementedException()
+    {
+        this("");
+    }
+
+    public NotImplementedException(String message)
+    {
+        super(message);
     }
 }
 
@@ -59,17 +86,17 @@ class Tokenizer implements Iterator<Token>
                 case "(": return new LParenToken();
                 case ")": return new RParenToken();
             }
-            throw new UnsupportedOperationException("Not implemented");
+            return new LiteralToken(matcher.group());
         } else if (matcher.group("whitespace") != null) {
             return WHITESPACE;
         } else {
-            throw new UnsupportedOperationException("Syntax Error");
+            throw new SyntaxErrorException(matcher.group());
         }
     }
 
     public void remove()
     {
-        throw new UnsupportedOperationException("Not implemented");
+        throw new NotImplementedException();
     }
 }
 
@@ -91,23 +118,23 @@ class Parser
 
     public Token next()
     {
-        return next("");
-    }
-
-    public Token next(String expectValue)
-    {
         while (tokenizer.hasNext()) {
             currentToken = tokenizer.next();
             if (currentToken.isWhitespace()) {
                 continue;
             }
-            if (expectValue.length() > 0 && currentToken.tokenValue() != expectValue) {
-                throw new UnsupportedOperationException("Expected " + expectValue + " but got " + currentToken.tokenValue());
-            }
             return currentToken;
         }
         currentToken = new EndProgramToken();
         return currentToken;
+    }
+
+    public Token expect(String expectedValue)
+    {
+        if (!currentToken.tokenValue().equals(expectedValue)) {
+            throw new SyntaxErrorException("Expected '" + expectedValue + "' but got '" + currentToken.tokenValue() + "'");
+        }
+        return next();
     }
 
     // Author: Fredrik Lundh
@@ -117,6 +144,8 @@ class Parser
         Token currentToken = current();
         Token nextToken = next();
         Token left = currentToken.nud(this);
+        // Sub-expressions may eat tokens so keep our local references up to date
+        nextToken = current();
         while (rbp < nextToken.lbp()) {
             currentToken = current();
             nextToken = next();
@@ -144,22 +173,36 @@ abstract class Token
 
     public int lbp()
     {
-        return 0;
+        return 1;
     }
 
     public Token nud(Parser p)
     {
-        throw new UnsupportedOperationException("Not implemented (" + tokenValue() + ")");
+        throw new NotImplementedException("Not implemented (" + tokenValue() + ")");
     }
 
     public Token led(Parser p, Token left)
     {
-        throw new UnsupportedOperationException("Not implemented (" + tokenValue() + ")");
+        throw new NotImplementedException("Not implemented (" + tokenValue() + ")");
     }
 
     public boolean isWhitespace()
     {
         return false;
+    }
+}
+
+class LiteralToken extends Token
+{
+    public LiteralToken(String value)
+    {
+        super(value);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(literal " + tokenValue() + ")";
     }
 }
 
@@ -323,6 +366,67 @@ class SlashToken extends Token
     }
 }
 
+class CallFuncToken extends Token
+{
+    public IdentToken ident;
+    public ArgsListToken args;
+
+    public CallFuncToken(IdentToken ident)
+    {
+        super("<function>");
+        this.ident = ident;
+    }
+
+    @Override
+    public Token nud(Parser p)
+    {
+        args = (ArgsListToken)new ArgsListToken().nud(p);
+        p.expect(")");
+        return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(func " + this.ident + " " + this.args + ")";
+    }
+}
+
+class ArgsListToken extends Token
+{
+    public List<Token> args;
+
+    public ArgsListToken()
+    {
+        super("<args>");
+    }
+
+    @Override
+    public Token nud(Parser p)
+    {
+        args = new LinkedList<Token>();
+        while (p.current().tokenValue() != ")") {
+            Token expr = p.expression(lbp());
+            args.add(expr);
+            if (p.current().tokenValue() != ")") {
+                p.expect(",");
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Token t : args) {
+            sb.append(t.toString());
+            sb.append(" ");
+        }
+        return "(args " + sb.toString().trim() + ")";
+    }
+}
+
 class LParenToken extends Token
 {
     public LParenToken()
@@ -333,9 +437,18 @@ class LParenToken extends Token
     @Override
     public Token nud(Parser p)
     {
-        Token result = p.expression(0);
-        p.next(")");
-        return result;
+        Token expr = p.expression(lbp());
+        p.expect(")");
+        return expr;
+    }
+
+    @Override
+    public Token led(Parser p, Token left)
+    {
+        if (left instanceof IdentToken) {
+            return new CallFuncToken((IdentToken)left).nud(p);
+        }
+        throw new SyntaxErrorException("Object cannot be invoked");
     }
 }
 
@@ -344,6 +457,12 @@ class RParenToken extends Token
     public RParenToken()
     {
         super(")");
+    }
+
+    @Override
+    public Token led(Parser p, Token left)
+    {
+        throw new SyntaxErrorException("Missing left parenthesis");
     }
 }
 
