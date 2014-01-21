@@ -1,0 +1,6 @@
+
+*.class
+bin/
+Thumbs.db
+trash/
+archive/

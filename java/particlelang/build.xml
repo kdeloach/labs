@@ -1,0 +1,19 @@
+<project default="run">
+    <target name="run" depends="build, exec">
+    </target>
+
+    <target name="clean">
+        <delete dir="bin" quiet="true" />
+        <mkdir dir="bin" />
+    </target>
+
+    <target name="build">
+        <javac srcdir="src" destdir="bin" debug="true" includeAntRuntime="false">
+            <!--compilerarg value="-Xlint" /-->
+        </javac>
+    </target>
+
+    <target name="exec">
+        <java classpath="bin" classname="Main" fork="true" />
+    </target>
+</project>
