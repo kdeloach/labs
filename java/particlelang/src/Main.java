@@ -9,25 +9,13 @@ public class Main
 {
     public static void main(String[] argv)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(?:");
-        sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[!\\-+,></*])");
-        sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]+)");
-        sb.append("|(?<number>(?:0x[a-fA-F0-9]+|\\d+(?:\\.\\d+)?))");
-        sb.append("|(?<whitespace>[\n\t ])");
-        sb.append("|(?<unknown>.)");
-        sb.append(")");
-        Pattern p = Pattern.compile(sb.toString());
         String[] samplePrograms = new String[] {
             //"random(1, 360) * pi / 180",
             "random() * 0x55 + 0x33"
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
-            // for (Token t : new Tokenizer(p, input)) {
-                // System.out.println(t);
-            // }
-            Parser parser = new Parser(new Tokenizer(p, input));
+            Parser parser = new Parser(new Tokenizer(input));
             System.out.println(parser.expression(0));
         }
     }
@@ -65,9 +53,22 @@ class Tokenizer implements Iterator<Token>, Iterable<Token>
 
     Matcher matcher;
 
-    public Tokenizer(Pattern pattern, String input)
+    public Tokenizer(String input)
     {
-        matcher = pattern.matcher(input);
+        matcher = getPattern().matcher(input);
+    }
+
+    public Pattern getPattern()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(?:");
+        sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[!\\-+,></*])");
+        sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]+)");
+        sb.append("|(?<number>(?:0x[a-fA-F0-9]+|\\d+(?:\\.\\d+)?))");
+        sb.append("|(?<whitespace>[\n\t ])");
+        sb.append("|(?<unknown>.)");
+        sb.append(")");
+        return Pattern.compile(sb.toString());
     }
 
     public boolean hasNext()
