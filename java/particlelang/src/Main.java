@@ -25,6 +25,8 @@ public class Main
 
 class Tokenizer implements Iterator<Token>
 {
+    final static Token WHITESPACE = new WhitespaceToken();
+
     Matcher matcher;
 
     public Tokenizer(Pattern pattern, String input)
@@ -52,10 +54,7 @@ class Tokenizer implements Iterator<Token>
             }
             throw new UnsupportedOperationException("Not implemented");
         } else if (matcher.group("whitespace") != null) {
-            if (hasNext()) {
-                return next();
-            }
-            return null;
+            return WHITESPACE;
         } else {
             throw new UnsupportedOperationException("Syntax Error");
         }
@@ -90,14 +89,15 @@ class Parser
 
     public Token next(String expectValue)
     {
-        if (tokenizer.hasNext()) {
+        while (tokenizer.hasNext()) {
             currentToken = tokenizer.next();
-            if (currentToken != null) {
-                if (expectValue.length() > 0 && currentToken.tokenValue() != expectValue) {
-                    throw new UnsupportedOperationException("Expected " + expectValue + " but got " + currentToken.tokenValue());
-                }
-                return currentToken;
+            if (currentToken.isWhitespace()) {
+                continue;
             }
+            if (expectValue.length() > 0 && currentToken.tokenValue() != expectValue) {
+                throw new UnsupportedOperationException("Expected " + expectValue + " but got " + currentToken.tokenValue());
+            }
+            return currentToken;
         }
         currentToken = new EndProgramToken();
         return currentToken;
@@ -153,6 +153,11 @@ abstract class Token
     public Token led(Parser p, Token left)
     {
         throw new UnsupportedOperationException("Not implemented (" + tokenValue() + ")");
+    }
+
+    public boolean isWhitespace()
+    {
+        return false;
     }
 }
 
@@ -313,6 +318,20 @@ class DivToken extends Token
     public String toString()
     {
         return "(/ " + this.left + " " + this.right + ")";
+    }
+}
+
+class WhitespaceToken extends Token
+{
+    public WhitespaceToken()
+    {
+        super("");
+    }
+
+    @Override
+    public boolean isWhitespace()
+    {
+        return true;
     }
 }
 
