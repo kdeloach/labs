@@ -22,7 +22,7 @@ public class Tokenizer implements Iterator<Token>, Iterable<Token>
         sb.append("(?:");
         sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[%!\\-+,></*])");
         sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]*)");
-        sb.append("|(?<number>(?:0x[a-fA-F0-9]+|\\d+(?:\\.\\d+)?))");
+        sb.append("|(?<number>\\d+(?:\\.\\d+)?)");
         sb.append("|(?<whitespace>[\n\t ])");
         sb.append("|(?<unknown>.)");
         sb.append(")");

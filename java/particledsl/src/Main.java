@@ -18,9 +18,7 @@ public class Main
             "random(1, 360) * pi / 180",
             "toDegrees(toRadians(45))",
             "toDegrees(1, test(22))",
-            "pi/3 + random() * (hi-lo)+lo",
-            "0xFF/(sqrt(x*x + y*y))",
-            "0xFF * 2 % 255"
+            "pi/3 + random() * (hi-lo)+lo"
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
