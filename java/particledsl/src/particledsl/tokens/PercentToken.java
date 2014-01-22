@@ -2,13 +2,13 @@ package particledsl.tokens;
 
 import particledsl.*;
 
-public class SlashToken extends Token
+public class PercentToken extends Token
 {
     public Token left, right;
 
-    public SlashToken()
+    public PercentToken()
     {
-        super("/");
+        super("%");
     }
 
     @Override
@@ -28,6 +28,6 @@ public class SlashToken extends Token
     @Override
     public String toString()
     {
-        return "(/ " + this.left + " " + this.right + ")";
+        return "(% " + this.left + " " + this.right + ")";
     }
 }

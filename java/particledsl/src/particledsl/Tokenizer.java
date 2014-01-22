@@ -20,7 +20,7 @@ public class Tokenizer implements Iterator<Token>, Iterable<Token>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("(?:");
-        sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[!\\-+,></*])");
+        sb.append("(?<op>\\(|\\)|<=|>=|!==|==|[%!\\-+,></*])");
         sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]*)");
         sb.append("|(?<number>(?:0x[a-fA-F0-9]+|\\d+(?:\\.\\d+)?))");
         sb.append("|(?<whitespace>[\n\t ])");
@@ -46,6 +46,7 @@ public class Tokenizer implements Iterator<Token>, Iterable<Token>
                 case "-": return new MinusToken();
                 case "*": return new StarToken();
                 case "/": return new SlashToken();
+                case "%": return new PercentToken();
                 case "(": return new LParenToken();
                 case ")": return new RParenToken();
             }

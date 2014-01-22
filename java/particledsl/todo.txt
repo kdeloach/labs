@@ -1,0 +1,2 @@
+HIGH
+- Add helper method on NumberToken getNumberBase()

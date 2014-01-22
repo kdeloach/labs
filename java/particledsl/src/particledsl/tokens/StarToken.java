@@ -4,7 +4,7 @@ import particledsl.*;
 
 public class StarToken extends Token
 {
-    Token left, right;
+    public Token left, right;
 
     public StarToken()
     {

@@ -5,7 +5,9 @@ import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import particledsl.*;
+import particledsl.Parser;
+import particledsl.Tokenizer;
+import particledsl.tokens.Token;
 
 public class Main
 {
@@ -17,7 +19,8 @@ public class Main
             "toDegrees(toRadians(45))",
             "toDegrees(1, test(22))",
             "pi/3 + random() * (hi-lo)+lo",
-            "0xFF/(sqrt(x*x + y*y))"
+            "0xFF/(sqrt(x*x + y*y))",
+            "0xFF * 2 % 255"
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
