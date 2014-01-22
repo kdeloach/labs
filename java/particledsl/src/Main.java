@@ -14,7 +14,6 @@ public class Main
     public static void main(String[] argv)
     {
         String[] samplePrograms = new String[] {
-            "random() * 0x55 + 0x33",
             "random(1, 360) * pi / 180",
             "toDegrees(toRadians(45))",
             "toDegrees(1, test(22))",
