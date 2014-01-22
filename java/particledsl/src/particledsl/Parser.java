@@ -40,6 +40,13 @@ public class Parser
         return next();
     }
 
+    public Token parse()
+    {
+        Token program = expression(0);
+        expect("<end>");
+        return program;
+    }
+
     // Author: Fredrik Lundh
     // Source: http://effbot.org/zone/simple-top-down-parsing.htm
     public Token expression(int rbp)

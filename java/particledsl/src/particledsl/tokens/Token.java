@@ -39,6 +39,6 @@ public abstract class Token
     @Override
     public String toString()
     {
-        return "Token('" + tokenValue() + "')";
+        return "(token '" + tokenValue() + "')";
     }
 }

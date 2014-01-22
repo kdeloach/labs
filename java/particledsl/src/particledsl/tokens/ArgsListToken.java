@@ -1,12 +1,11 @@
 package particledsl.tokens;
 
-import java.util.List;
 import java.util.LinkedList;
 import particledsl.*;
 
 public class ArgsListToken extends Token
 {
-    public List<Token> args;
+    public LinkedList<Token> args;
 
     public ArgsListToken()
     {
