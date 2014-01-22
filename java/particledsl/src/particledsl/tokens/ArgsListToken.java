@@ -18,7 +18,7 @@ public class ArgsListToken extends Token
     {
         args = new LinkedList<Token>();
         while (p.current().tokenValue() != ")") {
-            Token expr = p.expression(lbp());
+            Token expr = p.expression(0);
             args.add(expr);
             if (p.current().tokenValue() != ")") {
                 p.expect(",");

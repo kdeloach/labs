@@ -12,7 +12,7 @@ public class LParenToken extends Token
     @Override
     public Token nud(Parser p)
     {
-        Token expr = p.expression(lbp());
+        Token expr = p.expression(0);
         p.expect(")");
         return expr;
     }
@@ -24,5 +24,11 @@ public class LParenToken extends Token
             return new CallFuncToken((IdentToken)left).nud(p);
         }
         throw new SyntaxErrorException("Object cannot be invoked");
+    }
+
+    @Override
+    public int lbp()
+    {
+        return 80;
     }
 }

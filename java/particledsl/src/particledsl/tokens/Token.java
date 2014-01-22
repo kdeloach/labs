@@ -18,7 +18,7 @@ public abstract class Token
 
     public int lbp()
     {
-        return 1;
+        return 0;
     }
 
     public Token nud(Parser p)
