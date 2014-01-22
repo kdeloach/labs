@@ -1,2 +1,2 @@
 HIGH
-- Add helper method on NumberToken getNumberBase()
+- Parse single expression then expect an (end) token

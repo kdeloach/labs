@@ -2,7 +2,7 @@ package particledsl.tokens;
 
 import particledsl.*;
 
-public class PercentToken extends Token
+public class PercentToken extends BinaryMathToken
 {
     public Token left, right;
 
@@ -12,22 +12,8 @@ public class PercentToken extends Token
     }
 
     @Override
-    public Token led(Parser p, Token left)
-    {
-        this.left = left;
-        this.right = p.expression(lbp());
-        return this;
-    }
-
-    @Override
     public int lbp()
     {
         return 60;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "(% " + this.left + " " + this.right + ")";
     }
 }
