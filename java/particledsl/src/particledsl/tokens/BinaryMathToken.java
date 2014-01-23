@@ -2,7 +2,7 @@ package particledsl.tokens;
 
 import particledsl.*;
 
-public class BinaryMathToken extends Token
+abstract public class BinaryMathToken extends Token
 {
     public Token left, right;
 

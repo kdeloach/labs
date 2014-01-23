@@ -12,6 +12,6 @@ public class LiteralToken extends Token
     @Override
     public String toString()
     {
-        return "(literal " + tokenValue() + ")";
+        return "(literal '" + tokenValue() + "')";
     }
 }
