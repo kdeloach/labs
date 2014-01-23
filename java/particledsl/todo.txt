@@ -1,2 +1,0 @@
-HIGH
-- Parse single expression then expect an (end) token

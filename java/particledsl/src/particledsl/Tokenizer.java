@@ -20,7 +20,7 @@ public class Tokenizer implements Iterator<Token>, Iterable<Token>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("(?:");
-        sb.append("(?<op>\\(|\\)|if|else|true|false|<=|>=|==|!=|[%!\\-+,></*])");
+        sb.append("(?<op>\\(|\\)|if|else|true|false|and|or|<=|>=|==|!=|[%!\\-+,></*])");
         sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]*)");
         sb.append("|(?<number>\\d+(?:\\.\\d+)?)");
         sb.append("|(?<whitespace>[\n\t ])");
@@ -54,6 +54,8 @@ public class Tokenizer implements Iterator<Token>, Iterable<Token>
                     return new BinaryCompareToken(matcher.group());
                 case "true": case "false":
                     return new TrueFalseToken(matcher.group());
+                case "and": case "or":
+                    return new LogicalOpToken(matcher.group());
             }
             return new LiteralToken(matcher.group());
         } else if (matcher.group("whitespace") != null) {

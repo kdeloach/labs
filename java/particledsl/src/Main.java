@@ -18,9 +18,11 @@ public class Main
             // "toDegrees(toRadians(45))",
             // "toDegrees(1, test(22))",
             // "pi/3 + random() * (hi-lo)+lo",
-            "if ((if (1 < 2) 3 else 4) == 2) 3",
-            "if (false) 1 else if (true) 2 else 3",
-            "if (1 < 2) random() else if (4 < 5) 1 else theta"
+            //"if ((if (1 < 2) 3 else 4) == 2) 3",
+            //"if (false) 1 else if (true) 2 else 3",
+            //"if (1 < 2) random() else if (4 < 5) 1 else theta",
+            //"if (ticks < 1) 2 else if (ticks >= 3 and ticks < 5) 6 else 7",
+            "if (1 == 2 or 3 < 4) 5"
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
