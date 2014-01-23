@@ -20,9 +20,9 @@ public class Tokenizer implements Iterator<Token>, Iterable<Token>
     {
         StringBuilder sb = new StringBuilder();
         sb.append("(?:");
-        sb.append("(?<op>\\(|\\)|if|else|true|false|and|or|<=|>=|==|!=|[%!\\-+,></*])");
+        sb.append("(?<number>-?\\d+(?:\\.\\d+)?)");
+        sb.append("|(?<op>\\(|\\)|if|else|true|false|and|or|<=|>=|==|!=|[%!\\-+,></*])");
         sb.append("|(?<ident>[a-zA-Z][a-zA-Z0-9]*)");
-        sb.append("|(?<number>\\d+(?:\\.\\d+)?)");
         sb.append("|(?<whitespace>[\n\t ])");
         sb.append("|(?<unknown>.)");
         sb.append(")");

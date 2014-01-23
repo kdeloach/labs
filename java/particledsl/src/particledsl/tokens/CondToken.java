@@ -21,14 +21,12 @@ public class CondToken extends Token
         }
         p.expect(")");
         trueBody = p.expression(0);
-        if (p.current().tokenValue().equals("else")) {
-            p.expect("else");
-            if (p.current().tokenValue().equals("if")) {
-                p.expect("if");
-                otherBody = (Token)new CondToken().nud(p);
-            } else {
-                otherBody = p.expression(0);
-            }
+        p.expect("else");
+        if (p.current().tokenValue().equals("if")) {
+            p.expect("if");
+            otherBody = (Token)new CondToken().nud(p);
+        } else {
+            otherBody = p.expression(0);
         }
         return this;
     }

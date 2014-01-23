@@ -1,0 +1,2 @@
+- Implement negative inflix operator
+- Implement logical not

@@ -22,7 +22,7 @@ public class Main
             //"if (false) 1 else if (true) 2 else 3",
             //"if (1 < 2) random() else if (4 < 5) 1 else theta",
             //"if (ticks < 1) 2 else if (ticks >= 3 and ticks < 5) 6 else 7",
-            "if (1 == 2 or 3 < 4) 5"
+            "if (1 == 2 or 3 < 4) 5 else if (true) 0 else -1",
         };
         for (String input : Arrays.asList(samplePrograms)) {
             System.out.println(input);
