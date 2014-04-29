@@ -1,0 +1,2 @@
+PBKDF==1.0
+pysodium==0.6.1
