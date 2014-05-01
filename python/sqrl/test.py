@@ -120,16 +120,22 @@ def test_identity_unlock():
     # Test identity unlock procedure
     ilk, iuk = crypto_box_keypair()
     suk, rlk = crypto_box_keypair()
+    vuk = make_public(dhka(ilk, rlk))
     print 'ilk', binascii.hexlify(ilk)
     print 'iuk', binascii.hexlify(iuk)
     print 'rlk', binascii.hexlify(rlk)
     print 'suk', binascii.hexlify(suk)
+    print 'vuk', binascii.hexlify(vuk)
 
-    n = randombytes(crypto_secretbox_NONCEBYTES)
-    a = crypto_box("test", n, ilk, rlk)
-    b = crypto_box("test", n, suk, iuk)
-    print 'a', binascii.hexlify(a)
-    print 'b', binascii.hexlify(b)
+    # Reconstruct private key
+    ursk = dhka(suk, iuk)
+    print 'ursk', binascii.hexlify(ursk)
+
+    # Server-side verification
+    #n = randombytes(crypto_box_NONCEBYTES)
+    #cipher = crypto_box("revoke key", n, vuk, ursk)
+    sm = crypto_sign("test", ursk)
+    crypto_sign_open(sm, vuk)
 
 def test_make_public():
     # Test creating public key from private key
@@ -159,7 +165,7 @@ def test_dhka():
 if __name__ == '__main__':
     #test()
     #test_keypair_box()
-    #test_identity_unlock()
-    test_make_public()
-    test_dhka()
+    test_identity_unlock()
+    #test_make_public()
+    #test_dhka()
 
