@@ -1,2 +1,2 @@
 PBKDF==1.0
-pysodium==0.6.1
+-e git+git://github.com/kdeloach/pysodium#egg=pysodium

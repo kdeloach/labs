@@ -101,5 +101,65 @@ def generate_site_keypair(masterkey, netloc):
     pk, sk = crypto_sign_seed_keypair(seed)
     return pk, sk
 
+def test_keypair_box():
+    # Test that either pair of private/public keys can decrypt a message
+    pkA, skA = crypto_box_keypair()
+    pkB, skB = crypto_box_keypair()
+    n = randombytes(crypto_box_NONCEBYTES)
+    cipher = crypto_box("hello world", n, pkB, skA)
+    try:
+        x = crypto_box_open(cipher, n, pkA, skB)
+        y = crypto_box_open(cipher, n, pkB, skA)
+        print x
+        print y
+        assert x == y
+    except ValueError:
+        print 'decryption error'
+
+def test_identity_unlock():
+    # Test identity unlock procedure
+    ilk, iuk = crypto_box_keypair()
+    suk, rlk = crypto_box_keypair()
+    print 'ilk', binascii.hexlify(ilk)
+    print 'iuk', binascii.hexlify(iuk)
+    print 'rlk', binascii.hexlify(rlk)
+    print 'suk', binascii.hexlify(suk)
+
+    n = randombytes(crypto_secretbox_NONCEBYTES)
+    a = crypto_box("test", n, ilk, rlk)
+    b = crypto_box("test", n, suk, iuk)
+    print 'a', binascii.hexlify(a)
+    print 'b', binascii.hexlify(b)
+
+def test_make_public():
+    # Test creating public key from private key
+    _, sk = crypto_box_keypair()
+    pk = make_public(sk)
+    print '_', binascii.hexlify(_)
+    print 'pk', binascii.hexlify(pk)
+    print 'sk', binascii.hexlify(sk)
+    assert pk == _
+
+def make_public(sk):
+    return crypto_scalarmult_curve25519_base(sk)
+
+def dhka(pk, sk):
+    return crypto_scalarmult_curve25519(sk, pk)
+
+def test_dhka():
+    # Test creating a shared secret between two keypairs
+    pkA, skA = crypto_box_keypair()
+    pkB, skB = crypto_box_keypair()
+    x = dhka(pkA, skB)
+    y = dhka(pkB, skA)
+    print 'x', binascii.hexlify(x)
+    print 'y', binascii.hexlify(y)
+    assert x == y
+
 if __name__ == '__main__':
-    test()
+    #test()
+    #test_keypair_box()
+    #test_identity_unlock()
+    test_make_public()
+    test_dhka()
+
