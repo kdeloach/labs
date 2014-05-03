@@ -49,11 +49,9 @@ def test():
     message = crypto_sign(nonce, sk)
     print binascii.hexlify(message)
 
-    # TODO: Submit signed message to url
-
-    # Check that message was signed with pk
+    # Server-side verification
     try:
-        crypto_sign_open(message, pk)
+        print crypto_sign_open(message, pk)
         print "Logged in"
     except ValueError:
         print "Failed to verify message was signed with pk"
@@ -120,7 +118,11 @@ def test_identity_unlock():
     # Test identity unlock procedure
     ilk, iuk = crypto_box_keypair()
     suk, rlk = crypto_box_keypair()
-    vuk = make_public(dhka(ilk, rlk))
+    secret = dhka(ilk, rlk)
+    # create keypair seeded with dhka secret
+    # _ is the discarded ursk
+    vuk, _ = crypto_sign_seed_keypair(secret)
+
     print 'ilk', binascii.hexlify(ilk)
     print 'iuk', binascii.hexlify(iuk)
     print 'rlk', binascii.hexlify(rlk)
@@ -128,14 +130,19 @@ def test_identity_unlock():
     print 'vuk', binascii.hexlify(vuk)
 
     # Reconstruct private key
-    ursk = dhka(suk, iuk)
+    secret = dhka(suk, iuk)
+    # We already know the public key (vuk)
+    _, ursk = crypto_sign_seed_keypair(secret)
     print 'ursk', binascii.hexlify(ursk)
 
+    # Create and sign change request
+    cr = crypto_sign("revoke key 123", ursk)
+
     # Server-side verification
-    #n = randombytes(crypto_box_NONCEBYTES)
-    #cipher = crypto_box("revoke key", n, vuk, ursk)
-    sm = crypto_sign("test", ursk)
-    crypto_sign_open(sm, vuk)
+    try:
+        print crypto_sign_open(cr, vuk)
+    except ValueError:
+        print 'Failed to verify signature'
 
 def test_make_public():
     # Test creating public key from private key
@@ -163,9 +170,8 @@ def test_dhka():
     assert x == y
 
 if __name__ == '__main__':
-    #test()
-    #test_keypair_box()
+    test()
+    test_keypair_box()
     test_identity_unlock()
-    #test_make_public()
-    #test_dhka()
-
+    test_make_public()
+    test_dhka()
