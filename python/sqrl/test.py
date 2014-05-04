@@ -169,9 +169,18 @@ def test_dhka():
     print 'y', binascii.hexlify(y)
     assert x == y
 
+def test_generichash():
+    test = crypto_stream(32L)
+    a = crypto_generichash(test, outlen=16L)
+    b = crypto_generichash(test, outlen=16L)
+    print 'a', binascii.hexlify(a)
+    print 'b', binascii.hexlify(b)
+    assert a == b
+
 if __name__ == '__main__':
-    test()
-    test_keypair_box()
-    test_identity_unlock()
-    test_make_public()
-    test_dhka()
+    #test()
+    #test_keypair_box()
+    #test_identity_unlock()
+    #test_make_public()
+    #test_dhka()
+    test_generichash()
