@@ -1,3 +1,4 @@
 PBKDF==1.0
 -e git+git://github.com/kdeloach/pysodium#egg=pysodium
 docopt==0.6.1
+requests==2.2.1
