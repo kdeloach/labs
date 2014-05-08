@@ -104,7 +104,7 @@ def generate_site_keypair(masterkey, domain):
 def login(identity, pw, url):
     info = urlparse.urlparse(url)
     if info.scheme not in ['qrl', 'sqrl']:
-        raise 'Url schema not supported.'
+        raise Exception('Url schema not supported.')
     secure = info.scheme == 'sqrl'
 
     host = info.netloc
@@ -145,17 +145,19 @@ def login(identity, pw, url):
         post_url = url.replace('qrl://', 'http://')
 
     r = requests.post(post_url, data=payload, headers=headers)
+    print r.text
     return r
 
 
 if __name__ == '__main__':
     from docopt import docopt
     args = docopt(__doc__, version='1.0.0')
-    #print(args)
-    #sys.exit(0)
 
     # Disable output buffering.
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+    #print(args)
+    #sys.exit(0)
 
     if args['login']:
         # load identity
@@ -186,14 +188,12 @@ if __name__ == '__main__':
             print('Store this in a safe location!')
             print(binascii.hexlify(iuk))
             sys.exit(0)
-        elif args['--change-password'] or args['--change-iterations']:
+        else:
             # We don't need to confirm the password before changing it because the change password
             # function already does that.
             password = args['--password']
-            newpassword = args['--password']
+            newpassword = args['--change-password']
             newiterations = identity.pw_iterations
-            if args['--change-password']:
-                newpassword = args['--change-password']
             if args['--change-iterations']:
                 newiterations = int(args['--change-iterations'])
             change_pw(identity, password, newpassword, newiterations)

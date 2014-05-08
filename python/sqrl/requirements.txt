@@ -1,4 +1,12 @@
+Flask==0.10.1
+Jinja2==2.7.2
+MarkupSafe==0.21
 PBKDF==1.0
--e git+git://github.com/kdeloach/pysodium#egg=pysodium
+Pillow==2.4.0
+Werkzeug==0.9.4
 docopt==0.6.1
+itsdangerous==0.24
+-e git://github.com/kdeloach/pysodium@ee09611a91e8f145dd82657f6e0560d2d3df10ae#egg=pysodium-master
+qrcode==4.0.4
 requests==2.2.1
+six==1.6.1
