@@ -31,15 +31,19 @@ from test_fileformat import SqrlIdentity
 import requests
 import base64url
 
+SALT_LEN = 8L
+IDK_LEN = 32L
+VERIFY_LEN = 16L
+
 def create_identity(pw, iterations):
     """Return randomly generated identity encrypted with pw.
     This does not include creation of identity unlock keys.
     """
     iterations = max(iterations, 1)
-    salt = crypto_stream(8L)
+    salt = crypto_stream(SALT_LEN)
     pw_hash = create_pw_hash(pw, salt, iterations)
     pw_verify = create_pw_verify(pw_hash)
-    masterkey = xor_masterkey(crypto_stream(32L), pw_hash, salt)
+    masterkey = xor_masterkey(crypto_stream(IDK_LEN), pw_hash, salt)
     identity = SqrlIdentity(
         masterkey=masterkey,
         salt=salt,
@@ -68,7 +72,7 @@ def change_pw(identity, pw, newpw, newiterations):
     original_masterkey = xor_masterkey(identity.masterkey, pw_hash, identity.salt)
 
     # Encrypt with new pw.
-    salt = crypto_stream(8L)
+    salt = crypto_stream(SALT_LEN)
     pw_hash = create_pw_hash(newpw, salt, newiterations)
     pw_verify = create_pw_verify(pw_hash)
     masterkey = xor_masterkey(original_masterkey, pw_hash, salt)
@@ -93,7 +97,7 @@ def create_pw_hash(pw, salt, iterations):
     return PBKDF2(pw, salt, c=iterations)
 
 def create_pw_verify(pw_hash):
-    return crypto_generichash(pw_hash, outlen=16L)
+    return crypto_generichash(pw_hash, outlen=VERIFY_LEN)
 
 def generate_site_keypair(masterkey, domain):
     """Return keypair based on site and master key"""
