@@ -23,7 +23,7 @@ def create_db():
         vuk text
     )""")
     c.execute("""
-    create table sqrl_sessions (
+    create table sqrl_session (
         id integer primary key,
         session_id text,
         identity_id integer
@@ -62,7 +62,7 @@ def make_login_url(session_id):
 def qrcode_svg():
     info = urlparse.urlparse(request.url)
     if len(info.query) > 0:
-        login_url = base64url.decode(info.query)
+        login_url = base64url.decode(info.query.encode('utf-8'))
         img = qrcode.make(login_url, image_factory=qrcode.image.svg.SvgImage)
         res = StringIO()
         img.save(res)
@@ -81,10 +81,10 @@ def sqrl_request():
         abort(405)
 
 def sqrl_post_request():
-    try:
-        x = sqrl.parse(request.data)
-    except InvalidClient:
-        abort(400)
+    # try:
+        # x = sqrl.parse(request.data)
+    # except:
+        # abort(400)
 
     tif = 0
     row = get_user_by_idk(x.client.idk)
@@ -114,7 +114,7 @@ def sqrl_post_request():
 
     if 'login' in x.client.cmd:
         # mark nonce as authenticated
-        pass
+        abort(200)
 
     if 'logme' in x.client.cmd:
         abort(505)

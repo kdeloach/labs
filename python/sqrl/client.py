@@ -30,10 +30,111 @@ import test_fileformat as ff
 from test_fileformat import SqrlIdentity
 import requests
 import base64url
+from collections import namedtuple
 
 SALT_LEN = 8L
 IDK_LEN = 32L
-VERIFY_LEN = 16L
+PW_VERIFIER_LEN = 16L
+
+class TIF(object):
+    # Found idk match
+    IdMatch = 0x1
+    # Found pidk match
+    PreviousIdMatch = 0x2
+    # Client IP matches encrypted IP
+    IpMatch = 0x4
+    # User account is enabled
+    SqrlEnabled = 0x8
+    # User already logged in
+    LoggedIn = 0x10
+    # User can register
+    AccountCreationEnabled = 0x20
+    # Error processing command
+    CommandFailed = 0x40
+    # Server error
+    SqrlFailure = 0x80
+
+SqrlUser = namedtuple('SqrlUser', 'identity pw')
+SqrlAccount = namedtuple('SqrlAccount', 'user url suk vuk tif')
+SqrlResponse = namedtuple('SqrlResponse', 'suk vuk tif')
+
+class SqrlRequest(object):
+    def __init__(self, user, url):
+        self.user = user
+        self.url = url
+
+    def get_command(self):
+        return ''
+
+    def get_client_args(self):
+        return {}
+
+    def response(self):
+        info = urlparse.urlparse(self.url)
+
+        if info.scheme not in ['qrl', 'sqrl']:
+            raise Exception('Url scheme not supported.')
+
+        host = info.netloc
+        headers = {
+            'User-Agent': 'SQRL/1'
+        }
+
+        if '@' in host:
+            userpass, host = host.split('@')
+            headers['Authentication'] = userpass
+
+        pw_hash = create_pw_hash(
+            self.user.pw,
+            self.user.identity.salt,
+            self.user.identity.pw_iterations)
+
+        original_masterkey = xor_masterkey(
+            self.user.identity.masterkey,
+            pw_hash,
+            self.user.identity.salt)
+
+        pk, sk = generate_site_keypair(original_masterkey, host)
+
+        clientargs = dict(
+            ver=1,
+            cmd = self.get_command(),
+            idk=base64url.encode(pk)
+        )
+
+        clientargs.update(self.get_client_args())
+
+        clientval = base64url.encode('&'.join(
+            '%s=%s' % (k, v) for k, v in clientargs.iteritems()))
+        serverval = base64url.encode(self.url)
+        m = clientval + serverval
+        ids = base64url.encode(crypto_sign(m, sk))
+
+        args = dict(
+            client=clientval,
+            server=serverval,
+            ids=ids
+        )
+
+        payload = '&'.join('%s=%s' % (k, v) for k, v in args.iteritems())
+
+        if info.scheme == 'sqrl':
+            post_url = url.replace('sqrl://', 'https://')
+        else:
+            post_url = url.replace('qrl://', 'http://')
+
+        r = requests.post(post_url, data=payload, headers=headers)
+
+        print r.text
+
+        return self.parse_response(r)
+
+    def parse_response(self, res):
+        suk = ""
+        vuk = ""
+        tif = 0
+        return SqrlResponse(suk, vuk, tif)
+
 
 def create_identity(pw, iterations):
     """Return randomly generated identity encrypted with pw.
@@ -97,7 +198,7 @@ def create_pw_hash(pw, salt, iterations):
     return PBKDF2(pw, salt, c=iterations)
 
 def create_pw_verify(pw_hash):
-    return crypto_generichash(pw_hash, outlen=VERIFY_LEN)
+    return crypto_generichash(pw_hash, outlen=PW_VERIFIER_LEN)
 
 def generate_site_keypair(masterkey, domain):
     """Return keypair based on site and master key"""
@@ -105,53 +206,20 @@ def generate_site_keypair(masterkey, domain):
     pk, sk = crypto_sign_seed_keypair(seed)
     return pk, sk
 
-def login(identity, pw, url):
-    info = urlparse.urlparse(url)
-    if info.scheme not in ['qrl', 'sqrl']:
-        raise Exception('Url schema not supported.')
-    secure = info.scheme == 'sqrl'
+def fetch_account(user, url):
+    req = SqrlRequest(user, url)
+    res = req.response()
+    suk = res.suk
+    vuk = res.vuk
+    tif = res.tif
+    return SqrlAccount(user, url, suk, vuk, tif)
 
-    host = info.netloc
-    headers = {
-        'User-Agent': 'SQRL/1'
-    }
-
-    if '@' in host:
-        userpass, host = host.split('@')
-        headers['Authentication'] = userpass
-
-    pw_hash = create_pw_hash(pw, identity.salt, identity.pw_iterations)
-    original_masterkey = xor_masterkey(identity.masterkey, pw_hash, identity.salt)
-    pk, sk = generate_site_keypair(original_masterkey, host)
-
-    clientargs = dict(
-        ver=1,
-        cmd='login',
-        idk=base64url.encode(pk)
-    )
-
-    clientval = base64url.encode('&'.join('%s=%s' % (k, v) for k, v in clientargs.iteritems()))
-    serverval = base64url.encode(url)
-    m = clientval + serverval
-    ids = base64url.encode(crypto_sign(m, sk))
-
-    args = {
-        'client': clientval,
-        'server': serverval,
-        'ids': ids
-    }
-
-    payload = '&'.join('%s=%s' % (k, v) for k, v in args.iteritems())
-
-    if secure:
-        post_url = url.replace('sqrl://', 'https://')
-    else:
-        post_url = url.replace('qrl://', 'http://')
-
-    r = requests.post(post_url, data=payload, headers=headers)
-    print r.text
-    return r
-
+def login(account):
+    print account
+    #info = probe_server(url)
+    #cmd = SqrlLoginRequest(account)
+    #print cmd.response()
+    # based on TIF... login
 
 if __name__ == '__main__':
     from docopt import docopt
@@ -164,13 +232,14 @@ if __name__ == '__main__':
     #sys.exit(0)
 
     if args['login']:
-        # load identity
-        # create pw hash
-        # decrypt masterkey
-        # create request command
-        # sign client+server params with each key
+        url = args['--url']
+        password = args['--password']
         identity = load_identity(args['--identity'])
-        login(identity, args['--password'], args['--url'])
+        user = SqrlUser(identity, password)
+        account = fetch_account(user, url)
+        login(account)
+        sys.exit(0)
+    elif args['register']:
         sys.exit(0)
     elif args['create']:
         password = args['--password']
