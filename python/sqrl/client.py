@@ -7,6 +7,7 @@ Usage:
   client.py update --identity=<file> [--password=<pw>] --unlock
   client.py update --identity=<file> [--password=<pw>] [--change-password=<newpw>] [--change-iterations=<iterations>]
   client.py login --identity=<file> [--password=<pw>] --url=<url>
+  client.py register --identity=<file> [--password=<pw>] --url=<url>
 
 Options:
   -h, --help                        Show this screen.
@@ -37,10 +38,10 @@ def create_identity(pw, iterations):
     This does not include creation of identity unlock keys.
     """
     iterations = max(iterations, 1)
-    salt = crypto_stream(SALT_LEN)
+    salt = crypto_stream(libsqrl.SALT_LEN)
     pw_hash = create_pw_hash(pw, salt, iterations)
     pw_verify = create_pw_verify(pw_hash)
-    masterkey = xor_masterkey(crypto_stream(IDK_LEN), pw_hash, salt)
+    masterkey = xor_masterkey(crypto_stream(libsqrl.IDK_LEN), pw_hash, salt)
     identity = SqrlIdentity(
         masterkey=masterkey,
         salt=salt,
@@ -54,7 +55,10 @@ def verify_password(identity, pw):
     """Return true if pw hash matches identity pw verification hash."""
     pw_hash = create_pw_hash(pw, identity.salt, identity.pw_iterations)
     pw_verify = create_pw_verify(pw_hash)
-    return pw_verify == identity.pw_verify
+    if pw_verify == identity.pw_verify:
+        return pw_hash
+    else:
+        return False
 
 def change_pw(identity, pw, newpw, newiterations):
     newiterations = max(newiterations, 1)
@@ -69,7 +73,7 @@ def change_pw(identity, pw, newpw, newiterations):
     original_masterkey = xor_masterkey(identity.masterkey, pw_hash, identity.salt)
 
     # Encrypt with new pw.
-    salt = crypto_stream(SALT_LEN)
+    salt = randombytes(libsqrl.SALT_LEN)
     pw_hash = create_pw_hash(newpw, salt, newiterations)
     pw_verify = create_pw_verify(pw_hash)
     masterkey = xor_masterkey(original_masterkey, pw_hash, salt)
@@ -88,13 +92,14 @@ def load_identity(file):
 
 def xor_masterkey(masterkey, pw_hash, salt):
     """Return masterkey XOR pw_hash with salt."""
-    return crypto_stream_xor(masterkey, len(masterkey), key=pw_hash, nonce=salt)
+    return crypto_stream_xor(masterkey, libsqrl.IDK_LEN, key=pw_hash, nonce=salt)
 
 def create_pw_hash(pw, salt, iterations):
+    salt = crypto_generichash(salt)
     return PBKDF2(pw, salt, c=iterations)
 
 def create_pw_verify(pw_hash):
-    return crypto_generichash(pw_hash, outlen=PW_VERIFIER_LEN)
+    return crypto_generichash(pw_hash, outlen=libsqrl.PW_VERIFIER_LEN)
 
 def generate_site_keypair(masterkey, domain):
     """Return keypair based on site and master key"""
@@ -127,16 +132,18 @@ def create_request_body(user, url, cmd=None):
     info = urlparse.urlparse(url)
     host = info.netloc
 
-    pw_hash = create_pw_hash(
-        user.pw,
-        user.identity.salt,
-        user.identity.pw_iterations)
+    pw_hash = verify_password(user.identity, user.pw)
 
+    if not pw_hash:
+        raise Exception('Invalid password')
+
+    salt = crypto_generichash(user.identity.salt)
     original_masterkey = xor_masterkey(
         user.identity.masterkey,
         pw_hash,
-        user.identity.salt)
+        salt)
 
+    seed = crypto_generichash(host, k=original_masterkey)
     pk, sk = generate_site_keypair(original_masterkey, host)
 
     req = libsqrl.SqrlRequestBody()
@@ -161,7 +168,19 @@ def login(account):
         payload = create_request_body(user, url, cmd='login')
         response = post_request(payload.serialize())
     else:
-        print 'no account registered'
+        print 'No account registered.'
+
+def register(account):
+    if libsqrl.has_flag(account.tif, libsqrl.TIF.AccountCreationEnabled):
+        payload = create_request_body(user, url, cmd='create')
+        response = post_request(payload.serialize())
+        if libsqrl.has_flag(response.tif, libsqrl.TIF.CommandFailed):
+            print 'Error creating account.'
+        else:
+            #print response
+            print 'Success'
+    else:
+        print 'Account registration is not enabled.'
 
 if __name__ == '__main__':
     from docopt import docopt
@@ -182,6 +201,12 @@ if __name__ == '__main__':
         login(account)
         sys.exit(0)
     elif args['register']:
+        url = args['--url']
+        password = args['--password']
+        identity = load_identity(args['--identity'])
+        user = libsqrl.SqrlUser(identity, password)
+        account = fetch_account(user, url)
+        register(account)
         sys.exit(0)
     elif args['create']:
         password = args['--password']

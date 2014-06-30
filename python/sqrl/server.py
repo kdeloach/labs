@@ -1,7 +1,7 @@
 import sys
 import logging
 from StringIO import StringIO
-from flask import Flask, request, abort, send_file, session
+from flask import Flask, request, abort, send_file, session, render_template, redirect, jsonify
 from pysodium import *
 import base64url
 import qrcode
@@ -22,51 +22,89 @@ def create_db():
             id integer primary key,
             idk text,
             suk text,
-            vuk text
-    )""")
+            vuk text)
+    """)
     c.execute("""
         create table sqrl_session (
             id integer primary key,
             session_id text,
             identity_id integer,
-            created_date integer
-    )
+            created_date integer)
     """)
     conn.commit()
 
-tmpuser = namedtuple('namedtuple', 'suk vuk identity_id')
+sqrl_user = namedtuple('namedtuple', 'identity_id idk suk vuk')
 
 def get_user_by_idk(idk):
-    u = tmpuser('', '', 1)
-    return u
+    vals = (base64url.encode(idk),)
+    c = conn.cursor()
+    c.execute("""
+        select id, idk, suk, vuk
+        from sqrl_identity
+        where idk = ?
+    """, vals)
+    row = c.fetchone()
+    return sqrl_user(*row) if row else None
 
-def user_logged_in(user):
-    return False
+def get_user_by_session(session_id):
+    vals = (session_id,)
+    c = conn.cursor()
+    c.execute("""
+        select i.id, i.idk, i.suk, i.vuk
+        from sqrl_identity i
+        inner join sqrl_session s on s.identity_id = i.id
+        where s.session_id = ?
+    """, vals)
+    row = c.fetchone()
+    return sqrl_user(*row) if row else None
 
-def user_enabled(user):
-    return True
+def delete_session(session_id):
+    vals = (session_id,)
+    conn.execute("""
+        delete from sqrl_session where session_id = ?
+    """, vals)
 
 @app.route('/')
 def index():
-    if 'session_id' not in session:
-        session['session_id'] = crypto_stream(8L)
-    session_id = session['session_id']
-    login_url = generate_login_url(session_id)
-    qr_data = base64url.encode(login_url)
-    output = []
-    output.append('<p>Login url:</p>')
-    output.append('<a href="' + login_url + '"><img src="/qr?' + qr_data + '" /></a>')
-    output.append('<p>' + login_url + '</p>')
-    return ''.join(output)
+    try:
+        session_id = unicode(session['session_id'])
+    except KeyError:
+        session_id = base64url.encode(crypto_stream(8L))
+        session['session_id'] = session_id
+    user = get_user_by_session(session_id)
+    if user:
+        return render_template('logged_in.html', idk=user.idk)
+    else:
+        login_url = generate_login_url(session_id)
+        qr_code = base64url.encode(login_url)
+        return render_template('login.html', login_url=login_url, qr_code=qr_code)
+
+@app.route('/logout')
+def logout():
+    try:
+        session_id = unicode(session['session_id'])
+        del session['session_id']
+        delete_session(session_id)
+    except KeyError:
+        pass
+    return redirect('/')
+
+@app.route('/loggedin')
+def loggedin():
+    session_id = 0
+    try:
+        session_id = unicode(session['session_id'])
+    except KeyError:
+        pass
+    user = get_user_by_session(session_id)
+    logged_in = user is not None
+    return jsonify(logged_in=logged_in)
 
 def generate_login_url(session_id):
     scheme = 'qrl'
     netloc = 'localhost:5000'
     path = '/sqrl'
-    args = dict(
-        session_id=base64url.encode(session_id),
-        created=str(datetime.utcnow())
-    )
+    args = dict(session_id=session_id)
     query = '&'.join('{0}={1}'.format(k, v) for k, v in args.iteritems())
     parts = urlparse.ParseResult(scheme=scheme, netloc=netloc, path=path,
         params='', query=query, fragment='')
@@ -98,7 +136,6 @@ def handle_sqrl_request():
     req = libsqrl.SqrlRequestBody.deserialize(request.data)
 
     # TODO: Verify signatures
-
     # TODO: Verify unchanged message contents
 
     info = urlparse.urlparse(req.server)
@@ -108,13 +145,10 @@ def handle_sqrl_request():
     user = get_user_by_idk(req.client.idk)
 
     tif = libsqrl.TIF.AccountCreationEnabled
-
     if user:
         tif |= libsqrl.TIF.IdMatch
-        if user_logged_in(user):
-            tif |= libsqrl.TIF.LoggedIn
-        if user_enabled(user):
-            tif |= libsqrl.TIF.SqrlEnabled
+
+    # TODO: Update TIF
 
     if 'setkey' in req.client.cmd:
         abort(505)
@@ -132,11 +166,18 @@ def handle_sqrl_request():
         abort(505)
 
     if 'create' in req.client.cmd:
-        abort(505)
+        c = conn.cursor()
+        vals = (base64url.encode(req.client.idk), \
+                base64url.encode(req.client.suk), \
+                base64url.encode(req.client.vuk))
+        c.execute("""
+            insert into sqrl_identity (idk, suk, vuk)
+            values (?, ?, ?)
+        """, vals)
+        conn.commit()
 
     if user and 'login' in req.client.cmd:
         c = conn.cursor()
-        print session_id, type(session_id)
         vals = (session_id, user.identity_id, datetime.utcnow())
         c.execute("""
             insert into sqrl_session (
@@ -146,14 +187,6 @@ def handle_sqrl_request():
             values (?, ?, ?)
         """, vals)
         conn.commit()
-
-        # Display sessions
-        c = conn.cursor()
-        q = c.execute("""
-            select * from sqrl_session
-        """)
-        for row in q:
-            print row
 
     if 'logme' in req.client.cmd:
         abort(505)

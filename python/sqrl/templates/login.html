@@ -1,0 +1,27 @@
+<html>
+<body style="background: url(static/tape.png) 0 0 repeat-x">
+<div style="margin-top: 150px">
+    <img src="static/police.png" />
+</div>
+<div style="position:absolute;top:100px;left:33%;text-align:center;">
+    <h1>Login</h1>
+    <p><img src="/qr?'{{qr_code}}" alt="QR Code" /></p>
+    <h2 style="background:white">{{login_url}}</h2>
+    <img src="static/keepout.png" />
+</div>
+<script type="text/javascript" src="static/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+var checkLogin = function() {
+    $.getJSON('/loggedin')
+        .success(function(data) {
+            if (data && data.logged_in) {
+                window.location.reload();
+            } else {
+                setTimeout(checkLogin, 1500);
+            }
+        });
+};
+checkLogin();
+</script>
+</body>
+</html>
