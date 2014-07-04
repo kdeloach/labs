@@ -1,0 +1,30 @@
+[alias]
+	co = checkout
+	st = status
+	ll = status
+	l = status
+	cm = commit
+	br = branch
+	a = add
+ 	lg = log --pretty=format:\"%C(yellow)%h%Creset %C(dim)%d%Creset %s %C(dim)%ad%Creset %C(dim)<%an>%Creset\" --date=relative --graph
+	p = add --patch
+	dc = diff --cached
+	rb = rebase
+	f = fetch
+	p4diff = difftool --tool=p4diff --no-prompt
+	p4merge = mergetool --tool=p4merge --no-prompt
+[color]
+	ui = true
+[user]
+	name = Kevin DeLoach
+	email = kdeloach@azavea.com
+[core]
+	editor = vim
+	autocrlf = true
+[mergetool "p4merge"]
+	cmd = p4merge.exe "$(cygpath -wla $BASE)" "$(cygpath -wla $LOCAL)" "$(cygpath -wla $REMOTE)" "$(cygpath -wla $MERGED)"
+	prompt = false
+[difftool "p4diff"]
+	cmd = p4merge.exe "$(cygpath -wla $LOCAL)" "$(cygpath -wla $REMOTE)"
+	prompt = false
+
