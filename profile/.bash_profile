@@ -20,6 +20,10 @@ if [ -f "${HOME}/.bashrc" ] ; then
   source "${HOME}/.bashrc"
 fi
 
+if [ -f "${HOME}/.git-completion.bash" ] ; then
+  source "${HOME}/.git-completion.bash"
+fi
+
 # Set PATH so it includes user's private bin if it exists
 # if [ -d "${HOME}/bin" ] ; then
 #   PATH="${HOME}/bin:${PATH}"
