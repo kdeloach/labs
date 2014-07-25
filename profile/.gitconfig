@@ -17,7 +17,7 @@
 	ui = true
 [user]
 	name = Kevin DeLoach
-	email = kdeloach@azavea.com
+	email = kdeloach@gmail.com
 [core]
 	editor = vim
 	autocrlf = true
