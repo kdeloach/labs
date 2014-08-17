@@ -1,0 +1,4 @@
+BoldAsFont=no
+RightClickAction=paste
+Term=xterm-256color
+FontHeight=12

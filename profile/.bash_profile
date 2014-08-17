@@ -40,3 +40,4 @@ fi
 # fi
 
 alias g=git
+alias v=vagrant
