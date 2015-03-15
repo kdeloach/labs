@@ -45,7 +45,7 @@ body {
 </head>
 <body>
 
-<button id="solve">Solve</button>
+<button id="solve">Help</button>
 <button id="randomize">Random</button>
 <button id="reset">Reset</button>
 
@@ -149,50 +149,85 @@ function solve() {
     if (_solving) {
         return;
     }
-    reset();
     _solving = true;
-    var queue = [];
-    // Source: http://www.cs.cmu.edu/~cburch/survey/recurse/hanoiimpl.html
-    function _solve(disc, source, dest, spare) {
-        if (disc == 3) {
+
+    var queue = [],
+        sources = $('.disc').toArray().reduce(function(acc, disc) {
+            var $el = $(disc);
+            acc[getSize($el)] = getX($el);
+            return acc;
+        }, {});
+
+    // Adapted from: http://www.cs.cmu.edu/~cburch/survey/recurse/hanoiimpl.html
+    // Reference: http://zylla.wipos.p.lodz.pl/games/hanoi-ex.html
+    function _solve(disc, dest) {
+        if (disc === 3) {
             _move(disc, dest);
         } else {
-            _solve(disc + 1, source, spare, dest);
-            _move(disc, dest);
-            _solve(disc + 1, spare, dest, source);
+            var source = sources[disc],
+                spare = _findSpare(source, dest);
+            if (source !== dest) {
+                _solve(disc + 1, spare);
+                _move(disc, dest);
+            }
+            _solve(disc + 1, dest);
         }
     }
+
+    function _findSpare(a, b) {
+        return [0, 1, 2].filter(function(n) {
+            return n !== a && n !== b;
+        })[0];
+    }
+
     function _move(disc, x) {
         queue.push(function() {
-            var y = $('.disc[data-x="' + x + '"]').size();
-            $('.disc[data-size="' + disc + '"]').attr({
+            var $el = $('.disc[data-size="' + disc + '"]');
+            if (getX($el) === x) {
+                return;
+            }
+            $el.attr({
                 'data-x': x,
-                'data-y': y
+                'data-y': $('.disc[data-x="' + x + '"]').not($el).size()
             });
+            var foo = 1;
         });
+        sources[disc] = x;
     }
+
     function _animate() {
         if (!queue.length) {
-            $('#game').removeClass('solving');
-            resetTops();
-            _solving = false;
-            return;
+            return _animationComplete();
         }
         var frame = queue.shift();
         frame();
         setTimeout(_animate, 500);
     }
-    _solve(0, 0, 2, 1);
+
+    function _animationComplete() {
+        $('#game').removeClass('solving');
+        resetTops();
+        _solving = false;
+    }
+
     $('#game').addClass('solving');
     $('.disc.top').removeClass('top');
+
+    // Which disc to start solving from?
+    for (var disc = 0; disc <= 3; disc++) {
+        if (sources[disc] !== 2) {
+            break;
+        }
+    }
+    _solve(disc, 2);
     _animate();
 }
 
+// Randomly place 4 discs on 3 pegs.
 function randomize() {
     if (_solving) {
         return;
     }
-    // Randomly place 4 discs on 3 pegs.
     var xz = [
             randInt(3),
             randInt(3),
@@ -206,6 +241,7 @@ function randomize() {
             'data-y': $('.disc[data-x="' + x + '"]').size()
         });
     });
+    resetTops();
 }
 
 function randInt(n) {
