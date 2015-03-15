@@ -3,18 +3,62 @@
 <title>Towers of Hanoi</title>
 <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="jquery-ui.min.js"></script>
+<script type="text/javascript" src="jquery.fireworks.js"></script>
 <style type="text/css" rel="stylesheet">
 body {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     background: #eee;
+    overflow: hidden;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
-#game { position: absolute; width: 500px; height: 300px; left: 50%; top: 50%; margin-top: -150px; margin-left: -250px; }
+#fireworks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 10;
+    opacity: 0;
+    display: none;
+}
+#fireworks h1,
+#fireworks h2 {
+    font-family: sans-serif;
+    font-size: 80px;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    display: none;
+}
+
+/* Source: http://www.john-smith.me/emulating--lt-blink-gt--using-webkit-css3-animation */
+@-webkit-keyframes blinker {
+  from { opacity: 1.0; }
+  to { opacity: 0.0; }
+}
+#fireworks h2 {
+    font-size: 60px;
+    -webkit-animation-name: blinker;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+    -webkit-animation-duration: 1s;
+}
+
+#game {
+    position: absolute;
+    width: 500px;
+    height: 300px;
+    left: 50%;
+    top: 50%;
+    margin-top: -150px;
+    margin-left: -250px;
+}
 
 .tower { position: absolute; width: 150px; height: 125px; top: 75px; }
 .tower.hover { background: #ddd; }
@@ -44,6 +88,11 @@ body {
 </style>
 </head>
 <body>
+
+<div id="fireworks">
+<h1>Congratulations!</h2>
+<h2>You rock</h2>
+</div>
 
 <button id="solve">Help</button>
 <button id="randomize">Random</button>
@@ -88,6 +137,9 @@ $('.disc').draggable({
         }
         $el.attr('style', '');
         resetTops();
+        if (isSolved()) {
+            gameOver();
+        }
     }
 });
 
@@ -184,37 +236,36 @@ function solve() {
         queue.push(function() {
             var $el = $('.disc[data-size="' + disc + '"]');
             if (getX($el) === x) {
-                return;
+                return false;
             }
             $el.attr({
                 'data-x': x,
                 'data-y': $('.disc[data-x="' + x + '"]').not($el).size()
             });
-            var foo = 1;
         });
+        // XXX
         sources[disc] = x;
     }
 
     function _animate() {
-        if (!queue.length) {
-            return _animationComplete();
+        if (queue.length) {
+            var frame = queue.shift();
+            if (frame() === false) {
+                return _animate();
+            }
         }
-        var frame = queue.shift();
-        frame();
-        setTimeout(_animate, 500);
+        return _animationComplete();
     }
 
     function _animationComplete() {
-        $('#game').removeClass('solving');
         resetTops();
         _solving = false;
     }
 
-    $('#game').addClass('solving');
     $('.disc.top').removeClass('top');
 
     // Which disc to start solving from?
-    for (var disc = 0; disc <= 3; disc++) {
+    for (var disc = 0; disc < 3; disc++) {
         if (sources[disc] !== 2) {
             break;
         }
@@ -258,6 +309,25 @@ function reset() {
     $('.disc[data-size="2"]').attr('data-y', 2);
     $('.disc[data-size="3"]').attr('data-y', 3);
     resetTops();
+}
+
+// Return true if there are 4 discs on the last peg.
+function isSolved() {
+    return $('.disc[data-x="2"]').size() === 4;
+}
+
+function gameOver() {
+    $('#fireworks')
+        .show()
+        .animate({opacity: 1}, 5000, function() {
+            $('#fireworks').fireworks();
+            setTimeout(function() {
+                $('#fireworks h1').show();
+                setTimeout(function() {
+                    $('#fireworks h2').show();
+                }, 2000);
+            }, 1000);
+        });
 }
 
 }());
