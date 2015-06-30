@@ -4,6 +4,7 @@ import (
     "bufio"
     "docopt"
     "encoding/json"
+    //"errors"
     "fmt"
     "io/ioutil"
     "log"
@@ -91,8 +92,7 @@ func main() {
         fileName := filepath.Base(entryFile)
         ref, err := getLocalModuleRef(baseDir, fileName)
         if err != nil {
-            log.Fatalln(err)
-            continue
+            log.Fatalln("Module not found")
         }
         err = scanModule(ref)
         if err != nil {
@@ -115,14 +115,25 @@ func loadPackage(fileName string) (NpmPackage, error) {
     if err != nil {
         return pkg, err
     }
-    err2 := json.Unmarshal(data, &pkg)
-    if err2 != nil {
-        return pkg, err2
+    err = json.Unmarshal(data, &pkg)
+    if err != nil {
+        return pkg, err
     }
     return pkg, nil
 }
 
+var scannedCache = make(map[string]bool)
+
 func scanModule(ref *ModRef) error {
+    // Has this been scanned already?
+    _, ok := scannedCache[ref.Key()]
+    //log.Println(ref.Key())
+    if ok {
+        return nil
+    } else {
+        scannedCache[ref.Key()] = true
+    }
+
     fp, err := os.Open(ref.Path)
     if err != nil {
         return err
@@ -159,7 +170,14 @@ func scanModule(ref *ModRef) error {
     return scanner.Err()
 }
 
+var modRefCache = make(map[string]*ModRef)
+
 func getModuleRef(baseDir, moduleName string) (*ModRef, error) {
+    key := makeKey(baseDir, moduleName)
+    ref, ok := modRefCache[key]
+    if ok {
+        return ref, nil
+    }
     if isLocalModule(moduleName) {
         return getLocalModuleRef(baseDir, moduleName)
     } else {
@@ -168,6 +186,7 @@ func getModuleRef(baseDir, moduleName string) (*ModRef, error) {
 }
 
 func getLocalModuleRef(baseDir, moduleName string) (*ModRef, error) {
+    log.Println(baseDir, moduleName)
     fileName := getLocalModuleFileName(moduleName)
     var ref = ModRef{}
     ref.ID = id
@@ -175,6 +194,10 @@ func getLocalModuleRef(baseDir, moduleName string) (*ModRef, error) {
     ref.Path = filepath.Join(baseDir, fileName)
     ref.Version = "0"
     id++
+
+    key := makeKey(baseDir, moduleName)
+    modRefCache[key] = &ref
+
     return &ref, nil
 }
 
@@ -184,6 +207,7 @@ func getNpmModuleRef(baseDir, moduleName string) (*ModRef, error) {
     packagePath := filepath.Join(modulePath, "package.json")
     pkg, err := loadPackage(packagePath)
     if err != nil {
+        log.Println(err)
         return &ref, err
     }
     ref.ID = id
@@ -191,6 +215,10 @@ func getNpmModuleRef(baseDir, moduleName string) (*ModRef, error) {
     ref.Path = filepath.Join(modulePath, pkg.Main)
     ref.Version = pkg.Version
     id++
+
+    key := makeKey(baseDir, moduleName)
+    modRefCache[key] = &ref
+
     return &ref, nil
 }
 
@@ -208,6 +236,10 @@ func isLocalModule(moduleName string) bool {
            strings.HasSuffix(moduleName, ".js")
 }
 
+func makeKey(baseDir, moduleName string) string {
+    return baseDir + moduleName
+}
+
 // TODO: Do something smarter here.
 func addGlobalModRef(ref *ModRef) {
     allRefs = append(allRefs, ref)
@@ -221,11 +253,11 @@ func writeDependencyGraph(f *os.File) {
 
     for _, id := range entryIds {
         ref := allRefs[id]
-        ref.WriteDependencyGraphIndented(f, 1)
+        ref.writeDependencyGraphIndented(f, 1)
     }
 }
 
-func (ref *ModRef) WriteDependencyGraphIndented(f *os.File, indent int) {
+func (ref *ModRef) writeDependencyGraphIndented(f *os.File, indent int) {
     writeIndentation(f, indent)
 
     if ref.Version != "0" {
@@ -236,7 +268,7 @@ func (ref *ModRef) WriteDependencyGraphIndented(f *os.File, indent int) {
 
     for _, id := range ref.Deps {
         dep := allRefs[id]
-        dep.WriteDependencyGraphIndented(f, indent + 1)
+        dep.writeDependencyGraphIndented(f, indent + 1)
     }
 }
 
@@ -292,6 +324,10 @@ func writeBundle(f *os.File) {
     }
 
     f.WriteString("]));\n")
+}
+
+func (ref *ModRef) Key() string {
+    return fmt.Sprintf("<%s %s>", ref.Name, ref.Version)
 }
 
 func (ref *ModRef) WriteTo(f *os.File) {
