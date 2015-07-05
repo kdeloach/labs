@@ -35,14 +35,11 @@ type ModRef struct {
     Name string
     Path string
     Version string
-    //Deps []*ModRefDep
-    Deps []int
+    Deps []*ModRef
+    //Deps []int
 }
 
-type ModRefDep struct {
-    ID int
-    Version string
-}
+type ModRefCache map[string]*ModRef
 
 // Npm package JSON
 type NpmPackage struct {
@@ -60,10 +57,13 @@ var RequireStmt = regexp.MustCompile(`` +
         `(?:"|')` +     // Single or double quote non-capture group
         `\)`)
 
-// Global variables.
-var id int = 0
-var allRefs []*ModRef
-var entryIds []int
+var newId = func() func() int {
+    i := 0
+    return func() int {
+        defer func() { i++ }()
+        return i
+    }
+}()
 
 func main() {
     args, _ := docopt.Parse(Usage, nil, true, Version, false)
@@ -87,25 +87,31 @@ func main() {
         writer = fp
     }
 
+    var allRefs []*ModRef
+    var entryIds []int
+    var cache = make(ModRefCache)
+
     for _, entryFile := range entryFiles {
         baseDir := filepath.Dir(entryFile)
         fileName := filepath.Base(entryFile)
-        ref, err := getLocalModuleRef(baseDir, fileName)
-        if err != nil {
-            log.Fatalln("Module not found")
-        }
+        ref := cache.getModuleRef(baseDir, fileName)
+        fmt.Println(ref)
+        continue
+        /*
         err = scanModule(ref)
         if err != nil {
             log.Println(err)
             continue
         }
         entryIds = append(entryIds, ref.ID)
+        */
     }
+    return
 
     if (tree) {
-        writeDependencyGraph(writer)
+        writeDependencyGraph(writer, allRefs, entryIds)
     } else {
-        writeBundle(writer)
+        writeBundle(writer, allRefs, entryIds)
     }
 }
 
@@ -122,18 +128,8 @@ func loadPackage(fileName string) (NpmPackage, error) {
     return pkg, nil
 }
 
-var scannedCache = make(map[string]bool)
-
+/*
 func scanModule(ref *ModRef) error {
-    // Has this been scanned already?
-    _, ok := scannedCache[ref.Key()]
-    //log.Println(ref.Key())
-    if ok {
-        return nil
-    } else {
-        scannedCache[ref.Key()] = true
-    }
-
     fp, err := os.Open(ref.Path)
     if err != nil {
         return err
@@ -169,57 +165,61 @@ func scanModule(ref *ModRef) error {
 
     return scanner.Err()
 }
+*/
 
-var modRefCache = make(map[string]*ModRef)
-
-func getModuleRef(baseDir, moduleName string) (*ModRef, error) {
-    key := makeKey(baseDir, moduleName)
-    ref, ok := modRefCache[key]
+func (cache ModRefCache) getModuleRef(baseDir, moduleName string) *ModRef {
+    resolvedModuleName := resolveName(baseDir, moduleName)
+    key := makeKey(baseDir, resolvedModuleName)
+    ref, ok := cache[key]
     if ok {
-        return ref, nil
+        return ref
     }
-    if isLocalModule(moduleName) {
-        return getLocalModuleRef(baseDir, moduleName)
-    } else {
-        return getNpmModuleRef(baseDir, moduleName)
-    }
+    cache[key] = getModuleRef(baseDir, resolvedModuleName)
+    return cache[key]
 }
 
-func getLocalModuleRef(baseDir, moduleName string) (*ModRef, error) {
+func getModuleRef(baseDir, moduleName string) *ModRef {
+    // 1. Try exact match in baseDir
+    // 2. Try with .js suffix in baseDir
+    // 3. Try exact match in baseDir + node_modules
+    // 4. Try with .js suffix in baseDir + node_modules
+    if ref := getLocalModuleRef(baseDir, moduleName); ref != nil {
+        return ref
+    }
+    if ref := getLocalModuleRef(baseDir, moduleName + ".js"); ref != nil {
+        return ref
+    }
+    if ref := getNpmModuleRef(baseDir, moduleName); ref != nil {
+        return ref
+    }
+    panic("Module not found")
+}
+
+func getLocalModuleRef(baseDir, moduleName string) *ModRef {
     log.Println(baseDir, moduleName)
     fileName := getLocalModuleFileName(moduleName)
     var ref = ModRef{}
-    ref.ID = id
+    ref.ID = newId()
     ref.Name = moduleName
     ref.Path = filepath.Join(baseDir, fileName)
     ref.Version = "0"
-    id++
-
-    key := makeKey(baseDir, moduleName)
-    modRefCache[key] = &ref
-
-    return &ref, nil
+    return &ref
 }
 
-func getNpmModuleRef(baseDir, moduleName string) (*ModRef, error) {
+func getNpmModuleRef(baseDir, moduleName string) *ModRef {
     var ref = ModRef{}
     modulePath := filepath.Join(baseDir, "node_modules", moduleName)
     packagePath := filepath.Join(modulePath, "package.json")
     pkg, err := loadPackage(packagePath)
     if err != nil {
         log.Println(err)
-        return &ref, err
+        return &ref
     }
-    ref.ID = id
+    ref.ID = newId()
     ref.Name = moduleName
     ref.Path = filepath.Join(modulePath, pkg.Main)
     ref.Version = pkg.Version
-    id++
-
-    key := makeKey(baseDir, moduleName)
-    modRefCache[key] = &ref
-
-    return &ref, nil
+    return &ref
 }
 
 func getLocalModuleFileName(moduleName string) string {
@@ -230,6 +230,15 @@ func getLocalModuleFileName(moduleName string) string {
     }
 }
 
+func resolveName(baseDir, moduleName string) string {
+    if isLocalModule(moduleName) {
+        if !strings.HasSuffix(moduleName, ".js") {
+            return moduleName + ".js"
+        }
+    }
+    return moduleName
+}
+
 func isLocalModule(moduleName string) bool {
     return strings.HasPrefix(moduleName, "./") ||
            strings.HasPrefix(moduleName, "../") ||
@@ -237,15 +246,14 @@ func isLocalModule(moduleName string) bool {
 }
 
 func makeKey(baseDir, moduleName string) string {
-    return baseDir + moduleName
+    result, err := filepath.Rel(baseDir, moduleName)
+    if err != nil {
+        panic("Unable to make key")
+    }
+    return result
 }
 
-// TODO: Do something smarter here.
-func addGlobalModRef(ref *ModRef) {
-    allRefs = append(allRefs, ref)
-}
-
-func writeDependencyGraph(f *os.File) {
+func writeDependencyGraph(f *os.File, allRefs []*ModRef, entryIds []int) {
     // TODO: Remove (for debugging only)
     for _, ref := range allRefs {
         log.Printf("%v. %s (%s)\n", ref.ID, ref.Name, ref.Version)
@@ -266,8 +274,7 @@ func (ref *ModRef) writeDependencyGraphIndented(f *os.File, indent int) {
         f.WriteString(fmt.Sprintf("%s\n", ref.Name))
     }
 
-    for _, id := range ref.Deps {
-        dep := allRefs[id]
+    for _, dep := range ref.Deps {
         dep.writeDependencyGraphIndented(f, indent + 1)
     }
 }
@@ -281,7 +288,7 @@ func writeIndentation(f *os.File, indent int) {
     }
 }
 
-func writeBundle(f *os.File) {
+func writeBundle(f *os.File, allRefs []*ModRef, entryIds []int) {
     f.WriteString("(function(deps, ids) {\n")
     f.WriteString("    var cache = {};\n")
     f.WriteString("    function make_require(lookup) {\n")
@@ -341,8 +348,7 @@ func (ref *ModRef) WriteTo(f *os.File) {
 
 func (ref *ModRef) WriteDepsTo(f *os.File) {
     f.WriteString("{")
-    for i, id := range ref.Deps {
-        dep := allRefs[id]
+    for i, dep := range ref.Deps {
         f.WriteString(fmt.Sprintf("'%s': %v", dep.Name, dep.ID))
         if i < len(ref.Deps) - 1 {
             f.WriteString(", ")
