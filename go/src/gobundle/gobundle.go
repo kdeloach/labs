@@ -1,8 +1,7 @@
-package main
+package gobundle
 
 import (
     "bufio"
-    "docopt"
     "encoding/json"
     //"errors"
     "fmt"
@@ -29,6 +28,11 @@ Options:
   -h --help                   Show this screen.
   --version                   Show version.`
 
+type ModRefBundle struct {
+    AllRefs []*ModRef
+    EntryIds []int
+}
+
 // Module Reference
 type ModRef struct {
     ID int
@@ -49,8 +53,7 @@ type NpmPackage struct {
     //Dependencies []string
 }
 
-var RequireStmt = regexp.MustCompile(`` +
-        `(?i)` +        // Set case-insensitive flag
+var RequireStmt = regexp.MustCompile(`(?i)` + // Set case-insensitive flag
         `require\(` +
         `(?:"|')` +     // Single or double quote non-capture group
         `([a-z0-9\./\\-]+)` +
@@ -65,80 +68,46 @@ var newId = func() func() int {
     }
 }()
 
-func main() {
-    args, _ := docopt.Parse(Usage, nil, true, Version, false)
-    log.Println(args)
+func Bundle(entryFiles []string) *ModRefBundle {
+    //var allRefs []*ModRef
+    entryIds := make([]int, 0)
+    queue := make([]*ModRef, 0)
 
-    entryFiles := args["<entry_file>"].([]string)
-    tree := args["--tree"].(bool)
+    cache := make(ModRefCache)
 
-    outputFile, ok := args["--output"].(string)
-    if !ok {
-        outputFile = ""
-    }
+    rootPath := longestCommonPath(entryFiles...)
+    log.Println("rootPath", rootPath)
 
-    writer := os.Stdout
-    if len(outputFile) > 0 {
-        fp, err := os.Create(outputFile)
-        if err != nil {
-            log.Fatalln(err)
-        }
-        defer fp.Close()
-        writer = fp
-    }
-
-    var allRefs []*ModRef
-    var entryIds []int
-    var cache = make(ModRefCache)
-
-    for _, entryFile := range entryFiles {
-        baseDir := filepath.Dir(entryFile)
-        fileName := filepath.Base(entryFile)
-        ref := cache.getModuleRef(baseDir, fileName)
-        fmt.Println(ref)
-        continue
-        /*
-        err = scanModule(ref)
-        if err != nil {
-            log.Println(err)
-            continue
-        }
+    for _, path := range entryFiles {
+        ref := cache.getModuleRef(rootPath, path)
+        log.Println(ref)
+        queue = append(queue, ref)
         entryIds = append(entryIds, ref.ID)
-        */
     }
-    return
 
-    if (tree) {
-        writeDependencyGraph(writer, allRefs, entryIds)
-    } else {
-        writeBundle(writer, allRefs, entryIds)
+    for len(queue) > 0 {
+        ref := queue[0]
+        queue = queue[1:]
+        files := scanModule(ref)
+        for _, path := range files {
+            child := cache.getModuleRef(rootPath, path)
+            log.Println(child)
+            queue = append(queue, child)
+        }
     }
+
+    return &ModRefBundle{}
 }
 
-func loadPackage(fileName string) (NpmPackage, error) {
-    var pkg NpmPackage
-    data, err := ioutil.ReadFile(fileName)
-    if err != nil {
-        return pkg, err
-    }
-    err = json.Unmarshal(data, &pkg)
-    if err != nil {
-        return pkg, err
-    }
-    return pkg, nil
-}
+func scanModule(ref *ModRef) []string {
+    result := make([]string, 0)
 
-/*
-func scanModule(ref *ModRef) error {
     fp, err := os.Open(ref.Path)
     if err != nil {
-        return err
+        log.Println("Unable to open module", ref.Path)
+        return result
     }
     defer fp.Close()
-
-    baseDir := filepath.Dir(ref.Path)
-
-    addGlobalModRef(ref)
 
     scanner := bufio.NewScanner(bufio.NewReader(fp))
     scanner.Split(bufio.ScanLines)
@@ -146,80 +115,103 @@ func scanModule(ref *ModRef) error {
     for scanner.Scan() {
         matches := RequireStmt.FindAllStringSubmatch(scanner.Text(), -1)
         for _, match := range matches {
-            // Skip first match (entire unmatched line).
-            for _, moduleName := range match[1:] {
-                childRef, err := getModuleRef(baseDir, moduleName)
-                if err != nil {
-                    log.Println(err)
-                    continue
-                }
-                err = scanModule(childRef)
-                if err != nil {
-                    log.Println(err)
-                    continue
-                }
-                ref.Deps = append(ref.Deps, childRef.ID)
-            }
+            result = append(result, match[1:]...)
         }
     }
 
-    return scanner.Err()
+    return result
 }
-*/
 
-func (cache ModRefCache) getModuleRef(baseDir, moduleName string) *ModRef {
-    resolvedModuleName := resolveName(baseDir, moduleName)
-    key := makeKey(baseDir, resolvedModuleName)
+func (cache ModRefCache) getModuleRef(rootPath, path string) *ModRef {
+    baseDir := filepath.Dir(path)
+    moduleName := filepath.Base(path)
+    key := makeKey(baseDir, moduleName)
     ref, ok := cache[key]
     if ok {
         return ref
     }
-    cache[key] = getModuleRef(baseDir, resolvedModuleName)
+    cache[key] = getModuleRef(rootPath, path)
     return cache[key]
 }
 
-func getModuleRef(baseDir, moduleName string) *ModRef {
-    // 1. Try exact match in baseDir
-    // 2. Try with .js suffix in baseDir
-    // 3. Try exact match in baseDir + node_modules
-    // 4. Try with .js suffix in baseDir + node_modules
-    if ref := getLocalModuleRef(baseDir, moduleName); ref != nil {
+func getModuleRef(rootPath, refPath string) *ModRef {
+    baseDir := filepath.Dir(refPath)
+    moduleName := filepath.Base(refPath)
+
+    path := pathJoin(baseDir, moduleName + ".js")
+    if ref := getLocalModuleRef(rootPath, path); ref != nil {
         return ref
     }
-    if ref := getLocalModuleRef(baseDir, moduleName + ".js"); ref != nil {
+
+    path = pathJoin(baseDir, moduleName)
+    if ref := getLocalModuleRef(rootPath, path); ref != nil {
         return ref
     }
-    if ref := getNpmModuleRef(baseDir, moduleName); ref != nil {
-        return ref
+
+    if pkg := getNpmPackage(path); pkg != nil {
+        if ref := getNpmModuleRef(pkg); ref != nil {
+            return ref
+        }
     }
-    panic("Module not found")
+
+    panic("Module not found: " + refPath)
 }
 
-func getLocalModuleRef(baseDir, moduleName string) *ModRef {
-    log.Println(baseDir, moduleName)
-    fileName := getLocalModuleFileName(moduleName)
-    var ref = ModRef{}
-    ref.ID = newId()
-    ref.Name = moduleName
-    ref.Path = filepath.Join(baseDir, fileName)
-    ref.Version = "0"
-    return &ref
-}
+func getLocalModuleRef(rootPath, path string) *ModRef {
+    if _, err := os.Stat(path); os.IsNotExist(err) {
+        return nil
+    }
 
-func getNpmModuleRef(baseDir, moduleName string) *ModRef {
-    var ref = ModRef{}
-    modulePath := filepath.Join(baseDir, "node_modules", moduleName)
-    packagePath := filepath.Join(modulePath, "package.json")
-    pkg, err := loadPackage(packagePath)
+    moduleName, err := filepath.Rel(rootPath, path)
     if err != nil {
-        log.Println(err)
-        return &ref
+        log.Fatal(err)
+        return nil
     }
-    ref.ID = newId()
-    ref.Name = moduleName
-    ref.Path = filepath.Join(modulePath, pkg.Main)
-    ref.Version = pkg.Version
-    return &ref
+
+    moduleName = "./" + filepath.ToSlash(moduleName)
+
+    return &ModRef{
+        ID: newId(),
+        Name: moduleName,
+        Path: path,
+        Version: "<NA>",
+    }
+}
+
+func getNpmPackage(path string) *NpmPackage {
+    baseDir := filepath.Dir(path)
+    moduleName := filepath.Base(path)
+
+    pkgPath := pathJoin(baseDir, "node_modules", moduleName, "package.json")
+
+    if _, err := os.Stat(pkgPath); os.IsNotExist(err) {
+        return nil
+    }
+
+    data, err := ioutil.ReadFile(pkgPath)
+    if err != nil {
+        return nil
+    }
+
+    var pkg NpmPackage
+    if err := json.Unmarshal(data, &pkg); err != nil {
+        log.Fatal(err)
+        return nil
+    }
+
+    // TODO: pkg.Path = Join(path, pkg.Main)
+
+    return &pkg
+}
+
+func getNpmModuleRef(pkg *NpmPackage) *ModRef {
+    log.Println("NPM Package:", pkg)
+    return &ModRef{
+        ID: newId(),
+        Name: pkg.Name,
+        Path: "npm path", // pkg.Path // pkg.Main
+        Version: pkg.Version,
+    }
 }
 
 func getLocalModuleFileName(moduleName string) string {
@@ -230,37 +222,66 @@ func getLocalModuleFileName(moduleName string) string {
     }
 }
 
-func resolveName(baseDir, moduleName string) string {
-    if isLocalModule(moduleName) {
-        if !strings.HasSuffix(moduleName, ".js") {
-            return moduleName + ".js"
-        }
-    }
-    return moduleName
-}
-
 func isLocalModule(moduleName string) bool {
     return strings.HasPrefix(moduleName, "./") ||
-           strings.HasPrefix(moduleName, "../") ||
-           strings.HasSuffix(moduleName, ".js")
+           strings.HasPrefix(moduleName, "../")
+}
+
+func hasExtension(moduleName string) bool {
+    return strings.HasSuffix(moduleName, ".js")
 }
 
 func makeKey(baseDir, moduleName string) string {
-    result, err := filepath.Rel(baseDir, moduleName)
-    if err != nil {
-        panic("Unable to make key")
+    name := moduleName
+    if isLocalModule(moduleName) && !hasExtension(moduleName) {
+        name = name + ".js"
     }
-    return result
+    return pathJoin(baseDir, name)
 }
 
-func writeDependencyGraph(f *os.File, allRefs []*ModRef, entryIds []int) {
+func pathJoin(path ...string) string {
+    return filepath.ToSlash(filepath.Join(path...))
+}
+
+func pathSplit(path string) []string {
+    return strings.Split(path, string(os.PathSeparator))
+}
+
+func longestCommonPath(paths...string) string {
+    if len(paths) == 0 {
+        return ""
+    }
+
+    result := make([]string, 0)
+    parts := pathSplit(filepath.Dir(paths[0]))
+
+loop:
+    for i, part := range parts {
+        // Append part to result if that part value and location
+        // is the same in all given paths.
+        for _, path := range paths[1:] {
+            otherParts := pathSplit(filepath.Dir(path))
+            if i >= len(otherParts) {
+                break loop
+            }
+            if parts[i] != otherParts[i] {
+                break loop
+            }
+        }
+        result = append(result, part)
+    }
+
+    return filepath.ToSlash(filepath.Join(result...))
+}
+
+func WriteDependencyGraph(f *os.File, bundle *ModRefBundle) {
     // TODO: Remove (for debugging only)
-    for _, ref := range allRefs {
+    for _, ref := range bundle.AllRefs {
         log.Printf("%v. %s (%s)\n", ref.ID, ref.Name, ref.Version)
     }
 
-    for _, id := range entryIds {
-        ref := allRefs[id]
+    for _, id := range bundle.EntryIds {
+        ref := bundle.AllRefs[id]
         ref.writeDependencyGraphIndented(f, 1)
     }
 }
@@ -288,7 +309,7 @@ func writeIndentation(f *os.File, indent int) {
     }
 }
 
-func writeBundle(f *os.File, allRefs []*ModRef, entryIds []int) {
+func WriteBundle(f *os.File, bundle *ModRefBundle) {
     f.WriteString("(function(deps, ids) {\n")
     f.WriteString("    var cache = {};\n")
     f.WriteString("    function make_require(lookup) {\n")
@@ -314,18 +335,18 @@ func writeBundle(f *os.File, allRefs []*ModRef, entryIds []int) {
     f.WriteString("    }\n")
     f.WriteString("}({\n")
 
-    for i, ref := range allRefs {
+    for i, ref := range bundle.AllRefs {
         ref.WriteTo(f)
-        if i < len(allRefs) - 1 {
+        if i < len(bundle.AllRefs) - 1 {
             f.WriteString(",\n")
         }
     }
 
     f.WriteString("}, [")
 
-    for i, entryId := range entryIds {
+    for i, entryId := range bundle.EntryIds {
         f.WriteString(strconv.Itoa(entryId))
-        if i < len(entryIds) - 1 {
+        if i < len(bundle.EntryIds) - 1 {
             f.WriteString(",")
         }
     }
