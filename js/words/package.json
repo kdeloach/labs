@@ -1,0 +1,15 @@
+{
+  "name": "words",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "build": "cat dictionary.txt | node dictionary_graph.js > dictionary.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "split": "^1.0.0"
+  }
+}
