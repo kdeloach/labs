@@ -1,0 +1,23 @@
+{
+  "name": "react-game",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "browserify": "^13.0.0",
+    "jquery": "^2.2.0",
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6",
+    "reactify": "^1.1.1",
+    "underscore": "^1.8.3",
+    "watchify": "^3.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "node_modules/.bin/browserify src/main.js -t [reactify] -o bin/main.js",
+    "watch": "node_modules/.bin/watchify src/main.js -t [reactify] -o bin/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

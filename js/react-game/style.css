@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #fff url(images/bg.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    overflow: hidden;
+}
+
+#container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.tick {
+    position: absolute;
+    right: 0;
+    background: red;
+}
+
+.ship {
+    position: absolute;
+    width: 207px;
+    height: 93px;
+    background: url(images/ship.png);
+}
+
+.citizen {
+    display: inline-block;
+    width: 26px;
+    height: 54px;
+    background: url(images/citizen.png);
+}
+.citizen.hit {
+    transform: scaleY(0.5) scaleX(1.8);
+    margin-top: 15px;
+}
+
+.sky {
+    position: absolute;
+    width: 100%;
+    height: 93px;
+}
+
+.city {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 54px;
+    overflow: hidden;
+}
+.city .citizen {
+    position: absolute;
+}
+
+.upper-city {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.bomb {
+    position: absolute;
+    width: 63px;
+    height: 63px;
+    background: url(images/bomb.png);
+}
+
+.laser {
+    position: absolute;
+    width: 20px;
+    height: 5000px;
+    background: url(images/laser.png) 0 0 repeat-y;
+}
+
+.particle {
+    position: absolute;
+    width: 39px;
+    height: 39px;
+    background: url(images/particle.png) 50% 50% no-repeat;
+}
+
+.hero.center {
+    display: inline-block;
+    width: 89px;
+    height: 234px;
+    background: url(images/hero.png);
+}
+
+.hero.left {
+    display: inline-block;
+    width: 183px;
+    height: 234px;
+    background: url(images/hero.png);
+    background-position: -180px 0;
+}
+
+.hero.right {
+    display: inline-block;
+    width: 183px;
+    height: 234px;
+    background: url(images/hero.png);
+    background-position: -417px 0;
+}
+
+.points100 {
+    display: inline-block;
+    width: 46px;
+    height: 18px;
+    background: url(images/100.png);
+}
+
+#paused {
+    display: none;
+    font-size: 100px;
+    font-family: monospace;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -75px;
+}
