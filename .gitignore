@@ -4,3 +4,6 @@
 *.exe
 *.db
 *.class
+node_modules/
+js/words/dictionary.json
+bin/
