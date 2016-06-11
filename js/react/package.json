@@ -1,0 +1,19 @@
+{
+  "name": "react",
+  "version": "0.0.0",
+  "description": "",
+  "main": "react-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react-dom": "^15.1.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-preset-react": "^6.5.0"
+  }
+}
