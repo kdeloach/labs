@@ -1,3 +1,23 @@
+function showUserSelectPage() {
+    return { type: 'showUserSelectPage' };
+}
+
+function resetCheckedInUsers() {
+    return { type: 'resetCheckedInUsers' };
+}
+
+function showCheckInPage() {
+    return { type: 'showCheckInPage' };
+}
+
+function showCheckedInPage() {
+    return { type: 'showCheckedInPage' };
+}
+
+function checkInUser(id) {
+    return { type: 'checkInUser', id: id };
+}
+
 var UserSelect = React.createClass({
     getInitialState: function() {
         return {
@@ -28,7 +48,7 @@ function CheckInPage(props) {
         <div>
             <h2>Check-in Page</h2>
             <p>
-                <button onClick={props.actions.showUserSelectPage}>Check In</button>
+                <button onClick={() => dispatch(showUserSelectPage())}>Check In</button>
             </p>
         </div>
     );
@@ -43,10 +63,10 @@ function CheckedInPage(props) {
             <h2>Checked-in Page</h2>
             <p>Users checked in: {_.pluck(users, 'name').join(', ')}</p>
             <p>
-                <button onClick={props.actions.showUserSelectPage}>Check-in someone else</button>
+                <button onClick={() => dispatch(showUserSelectPage())}>Check-in someone else</button>
                 <button onClick={() => {
-                    props.actions.resetCheckedInUsers();
-                    props.actions.showCheckInPage();
+                    dispatch(resetCheckedInUsers());
+                    dispatch(showCheckInPage());
                 }}>Reset</button>
            </p>
         </div>
@@ -56,14 +76,13 @@ function CheckedInPage(props) {
 function CheckInUserPage(props) {
     return (
         <UserSelect users={props.users} selectUser={(id) => {
-            props.actions.checkInUser(id);
-            props.actions.showCheckedInPage();
+            dispatch(checkInUser(id));
+            dispatch(showCheckedInPage());
         }} />
     );
 }
 
 function App(props) {
-    console.log(props.currentPage);
     var currentPage = props.currentPage == 'check-in' ? <CheckInPage {...props} /> :
                       props.currentPage == 'checked-in' ? <CheckedInPage {...props} /> :
                       props.currentPage == 'user-select' ? <CheckInUserPage {...props} /> :
@@ -86,32 +105,43 @@ var store = {
     ]
 };
 
-var actions = {
-    checkInUser: function(id) {
-        id = parseInt(id, 10);
-        store.checkedInUsers = store.checkedInUsers || [];
-        store.checkedInUsers.push(id);
-    },
-    resetCheckedInUsers: function() {
-        store.checkedInUsers = [];
-    },
-    showUserSelectPage: function() {
-        store.currentPage = 'user-select';
-        redraw();
-    },
-    showCheckInPage: function() {
-        store.currentPage = 'check-in';
-        redraw();
-    },
-    showCheckedInPage: function() {
-        store.currentPage = 'checked-in';
-        redraw();
+var reducers = [
+    function(action) {
+        console.log(action);
+        switch (action.type) {
+            case 'checkInUser':
+                id = parseInt(action.id, 10);
+                store.checkedInUsers = store.checkedInUsers || [];
+                store.checkedInUsers.push(id);
+                break;
+            case 'resetCheckedInUsers':
+                store.checkedInUsers = [];
+                break;
+            case 'showUserSelectPage':
+                store.currentPage = 'user-select';
+                redraw();
+                break;
+            case 'showCheckInPage':
+                store.currentPage = 'check-in';
+                redraw();
+                break;
+            case 'showCheckedInPage':
+                store.currentPage = 'checked-in';
+                redraw();
+                break;
+        }
     }
-};
+];
+
+function dispatch(action) {
+    _.each(reducers, function(reduce) {
+        reduce(action);
+    });
+}
 
 function redraw() {
     ReactDOM.render(
-        <App actions={actions} {...store} />,
+        <App {...store} />,
         document.getElementById('root')
     );
 }
