@@ -13,6 +13,7 @@
 \usepackage{pifont}
 \usepackage{marvosym}
 \usepackage{wasysym}
+% \usepackage[compact]{titlesec}
 
 \hypersetup{
     hidelinks,
@@ -34,47 +35,62 @@
 \href{https://github.com/kdeloach}{github.com/kdeloach}
 
 \noindent
-{\sc 1224 S Alder St. Philadelphia, PA 19147}
+{\sc Philadelphia, PA}
 \hfill
 \href{mailto:kdeloach@gmail.com}{\bfseries kdeloach@gmail.com}
 $\cdot$
 (215) 490-8269
 
-\section*{\sectionhead Work Experience}
-\begin{description}[leftmargin=0em] 
+% \section*{\sectionhead Work Experience}
+\begin{description}[leftmargin=0em]
     \itemsep0pt
     \parskip3pt
     \item
-        \workhead{Azavea}{GIS Software Developer}{1/2014 -- \emph{Present}}
-        \\
+        \workhead{Warner Brothers Digital Labs}{Software Engineer}{2018-02 -- Present}
+	\item
+		\workhead{TellusLabs}{Software Engineer}{2017-06 -- 2018-02}
+        \begin{itemize*}
+        	\li Automated mission critical services to collect, process, and ingest remote sensing data and satellite imagery to produce daily crop yield forecasts
+            \li Processed terabytes of geospatial data using Airflow, Docker, Python, GDAL, NumPy, \mbox{Celery}, and RabbitMQ on AWS managed by SaltStack
+            \li Developed internal geoprocessing tools to support Data Science team and coordinated with Kernel product team to deliver as much value to customers as possible
+        \end{itemize*}
     \item
-        \workhead{IBM Tealeaf Technology}{Software Engineer}{6/2012 -- 9/2013}
+        \workhead{Azavea}{GIS Software Developer}{2014-01 -- 2017-06}
         \begin{itemize*}
-            \li Worked on all aspects of Tealeaf cxOverstat. From initial integration, to deployment on major high volume traffic websites, such as \emph{Nike} and \emph{Expedia}.
-            \li Implemented features, performed user interface exploration, drafted documentation, and provided technical support for cxOverstat, cxImpact, and the Browser Based Replay tool.
+            \li Created web-based mapping applications using Docker, Django, PostgreSQL, \mbox{ReactJS}, Redux, Leaflet, and deployed services to AWS using Packer, Ansible, Terraform, and CloudFormation
+            \li Significant role in sprint planning, requirements gathering, project architecture, interviewing, maintaining high levels of code quality, and promoting standards and best practices
+            \li Professional services clients include \emph{Stroud Water Research Center}, \emph{The Nature Conservancy}, \emph{The U.S. Army Corps of Engineers}, \emph{The Philadelphia Water Department}, \emph{Department of Records}, and the \emph{New York City Department of Parks \& Recreation}
+            \li Notable projects include NYC Trees Count!, Model My Watershed, Coastal Resilience Mapping Portal, Unified Land Records System, and Raster Foundry prototype
         \end{itemize*}
-
-    \item 
-        \workhead{Elements, Inc.}{Software Developer}{8/2008 -- 12/2011}
+    \item
+        \workhead{IBM Tealeaf Technology}{Software Engineer}{2012-06 -- 2013-09}
         \begin{itemize*}
-            \li Developed franchise-oriented content management system, data migration \& build automation tools, web services, business reports, and various other custom applications for use in franchise, health care, real estate, and private equity industries; Some technologies used include IIS, MS SQL Server, C\#/VB .NET, Apache, MySQL, PHP, Flash, Flex, and Adobe AIR.
-            \li Worked with corporate and local business owners from national franchises such as: \emph{Maaco Collision Repair \& Auto Painting}, \emph{CertaPro Painters}, \emph{Floor Coverings International}, \emph{Weed Man Lawn Care}, and others, to create email marketing campaigns, improve customer engagement, and generate thousands of search engine optimized local franchise websites.
-            \li Coordinated knowledge transfer and technology transition with local and remote teams after original company (\emph{NetFuel Interactive}) was acquired by \emph{Elements, Inc.}
-        \end{itemize*}
-
-    \item 
-        \workhead{Verve Internet Solutions}{Web Developer}{12/2007 -- 8/2008}
-        \begin{itemize*}
-            \li Developed features for proprietary CMS, performed maintenance on legacy software, and produced websites using dynamic code generation techniques.
-            \li Created cross-browser compatible XHTML/CSS templates from Photoshop PSDs that comply with accessibility and Section 508 standards.
-            \li Worked directly with non-profits in the Philadelphia area, such as: \emph{The Delaware Valley Green Building Council}, \emph{The Consumer Credit Counseling Service of Delaware Valley}, \emph{The Philadelphia Mummers Fancy Brigade Association}, and \emph{Merion Mercy Academy}, to provide technical support, maintenance, content updates, and website enhancements.
+            \li Worked on visualizations for mouse clicks, conversion funnels, and other user interactions for web analytics software, Tealeaf cxOverstat
+            \li Implemented features, researched UI/UX design, drafted documentation, and provided technical support for cxOverstat, cxImpact, and Browser Based Replay
         \end{itemize*}
 
     \item
-        \workhead{Austin District Music Teachers Association}{Freelance Web Developer}{5/2008 -- 9/2008}
+        \workhead{Elements, Inc.}{Software Developer}{2008-08 -- 2011-12}
         \begin{itemize*}
-            \li Developed online portal to schedule events, manage student enrollment, and generate PDFs for approximately 125 teachers.
+            \li Developed franchise-oriented CMS, bug tracking software, build automation tools, web services, and custom applications for franchise, health care, real estate, and private equity industries
+            \li Worked with corporate and local business owners from national franchises such as \emph{Maaco}, \emph{\mbox{CertaPro} Painters}, \emph{Floor Coverings International}, and \emph{Weed Man Lawn Care} to create email marketing campaigns, improve customer engagement, and generate thousands of search engine optimized local franchise websites
+            \li Utilized wide range of technologies to deliver client services including IIS, Apache, MSSQL, MySQL, C\#, VB.NET, PHP, Flash, Flex, and Adobe AIR
+% 			\li Coordinated knowledge transfer and technology transition with multiple teams after company merger
         \end{itemize*}
+
+    \item
+        \workhead{Verve Internet Solutions}{Web Developer}{2007-12 -- 2008-08}
+        \begin{itemize*}
+            \li Worked with local non-profit organizations in the Philadelphia area such as \emph{The Delaware Valley Green Building Council}, \emph{The Consumer Credit Counseling Service of Delaware Valley}, \emph{The Philadelphia Mummers Fancy Brigade Association}, and \emph{Merion Mercy Academy}, to provide technical support, maintenance, content updates, and website enhancements
+            \li Developed features for proprietary CMS, maintained legacy software, and produced websites using dynamic code generation
+            \li Created pixel perfect cross-browser compatible XHTML websites from Photoshop PSDs that comply with accessibility and Section 508 standards
+        \end{itemize*}
+
+%    \item
+%        \workhead{Austin District Music Teachers Association}{Freelance Web Developer}{5/2008 -- 9/2008}
+%        \begin{itemize*}
+%            \li Developed online portal to schedule events, manage student enrollment, and generate PDFs for approximately 125 teachers.
+%        \end{itemize*}
 
 %    \item
 %        \workhead{Eshilon Design Inc.}{Freelance Web Production Assistant}{1/2008 -- 3/2008}
@@ -90,12 +106,12 @@ $\cdot$
 %        \end{itemize*}
 \end{description}
 
-\section*{\sectionhead Technical Skills}
-\begin{description}
-    \itemsep0pt
-    \parskip5pt
-    \item Languages: Python, C\#, VB .NET, Node.js, Java, JavaScript, PHP, PostgreSQL, PostGIS, MS SQL Server, MySQL, SQLite, Flex, ActionScript AS3, XML \Smiley, XSLT, \LaTeX
-    \item Software: Linux, Windows, Apache, NGINX, IIS, Microsoft Visual Studio, SQL Server Management Studio, Vim, Cygwin, Photoshop, Perforce, Git, Subversion, Docker, Vagrant, Ansible, AWS
-\end{description}
+% \section*{\sectionhead Technical Skills}
+% \begin{description}
+%     \itemsep0pt
+%     \parskip5pt
+%     \item Languages: Python, C\#, VB .NET, Node.js, Java, JavaScript, PHP, PostgreSQL, PostGIS, MS SQL Server, MySQL, SQLite, Flex, ActionScript AS3, XML \Smiley, XSLT, \LaTeX
+    % \item Software: Linux, Windows, Apache, NGINX, IIS, Microsoft Visual Studio, SQL Server Management Studio, Vim, Cygwin, Photoshop, Perforce, Git, Subversion, Docker, Vagrant, Ansible, AWS
+% \end{description}
 
 \end{document}
