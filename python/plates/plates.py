@@ -1,4 +1,5 @@
 import heapq
+import itertools
 
 
 bar = 45
@@ -17,27 +18,16 @@ def calculate_perms(plates):
     [45, 5, 2.5]
     etc.
     """
-    result = set()
-    for i in range(len(plates)):
-        result.add(tuple([plates[i]]))
-        perms = calculate_perms(plates[:i] + plates[i + 1 :])
-        for tup in perms:
-            result.add(tuple([plates[i]]) + tup)
-    return result
-
-
-def calculate_perms_distinct(plates):
-    """
-    Return distinct orderings.
-    """
-    perms = calculate_perms(plates)
-    # sort plates highest to lowest and filter duplicates
-    return set([tuple(sorted(tup, key=lambda n: -n)) for tup in perms])
+    return sorted(
+        set(
+            itertools.chain(
+                *[itertools.permutations(plates, i + 1) for i in range(len(plates))]
+            )
+        )
+    )
 
 
 perms = calculate_perms(plates)
-perms = sorted(perms)
-# perms = calculate_perms_distinct(plates)
 
 # Group plate orderings by weight (how many different ways can you arrange
 # the plates to equal some weight) in 5 lbs increments
