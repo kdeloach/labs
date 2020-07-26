@@ -1,26 +1,188 @@
+import heapq
+
+
 bar = 45
+plates = [45, 35, 25, 10, 10, 5, 5, 2.5]
 
-plates = [55, 45, 35, 25, 10, 10, 5, 5, 2.5]
-
-min_weight = int(bar + min(plates) * 2)
-max_weight = int(bar + sum(plates) * 2)
+min_weight = bar
+max_weight = bar + int(sum(plates) * 2)
 
 
-def greedy(goal):
-    goal -= bar
-    goal /= 2
-    out = []
-    for plate in plates:
-        if goal <= 0:
-            break
-        if plate > goal:
-            continue
-        goal -= plate
-        out.append(str(plate))
-    out = ', '.join(out)
-    return out
+def calculate_perms(plates):
+    """
+    Return every possible ordering.
+    [45]
+    [45, 2.5]
+    [45, 2.5, 5]
+    [45, 5, 2.5]
+    etc.
+    """
+    result = set()
+    for i in range(len(plates)):
+        result.add(tuple([plates[i]]))
+        perms = calculate_perms(plates[:i] + plates[i + 1 :])
+        for tup in perms:
+            result.add(tuple([plates[i]]) + tup)
+    return result
 
+
+def calculate_perms_distinct(plates):
+    """
+    Return distinct orderings.
+    """
+    perms = calculate_perms(plates)
+    # sort plates highest to lowest and filter duplicates
+    return set([tuple(sorted(tup, key=lambda n: -n)) for tup in perms])
+
+
+perms = calculate_perms(plates)
+perms = sorted(perms)
+# perms = calculate_perms_distinct(plates)
+
+# Group plate orderings by weight (how many different ways can you arrange
+# the plates to equal some weight) in 5 lbs increments
+perms_by_weight = {}
 
 for weight in range(min_weight, max_weight + 1, 5):
-    plates_str = greedy(weight)
-    print(f'{weight}\t{plates_str}')
+    perms_by_weight[weight] = [tup for tup in perms if sum(tup) * 2 + bar == weight]
+
+# Hack to support lifting empty bar
+perms_by_weight[bar] = [(0,)]
+
+
+def plate_base_score(a):
+    # Prefer plates in order from high to low
+    score = len(a)
+    for j, k in zip(a, a[1:]):
+        if j < k:
+            score += 1
+    return score
+
+
+def plate_change_score(a, b):
+    """
+    Return score of changing from plates a to b based on number of
+    additions and removals.
+    """
+    prefix = largest_common_prefix(a, b)
+    plates_added = b[prefix:]
+    plates_removed = a[prefix:]
+
+    # return len(plates_added) + len(plates_removed)
+    # return sum(plates_added) + sum(plates_removed)
+
+    score = plate_base_score(a)
+
+    score += sum(plates_added) * len(plates_added)
+    score += sum(plates_removed) * len(plates_removed)
+    # score += sum(plates_added)
+    # score += sum(plates_removed)
+
+    # Penalize adding and removing the same plate
+    for n in plates_removed:
+        if n in plates_added:
+            score += 1
+
+    return score
+
+
+def largest_common_prefix(a, b):
+    """
+    Find index of largest common prefix between 2 lists.
+    """
+    prefix = 0
+    size = min(len(a), len(b))
+    for i in range(size):
+        if a[i] == b[i]:
+            prefix += 1
+        else:
+            break
+    return prefix
+
+
+def generate_plans(weights):
+    """
+    Return all possible plate combinations for a progression of weights
+    along with a score.
+
+    Returns a list of tuples. First element is list of plates tuples.
+    Second element is list of scores.
+    """
+    if not weights:
+        return []
+
+    plates_list_tuples = perms_by_weight[weights[0]]
+    sub_plans = generate_plans(weights[1:])
+
+    if not sub_plans:
+        return [
+            ([plates_tuple], [plate_change_score(plates_tuple, [])])
+            for plates_tuple in plates_list_tuples
+        ]
+
+    h = []
+
+    for plates_tuple in plates_list_tuples:
+        for sub_plates, sub_score in sub_plans:
+            score = plate_change_score(plates_tuple, sub_plates[0])
+            item = ([plates_tuple] + sub_plates, [score] + sub_score)
+
+            # push item with score first to keep heap sorted
+            heapq.heappush(h, (score, item))
+
+    # return smallest score permutations with score removed from front
+    best_candidates = heapq.nsmallest(100, h)
+    return [item[1] for item in best_candidates]
+
+
+def find_best_plans(weights, n=1):
+    plans = generate_plans(weights)
+    plans = sorted(plans, key=lambda tup: sum(tup[1]))
+    return plans[:n]  # top n plans
+
+
+def find_best_plan(weights):
+    return find_best_plans(weights, n=1)[0]
+
+
+def round_to_nearest(n, increment):
+    return increment * round(n / increment)
+
+
+lifts = {
+    "Squat": {"repmax": 175},
+    "Bench": {"repmax": 130},
+    "Deadlift": {"repmax": 211},
+    "Press": {"repmax": 83},
+}
+
+for lift in lifts.values():
+    lift["training_max"] = round(lift["repmax"] * 0.9)
+
+for week in range(3):
+    extra_perc = week * 0.05
+    week_percs = [
+        0.4,
+        0.5,
+        0.6,
+        0.65 + extra_perc,
+        0.75 + extra_perc,
+        0.85 + extra_perc,
+        0.65 + extra_perc,
+    ]
+
+    for lift_name, lift in lifts.items():
+        tm = lift["training_max"]
+        weights = [max(bar, round_to_nearest(tm * w, 5)) for w in week_percs]
+
+        plans = find_best_plans(weights, n=1)
+
+        for plan in plans:
+            plates, scores = plan
+
+            print(f"Week {week + 1} {lift_name} (score: {sum(scores)})")
+            for perc, weight, plates in zip(week_percs, weights, plates):
+                plates_display = ", ".join(str(n) for n in plates)
+                if plates_display == "0":
+                    plates_display = "-"
+                print(f'{perc:0.0%},{weight},"{plates_display}"')
