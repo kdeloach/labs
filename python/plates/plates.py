@@ -140,10 +140,10 @@ def round_to_nearest(n, increment):
 
 
 lifts = {
-    "Squat": {"repmax": 175},
-    "Bench": {"repmax": 130},
-    "Deadlift": {"repmax": 211},
-    "Press": {"repmax": 83},
+    "Squat": {"repmax": 175 + 5},
+    "Bench": {"repmax": 130 + 2.5},
+    "Deadlift": {"repmax": 211 + 5},
+    "Press": {"repmax": 83 + 2.5},
 }
 
 for lift in lifts.values():
