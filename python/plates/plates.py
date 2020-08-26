@@ -1,4 +1,3 @@
-import heapq
 import itertools
 
 
@@ -40,13 +39,8 @@ for weight in range(min_weight, max_weight + 1, 5):
 perms_by_weight[bar] = [(0,)]
 
 
-def plate_base_score(a):
-    # Prefer plates in order from high to low
-    score = len(a)
-    for j, k in zip(a, a[1:]):
-        if j < k:
-            score += 1
-    return score
+def plates_score(plates):
+    return sum(plate_change_score(a, b) for a, b in zip(plates, plates[1:]))
 
 
 def plate_change_score(a, b):
@@ -73,6 +67,15 @@ def plate_change_score(a, b):
         if n in plates_added:
             score += 1
 
+    return score
+
+
+def plate_base_score(a):
+    # Prefer plates in order from high to low
+    score = len(a)
+    for j, k in zip(a, a[1:]):
+        if j < k:
+            score += 1
     return score
 
 
@@ -106,29 +109,24 @@ def generate_plans(weights):
 
     if not sub_plans:
         return [
-            ([plates_tuple], [plate_change_score(plates_tuple, [])])
+            ([plates_tuple], plate_base_score(plates_tuple))
             for plates_tuple in plates_list_tuples
         ]
 
-    h = []
-
+    candidates = []
     for plates_tuple in plates_list_tuples:
         for sub_plates, sub_score in sub_plans:
-            score = plate_change_score(plates_tuple, sub_plates[0])
-            item = ([plates_tuple] + sub_plates, [score] + sub_score)
+            plates = [plates_tuple] + sub_plates
+            score = plates_score(plates)
+            candidates.append((plates, score))
 
-            # push item with score first to keep heap sorted
-            heapq.heappush(h, (score, item))
-
-    # return smallest score permutations with score removed from front
-    best_candidates = heapq.nsmallest(100, h)
-    return [item[1] for item in best_candidates]
+    # return 100 best candidates
+    return sorted(candidates, key=lambda tup: tup[1])[:100]
 
 
 def find_best_plans(weights, n=1):
     plans = generate_plans(weights)
-    plans = sorted(plans, key=lambda tup: sum(tup[1]))
-    return plans[:n]  # top n plans
+    return plans[:n]
 
 
 def find_best_plan(weights):
@@ -149,30 +147,35 @@ lifts = {
 for lift in lifts.values():
     lift["training_max"] = round(lift["repmax"] * 0.9)
 
-for week in range(3):
-    extra_perc = week * 0.05
-    week_percs = [
-        0.4,
-        0.5,
-        0.6,
-        0.65 + extra_perc,
-        0.75 + extra_perc,
-        0.85 + extra_perc,
-        0.65 + extra_perc,
-    ]
 
+def main():
     for lift_name, lift in lifts.items():
-        tm = lift["training_max"]
-        weights = [max(bar, round_to_nearest(tm * w, 5)) for w in week_percs]
+        for week in range(3):
+            extra_perc = week * 0.05
+            week_percs = [
+                0.4,
+                0.5,
+                0.6,
+                0.65 + extra_perc,
+                0.75 + extra_perc,
+                0.85 + extra_perc,
+                0.65 + extra_perc,
+            ]
 
-        plans = find_best_plans(weights, n=1)
+            tm = lift["training_max"]
+            weights = [max(bar, round_to_nearest(tm * w, 5)) for w in week_percs]
+            plans = find_best_plans(weights, n=1)
 
-        for plan in plans:
-            plates, scores = plan
+            for plan in plans:
+                plates, score = plan
 
-            print(f"Week {week + 1} {lift_name} (score: {sum(scores)})")
-            for perc, weight, plates in zip(week_percs, weights, plates):
-                plates_display = ", ".join(str(n) for n in plates)
-                if plates_display == "0":
-                    plates_display = "-"
-                print(f'{perc:0.0%},{weight},"{plates_display}"')
+                print(f"Week {week + 1} {lift_name} (score: {score}) {plates}")
+                for perc, weight, plates in zip(week_percs, weights, plates):
+                    plates_display = ", ".join(str(n) for n in plates)
+                    if plates_display == "0":
+                        plates_display = "-"
+                    print(f'{perc:0.0%},{weight},"{plates_display}"')
+
+
+if __name__ == "__main__":
+    main()
