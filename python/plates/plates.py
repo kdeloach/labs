@@ -154,9 +154,6 @@ def main():
         for week in range(3):
             extra_perc = week * 0.05
             week_percs = [
-                0.4,
-                0.5,
-                0.6,
                 0.65 + extra_perc,
                 0.75 + extra_perc,
                 0.85 + extra_perc,
