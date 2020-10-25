@@ -56,6 +56,7 @@ def plate_change_score(a, b):
     # return sum(plates_added) + sum(plates_removed)
 
     score = plate_base_score(a)
+    score += plate_base_score(b)
 
     score += sum(plates_added) * len(plates_added)
     score += sum(plates_removed) * len(plates_removed)
