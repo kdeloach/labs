@@ -137,11 +137,12 @@ def round_to_nearest(n, increment):
     return increment * round(n / increment)
 
 
+# https://symmetricstrength.com/standards#/160/lb/male/31
 lifts = {
-    "Squat": {"repmax": 175 + 5},
-    "Bench": {"repmax": 130 + 2.5},
-    "Deadlift": {"repmax": 211 + 5},
-    "Press": {"repmax": 83 + 2.5},
+    "Squat": {"repmax": 210},
+    "Bench": {"repmax": 150},
+    "Deadlift": {"repmax": 245},
+    "Press": {"repmax": 100},
 }
 
 for lift in lifts.values():
