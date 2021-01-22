@@ -1,4 +1,6 @@
+import csv
 import itertools
+import sys
 
 
 bar = 45
@@ -151,6 +153,8 @@ for lift in lifts.values():
 
 
 def main():
+    w = csv.writer(sys.stdout)
+
     for lift_name, lift in lifts.items():
         for week in range(3):
             extra_perc = week * 0.05
@@ -170,10 +174,10 @@ def main():
 
                 print(f"Week {week + 1} {lift_name} (score: {score})")
                 for perc, weight, plates in zip(week_percs, weights, plates):
-                    plates_display = ", ".join(str(n) for n in plates)
+                    plates_display = ",".join(str(n) for n in plates)
                     if plates_display == "0":
                         plates_display = "-"
-                    print(f'{perc:0.0%}\t{weight}\t"{plates_display}"')
+                    w.writerow([f"{perc:0.0%}", weight, plates_display])
 
 
 if __name__ == "__main__":
