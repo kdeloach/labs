@@ -149,7 +149,7 @@ lifts = {
 }
 
 for lift in lifts.values():
-    lift["training_max"] = round(lift["repmax"] * 0.9)
+    lift["training_max"] = round_to_nearest(lift["repmax"] * 0.9, 5)
 
 
 def main():
