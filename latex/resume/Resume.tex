@@ -4,24 +4,15 @@
 \usepackage[a4paper,nohead,nofoot,hmargin=1.5cm,vmargin=2cm]{geometry}
 \pagestyle{empty}
 
-\usepackage{graphicx}
-\usepackage{epstopdf}
 \usepackage{mdwlist}
-\usepackage{tabto}
 \usepackage{enumitem}
 \usepackage[final]{hyperref}
-\usepackage{pifont}
-\usepackage{marvosym}
-\usepackage{wasysym}
-% \usepackage[compact]{titlesec}
 
 \hypersetup{
     hidelinks,
     pdfauthor=Kevin DeLoach,
     pdftitle=Kevin DeLoach
 }
-
-\epstopdfsetup{outdir=trash/}
 
 \newcommand{\sectionhead}{\normalfont\normalsize\scshape}
 \newcommand{\workhead}[3]{\textbf{#1}, \emph{#2} \hfill #3}
@@ -44,52 +35,62 @@ $\cdot$
 $\cdot$
 \href{https://github.com/kdeloach}{github.com/kdeloach}
 \end{center}
-\hline
+
+\noindent\hrulefill
 
 % \section*{\sectionhead Work Experience}
 \begin{description}[leftmargin=0em]
     \itemsep0pt
     \parskip3pt
+
     \item
-        \workhead{Warner Bros. Digital Labs}{Software Engineer}{2018-02 -- Present}
+        \workhead{Penn Interactive Ventures}{Senior Software Engineer}{2020-01 -- 2021-02}
         \begin{itemize*}
-            \li Responsible for designing and implementing APIs for curating content, user rights management, user generated content, static asset management, and payment processing for \emph{DC Universe} and \emph{Boomerang} video streaming platforms using Python, Django, Go, MySQL, and AWS
-        \end{itemize*}
-    \item
-        \workhead{TellusLabs}{Software Engineer}{2017-06 -- 2018-02}
-        \begin{itemize*}
-            \li Created mission critical distributed services to collect, process, and ingest remote sensing data and satellite imagery, to produce daily crop yield forecasts for our flagship product, \emph{Kernel}
-            \li Processed terabytes of geospatial data using Python, Docker, Airflow, GDAL, NumPy, \mbox{Celery}, RabbitMQ, AWS, and SaltStack
-        \end{itemize*}
-    \item
-        \workhead{Azavea}{GIS Software Developer}{2014-01 -- 2017-06}
-        \begin{itemize*}
-            \li Created web-based mapping applications using Python, Django, Docker, PostgreSQL, \mbox{ReactJS}, Redux, Leaflet, and deployed to AWS using Packer, Ansible, Terraform, and CloudFormation
-            \li Significant role in sprint planning, requirements gathering, project architecture, interviewing, maintaining high levels of code quality, and promoting standards and best practices
-            \li Professional services clients included \emph{Stroud Water Research Center}, \emph{The Nature Conservancy}, \emph{The U.S. Army Corps of Engineers}, \emph{The Philadelphia Water Department}, \emph{Department of Records}, and the \emph{New York City Department of Parks \& Recreation}
-            \li Principal contributor to \emph{NYC Trees Count!}, \emph{Model My Watershed}, \emph{Coastal Resilience Mapping Portal}, \emph{Unified Land Records System}, and \emph{Raster Foundry} projects
-        \end{itemize*}
-    \item
-        \workhead{IBM Tealeaf Technology}{Software Engineer}{2012-06 -- 2013-09}
-        \begin{itemize*}
-            \li Provided technical support, drafted documentation, and implemented web analytics visualizations such as clickmaps, conversion funnels, attention maps, and more for \emph{\mbox{cxOverstat}}, \emph{cxImpact}, and \emph{Browser Based Replay}
+            \li Developed backend APIs for \emph{Barstool Sportsbook}, an online sports betting app, using Python, Django, Go, Postgres, and AWS; integrated with \emph{White Hat Gaming}, \emph{Kambi}, \emph{GeoComply}, \emph{Shufti Pro}, and \emph{LexisNexis ThreatMetrix} to support travelling wallet, KYC, and geoverification
+            \li Designed user flows for registration, KYC, and travelling between states, to comply with regulations from gaming control boards such as \emph{GLI}, \emph{PGCB}, and \emph{DGE}
         \end{itemize*}
 
     \item
-        \workhead{Elements, Inc.}{Software Developer}{2008-08 -- 2011-12}
+        \workhead{Warner Bros. Digital Labs}{Senior Software Engineer}{2018-02 -- 2020-01}
+        \begin{itemize*}
+            \li Developed backend APIs for video streaming platforms \emph{DC Universe} and \emph{Boomerang} using Python, Django, Go, MySQL, and AWS; integrated with \emph{Braintree}, \emph{Swiftype}, and \emph{Discourse}
+            \li Collaborated with product team to build APIs for content rights management, predictive assets, search, premium offerings, and compliance with \emph{GDPR} and \emph{CCPA} regulations
+        \end{itemize*}
+
+    \item
+        \workhead{TellusLabs}{Software Engineer}{2017-06 -- 2018-02}
+        \begin{itemize*}
+            \li Created pipelines to collect, process, and ingest remote sensing data and satellite imagery, to produce daily crop yield forecasts for \emph{Kernel}, an Earth observations database
+            \li Processed terabytes of geospatial data using Python, Docker, Airflow, GDAL, NumPy, \mbox{Celery}, RabbitMQ, AWS, and SaltStack
+        \end{itemize*}
+
+    \item
+        \workhead{Azavea}{GIS Software Developer}{2014-01 -- 2017-06}
+        \begin{itemize*}
+            \li Created web-based mapping applications using Python, Django, Docker, PostgreSQL, \mbox{ReactJS}, Redux, and Leaflet; deployed to AWS using Packer, Ansible, Terraform, and CloudFormation
+            \li Worked on the Civic Apps team to build software for \emph{Stroud Water Research Center}, \emph{The Nature Conservancy}, \emph{The U.S. Army Corps of Engineers}, \emph{The Philadelphia Water Department}, \emph{Department of Records}, and \emph{The New York City Department of Parks \& Recreation}
+            \li Contributed to \emph{NYC Trees Count!}, \emph{Model My Watershed}, \emph{Coastal Resilience Mapping Portal}, \emph{Unified Land Records System}, and \emph{Raster Foundry} projects
+        \end{itemize*}
+
+    \item
+        \workhead{IBM Tealeaf Technology}{Software Engineer}{2012-06 -- 2013-09}
+        \begin{itemize*}
+            \li Implemented visualizations for \emph{cxOverstat} clickmaps, conversion funnels, and attention maps; integrated original \emph{cxOverstat} standalone application into \emph{cxImpact} and \emph{BrowserBased Replay}
+        \end{itemize*}
+
+    \item
+        \workhead{ScreenMatter}{Software Developer}{2008-08 -- 2011-12}
         \begin{itemize*}
             \li Developed franchise-oriented CMS, bug tracking software, automation tools, web services, and custom applications for franchise, health care, real estate, and private equity industries
             \li Generated thousands of search engine optimized local franchisee websites for national franchises such as \emph{Maaco}, \emph{\mbox{CertaPro} Painters}, \emph{Floor Coverings International}, and \emph{Weed Man Lawn Care}
-            \li Utilized wide range of technologies to deliver client services including C\#, VB.NET, IIS, SQL Server, PHP, Apache, Flash, Flex, and Adobe AIR
-%             \li Coordinated knowledge transfer and technology transition with multiple teams after company merger
+            \li Built custom applications using C\#/VB .NET, SQL Server, PHP, Flash, Flex, and Adobe AIR
         \end{itemize*}
 
     \item
         \workhead{Verve Internet Solutions}{Web Developer}{2007-12 -- 2008-08}
         \begin{itemize*}
-            \li Developed features for proprietary CMS, integrated with third party APIs, maintained legacy software, and produced websites using PHP, MySQL, and Apache
-            \li Created cross-browser compatible XHTML templates from Photoshop PSDs that comply with accessibility and Section 508 standards
-            \li Provide technical support, maintenance, and website updates for local non-profit organizations in the Philadelphia area such as \emph{The Delaware Valley Green Building Council}, \emph{The Consumer Credit Counseling Service of Delaware Valley}, \emph{The Philadelphia Mummers Fancy Brigade Association}, and \emph{Merion Mercy Academy}
+            \li Developed features for proprietary CMS, integrated with third party APIs, provided technical support, and maintained websites for clients using Linux, Apache, MySQL, and PHP
+            \li Produced websites for local non-profit organizations: \emph{The Delaware Valley Green Building Council}, \emph{The Consumer Credit Counseling Service of Delaware Valley}, \emph{The Philadelphia Mummers Fancy Brigade Association}, and \emph{Merion Mercy Academy}
         \end{itemize*}
 
 %    \item
