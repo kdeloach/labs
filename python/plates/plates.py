@@ -3,6 +3,23 @@ import itertools
 import sys
 
 
+# https://symmetricstrength.com/standards#/160/lb/male/31
+lifts = {
+    "Squat": {"repmax": 240},
+    "Bench": {"repmax": 170},
+    "Deadlift": {"repmax": 270},
+    "Press": {"repmax": 115},
+}
+
+
+def round_to_nearest(n, increment):
+    return increment * round(n / increment)
+
+
+for lift in lifts.values():
+    lift["training_max"] = round_to_nearest(lift["repmax"] * 0.9, 5)
+
+
 bar = 45
 plates = [45, 35, 25, 10, 10, 5, 5, 2.5]
 
@@ -134,22 +151,6 @@ def find_best_plans(weights, n=1):
 
 def find_best_plan(weights):
     return find_best_plans(weights, n=1)[0]
-
-
-def round_to_nearest(n, increment):
-    return increment * round(n / increment)
-
-
-# https://symmetricstrength.com/standards#/160/lb/male/31
-lifts = {
-    "Squat": {"repmax": 230},
-    "Bench": {"repmax": 160},
-    "Deadlift": {"repmax": 265},
-    "Press": {"repmax": 110},
-}
-
-for lift in lifts.values():
-    lift["training_max"] = round_to_nearest(lift["repmax"] * 0.9, 5)
 
 
 def main():
