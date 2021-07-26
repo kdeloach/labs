@@ -65,7 +65,7 @@ def plates_score(plates):
 def plate_change_score(a, b):
     """
     Return score of changing from plates a to b based on number of
-    additions and removals.
+    additions and removals. Lower is better.
     """
     prefix = largest_common_prefix(a, b)
     plates_added = b[prefix:]
@@ -95,7 +95,7 @@ def plate_base_score(a):
     score = len(a)
     for j, k in zip(a, a[1:]):
         if j < k:
-            score += 1
+            score += 10
     return score
 
 
@@ -106,10 +106,9 @@ def largest_common_prefix(a, b):
     prefix = 0
     size = min(len(a), len(b))
     for i in range(size):
-        if a[i] == b[i]:
-            prefix += 1
-        else:
+        if a[i] != b[i]:
             break
+        prefix += 1
     return prefix
 
 
