@@ -3,12 +3,12 @@ import itertools
 import sys
 
 
-# https://symmetricstrength.com/standards#/160/lb/male/31
+# https://symmetricstrength.com/standards#/166/lb/male/32
 lifts = {
-    "Squat": {"repmax": 280},
-    "Bench": {"repmax": 195},
-    "Deadlift": {"repmax": 290},
-    "Press": {"repmax": 135},
+    "Squat": {"repmax": 290},  # Goal: 320
+    "Bench": {"repmax": 200},  # Goal: 240
+    "Deadlift": {"repmax": 300},  # Goal: 370
+    "Press": {"repmax": 140},  # Goal: 155
 }
 
 
