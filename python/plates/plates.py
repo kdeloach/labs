@@ -153,7 +153,7 @@ def find_best_plan(weights):
 
 
 def main():
-    w = csv.writer(sys.stdout)
+    w = csv.writer(sys.stdout, delimiter=";", quoting=csv.QUOTE_NONE)
 
     for lift_name, lift in lifts.items():
         for week in range(3):
@@ -174,7 +174,7 @@ def main():
 
                 print(f"Week {week + 1} {lift_name} (score: {score})")
                 for perc, weight, plates in zip(week_percs, weights, plates):
-                    plates_display = ",".join(str(n) for n in plates)
+                    plates_display = ", ".join(str(n) for n in plates)
                     if plates_display == "0":
                         plates_display = "-"
                     w.writerow([f"{perc:0.0%}", weight, plates_display])
