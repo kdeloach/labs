@@ -5,10 +5,10 @@ import sys
 
 # https://symmetricstrength.com/standards#/160/lb/male/31
 lifts = {
-    "Squat": {"repmax": 270},
-    "Bench": {"repmax": 190},
-    "Deadlift": {"repmax": 280},
-    "Press": {"repmax": 130},
+    "Squat": {"repmax": 280},
+    "Bench": {"repmax": 195},
+    "Deadlift": {"repmax": 290},
+    "Press": {"repmax": 135},
 }
 
 
