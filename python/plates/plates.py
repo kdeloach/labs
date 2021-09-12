@@ -11,6 +11,41 @@ lifts = {
     "Press": {"repmax": 140},  # Goal: 155
 }
 
+# 5/3/1 BBB
+# https://www.jimwendler.com/blogs/jimwendler-com/101077382-boring-but-big
+PROGRAM_LIFTS = [
+    ("Press", "Bench"),
+    ("Deadlift", "Squat"),
+    ("Bench", "Press"),
+    ("Squat", "Deadlift"),
+]
+PROGRAM_TMS = [
+    [0.65, 0.75, 0.85, 0.65],
+    [0.7, 0.8, 0.9, 0.7],
+    [0.75, 0.85, 0.95, 0.75],
+]
+PROGRAM_REPS = [
+    [5, 5, 5, 5],
+    [3, 3, 3, 5],
+    [5, 3, 1, 5],
+]
+# TODO: increase by 10% each cycle
+BBB_TM = [0.5]
+BBB_SETS = [5]
+BBB_REPS = [10]
+
+program = []
+for week in range(3):
+    for day in range(4):
+        lift_1, lift_2 = PROGRAM_LIFTS[day]
+        tms = PROGRAM_TMS[week]
+        sets = [1, 1, 1, 5]
+        reps = PROGRAM_REPS[week]
+        program += [
+            (lift_1, week, day, tms, sets, reps),
+            (lift_2, week, day, BBB_TM, BBB_SETS, BBB_REPS),
+        ]
+
 
 def round_to_nearest(n, increment):
     return increment * round(n / increment)
@@ -148,36 +183,37 @@ def find_best_plans(weights, n=1):
     return plans[:n]
 
 
-def find_best_plan(weights):
-    return find_best_plans(weights, n=1)[0]
-
-
 def main():
     w = csv.writer(sys.stdout, delimiter=";", quoting=csv.QUOTE_NONE)
+    w.writerow(["Lift", "Week", "Day", "TM %", "Weight", "Plates", "Sets", "Reps"])
 
-    for lift_name, lift in lifts.items():
-        for week in range(3):
-            extra_perc = week * 0.05
-            week_percs = [
-                0.65 + extra_perc,
-                0.75 + extra_perc,
-                0.85 + extra_perc,
-                0.65 + extra_perc,
-            ]
+    for lift_name, week, day, tm_percs, sets, reps in program:
+        lift = lifts[lift_name]
+        tm = lift["training_max"]
+        weights = [max(bar, round_to_nearest(tm * w, 5)) for w in tm_percs]
+        plans = find_best_plans(weights, n=1)
 
-            tm = lift["training_max"]
-            weights = [max(bar, round_to_nearest(tm * w, 5)) for w in week_percs]
-            plans = find_best_plans(weights, n=1)
+        for plan in plans:
+            plates, score = plan
 
-            for plan in plans:
-                plates, score = plan
-
-                print(f"Week {week + 1} {lift_name} (score: {score})")
-                for perc, weight, plates in zip(week_percs, weights, plates):
-                    plates_display = ", ".join(str(n) for n in plates)
-                    if plates_display == "0":
-                        plates_display = "-"
-                    w.writerow([f"{perc:0.0%}", weight, plates_display])
+            for perc, weight, lift_sets, lift_reps, plates in zip(
+                tm_percs, weights, sets, reps, plates
+            ):
+                plates_display = ", ".join(str(n) for n in plates)
+                if plates_display == "0":
+                    plates_display = "-"
+                w.writerow(
+                    [
+                        lift_name,
+                        week + 1,
+                        day + 1,
+                        f"{perc:0.0%}",
+                        weight,
+                        plates_display,
+                        lift_sets,
+                        lift_reps,
+                    ]
+                )
 
 
 if __name__ == "__main__":
