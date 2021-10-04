@@ -29,8 +29,7 @@ PROGRAM_REPS = [
     [3, 3, 3, 5],
     [5, 3, 1, 5],
 ]
-# TODO: increase by 10% each cycle
-BBB_TM = [0.5]
+BBB_TM = [0.6]
 BBB_SETS = [5]
 BBB_REPS = [10]
 
