@@ -5,10 +5,10 @@ import sys
 
 # https://symmetricstrength.com/standards#/166/lb/male/32
 lifts = {
-    "Squat": {"repmax": 290},  # Goal: 320
-    "Bench": {"repmax": 200},  # Goal: 240
-    "Deadlift": {"repmax": 300},  # Goal: 370
-    "Press": {"repmax": 140},  # Goal: 155
+    "Squat": {"repmax": 300},  # Goal: 320
+    "Bench": {"repmax": 205},  # Goal: 240
+    "Deadlift": {"repmax": 310},  # Goal: 370
+    "Press": {"repmax": 145},  # Goal: 155
 }
 
 # 5/3/1 BBB
