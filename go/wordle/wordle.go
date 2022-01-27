@@ -13,12 +13,13 @@ import (
 )
 
 var fClues = flag.String("clues", "", "Comma separated list of clues. (ex. \"arose:G-Y--,allot:G--Y-\")")
+var fDebug = flag.Bool("debug", false, "Debug mode")
 
 func main() {
 	signal.Ignore(syscall.SIGPIPE)
 	flag.Parse()
 	words := loadWords()
-	clues := parseClues(*fClues)
+	clues := parseClues(*fClues, *fDebug)
 	filter := createFilterFunc(clues)
 	words = filterWords(words, filter)
 	rankWords(words)
@@ -46,7 +47,7 @@ func loadWords() []string {
 }
 
 // Parse clues CSV format "word:result,word:result,..."
-func parseClues(cluesCsv string) []string {
+func parseClues(cluesCsv string, debug bool) []string {
 	regexes := []string{}
 
 	if len(cluesCsv) == 0 {
@@ -128,6 +129,14 @@ func parseClues(cluesCsv string) []string {
 		vals = append(vals, string(v))
 	}
 	regexes = append(regexes, strings.Join(vals, ""))
+
+	if debug {
+		fmt.Printf("Regexes:\n")
+		for _, r := range regexes {
+			fmt.Printf("%v\n", r)
+		}
+		fmt.Printf("---\n")
+	}
 
 	return regexes
 }
