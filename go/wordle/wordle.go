@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"regexp"
 	"sort"
 	"strings"
 	"syscall"
@@ -44,31 +45,16 @@ func loadWords() []string {
 	return words
 }
 
-var (
-	NotSet byte = ' '
-	Green  byte = 'g'
-	Yellow byte = 'y'
-)
-
-type Clues struct {
-	allMatch      map[byte]bool
-	allMatchExact []byte
-	noMatch       map[byte]bool
-	noMatchExact  map[byte][]bool
-}
-
 // Parse clues CSV format "word:result,word:result,..."
-func parseClues(cluesCsv string) *Clues {
-	clues := &Clues{
-		allMatch:      map[byte]bool{},
-		allMatchExact: []byte{NotSet, NotSet, NotSet, NotSet, NotSet},
-		noMatch:       map[byte]bool{},
-		noMatchExact:  map[byte][]bool{},
-	}
+func parseClues(cluesCsv string) []string {
+	regexes := []string{}
 
 	if len(cluesCsv) == 0 {
-		return clues
+		return regexes
 	}
+
+	allMatchExact := []byte{'.', '.', '.', '.', '.'}
+	noMatch := map[byte]bool{}
 
 	// parse "word:result,word:result,..."
 	cluesSet := strings.Split(strings.ToLower(cluesCsv), ",")
@@ -99,29 +85,30 @@ func parseClues(cluesCsv string) *Clues {
 		// everything else = wrong letter
 		for i := 0; i < 5; i++ {
 			c := r[i]
-			if c == Green {
+			if c == 'g' {
 				// character match (exact position)
-				if clues.allMatchExact[i] == NotSet {
-					clues.allMatchExact[i] = w[i]
-				} else if clues.allMatchExact[i] != w[i] {
-					fmt.Printf(fmt.Sprintf("conflict: multiple exact matches at position %v\n", i+1))
-					os.Exit(1)
-				}
-			} else if c == Yellow {
+				allMatchExact[i] = w[i]
+			} else if c == 'y' {
 				// character match (any position)
-				clues.allMatch[w[i]] = true
-
 				// character no match (exact position)
-				if _, ok := clues.noMatchExact[w[i]]; !ok {
-					clues.noMatchExact[w[i]] = []bool{false, false, false, false, false}
+
+				anyMatches := []string{}
+				for j := 0; j < 5; j++ {
+					if j == i {
+						continue
+					}
+					anyMatch := []string{".", ".", ".", ".", "."}
+					anyMatch[i] = fmt.Sprintf("[^%v]", string(w[i]))
+					anyMatch[j] = fmt.Sprintf("[%v]", string(w[i]))
+					anyMatches = append(anyMatches, strings.Join(anyMatch, ""))
 				}
-				clues.noMatchExact[w[i]][i] = true
+				regexes = append(regexes, strings.Join(anyMatches, "|"))
 			} else if c == '?' {
 				// unknown character match
 				continue
 			} else if c == '_' || c == '-' || c == ' ' {
 				// characted no match (any position)
-				clues.noMatch[w[i]] = true
+				noMatch[w[i]] = true
 			} else {
 				fmt.Printf(fmt.Sprintf("invalid clue format: unexpected character \"%v\" (must be G, Y, -, _, ?, or space) \n", string(c)))
 				os.Exit(1)
@@ -130,7 +117,19 @@ func parseClues(cluesCsv string) *Clues {
 
 	}
 
-	return clues
+	keys := []string{}
+	for k := range noMatch {
+		keys = append(keys, string(k))
+	}
+	regexes = append(regexes, fmt.Sprintf("[^%v]+", strings.Join(keys, "")))
+
+	vals := []string{}
+	for _, v := range allMatchExact {
+		vals = append(vals, string(v))
+	}
+	regexes = append(regexes, strings.Join(vals, ""))
+
+	return regexes
 }
 
 func isAlpha(c byte) bool {
@@ -139,39 +138,22 @@ func isAlpha(c byte) bool {
 
 type FilterFunc func(word string) bool
 
-func createFilterFunc(clues *Clues) FilterFunc {
+func createFilterFunc(regexes []string) FilterFunc {
+	rs := []*regexp.Regexp{}
+
+	for _, reStr := range regexes {
+		re := regexp.MustCompile(reStr)
+		rs = append(rs, re)
+	}
+
 	return func(word string) bool {
-		// handle no match (any)
-		for c, _ := range clues.noMatch {
-			if strings.IndexByte(word, c) != -1 {
+		for _, re := range rs {
+			match := re.FindString(word)
+			if len(match) < 5 {
 				return true
 			}
-		}
 
-		// handle all match (exact)
-		for i := 0; i < 5; i++ {
-			c := clues.allMatchExact[i]
-			if isAlpha(c) && word[i] != c {
-				return true
-			}
 		}
-
-		// handle all match (any)
-		for c, _ := range clues.allMatch {
-			if strings.IndexByte(word, c) == -1 {
-				return true
-			}
-		}
-
-		// handle no match (exact)
-		for i := 0; i < 5; i++ {
-			if spots, ok := clues.noMatchExact[word[i]]; ok {
-				if spots[i] {
-					return true
-				}
-			}
-		}
-
 		return false
 	}
 }
