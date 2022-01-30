@@ -28,7 +28,7 @@ func main() {
 func loadWords() []string {
 	words := []string{}
 
-	file, err := os.Open("wordle-answers-alphabetical.txt")
+	file, err := os.Open("words-answers.txt")
 	if err != nil {
 		panic(err)
 	}
