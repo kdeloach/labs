@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"strings"
 
 	"github.com/btcsuite/btcutil"
 )
@@ -18,43 +17,34 @@ const Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 func main() {
 	flag.Parse()
 
-	wifOrig := "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
-	wifOrigLen := len(wifOrig)
-	fmt.Printf("%v\n", wifOrig)
+	wif := []byte("5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ")
+	fmt.Printf("%s\n", wif)
 
-	wifPart := []byte{}
-	letters := ""
+	letters := []byte{}
 	indexes := []int{}
 
-	for i := 0; i < len(wifOrig); i++ {
-		c := wifOrig[i]
-		if len(letters) < *nLettersFlag && !strings.Contains(letters, string(c)) {
-			wifPart = append(wifPart, byte('0'))
-			letters = letters + string(c)
+	for i, c := range wif {
+		if len(letters) < *nLettersFlag && !contains(letters, c) {
+			letters = append(letters, c)
 			indexes = append(indexes, i)
-		} else {
-			wifPart = append(wifPart, c)
 		}
 	}
 
-	fmt.Printf("%s\n", wifPart)
-	fmt.Printf("%v (replaced %d letters)\n", letters, len(letters))
+	fmt.Printf("%s (replacement letters)\n", letters)
 
-	letters = shuffle(letters)
-	fmt.Printf("%v (scrambled)\n", letters)
+	rand.Seed(*nRandomSeedFlag)
+	rand.Shuffle(len(letters), func(i, j int) {
+		wif[indexes[i]], wif[indexes[j]] = wif[indexes[j]], wif[indexes[i]]
+		indexes[i], indexes[j] = indexes[j], indexes[i]
+	})
+	fmt.Printf("%s (scrambled)\n", wif)
 
-	perm([]byte(letters), func(rcs []byte) {
-		wif2 := make([]byte, wifOrigLen)
-		copy(wif2, wifPart)
-		for i, idx := range indexes {
-			wif2[idx] = rcs[i]
-		}
-
+	perm(indexes, wif, func(wif2 []byte) {
+		// fmt.Printf("%s\n", wif2)
 		_, err := btcutil.DecodeWIF(string(wif2))
 		if err != nil {
 			return
 		}
-
 		fmt.Printf("match found: %s\n", wif2)
 		os.Exit(0)
 	}, 0)
@@ -63,25 +53,25 @@ func main() {
 	os.Exit(1)
 }
 
-func perm(a []byte, f func([]byte), i int) {
-	if i > len(a) {
+func perm(idx []int, a []byte, f func([]byte), i int) {
+	if i > len(idx) {
 		f(a)
 		return
 	}
-	perm(a, f, i+1)
-	for j := i + 1; j < len(a); j++ {
-		a[i], a[j] = a[j], a[i]
-		perm(a, f, i+1)
-		a[i], a[j] = a[j], a[i]
+	perm(idx, a, f, i+1)
+	for j := i + 1; j < len(idx); j++ {
+		m, n := idx[i], idx[j]
+		a[m], a[n] = a[n], a[m]
+		perm(idx, a, f, i+1)
+		a[m], a[n] = a[n], a[m]
 	}
 }
 
-func shuffle(src string) string {
-	rand.Seed(*nRandomSeedFlag)
-	perm := rand.Perm(len(src))
-	final := ""
-	for _, v := range perm {
-		final = final + string(src[v])
+func contains(s []byte, e byte) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
 	}
-	return final
+	return false
 }
