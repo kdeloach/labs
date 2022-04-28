@@ -22,36 +22,33 @@ func main() {
 	wifOrigLen := len(wifOrig)
 	fmt.Printf("%v\n", wifOrig)
 
-	wifPart := ""
+	wifPart := []byte{}
 	letters := ""
 	indexes := []int{}
 
 	for i := 0; i < len(wifOrig); i++ {
-		c := string(wifOrig[i])
-		if len(letters) < *nLettersFlag && !strings.Contains(letters, c) {
-			wifPart = wifPart + "0"
-			letters = letters + c
+		c := wifOrig[i]
+		if len(letters) < *nLettersFlag && !strings.Contains(letters, string(c)) {
+			wifPart = append(wifPart, byte('0'))
+			letters = letters + string(c)
 			indexes = append(indexes, i)
 		} else {
-			wifPart = wifPart + c
+			wifPart = append(wifPart, c)
 		}
 	}
 
-	fmt.Printf("%v\n", wifPart)
+	fmt.Printf("%s\n", wifPart)
 	fmt.Printf("%v (replaced %d letters)\n", letters, len(letters))
 
 	letters = shuffle(letters)
 	fmt.Printf("%v (scrambled)\n", letters)
 
 	perm([]byte(letters), func(rcs []byte) {
-		wif2 := make([]byte, 0, wifOrigLen)
-		n := 0
+		wif2 := make([]byte, wifOrigLen)
+		copy(wif2, wifPart)
 		for i, idx := range indexes {
-			wif2 = append(wif2, wifPart[n:idx]...)
-			wif2 = append(wif2, rcs[i])
-			n = idx + 1
+			wif2[idx] = rcs[i]
 		}
-		wif2 = append(wif2, wifPart[n:]...)
 
 		_, err := btcutil.DecodeWIF(string(wif2))
 		if err != nil {
