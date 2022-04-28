@@ -19,6 +19,7 @@ func main() {
 	flag.Parse()
 
 	wifOrig := "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
+	wifOrigLen := len(wifOrig)
 	fmt.Printf("%v\n", wifOrig)
 
 	wifPart := ""
@@ -42,19 +43,22 @@ func main() {
 	letters = shuffle(letters)
 	fmt.Printf("%v (scrambled)\n", letters)
 
-	perm([]byte(letters), func(cs []byte) {
-		wif2 := wifPart
-		for i, c := range cs {
-			j := indexes[i]
-			wif2 = wif2[:j] + string(c) + wif2[j+1:]
+	perm([]byte(letters), func(rcs []byte) {
+		wif2 := make([]byte, 0, wifOrigLen)
+		n := 0
+		for i, idx := range indexes {
+			wif2 = append(wif2, wifPart[n:idx]...)
+			wif2 = append(wif2, rcs[i])
+			n = idx + 1
 		}
+		wif2 = append(wif2, wifPart[n:]...)
 
-		_, err := btcutil.DecodeWIF(wif2)
+		_, err := btcutil.DecodeWIF(string(wif2))
 		if err != nil {
 			return
 		}
 
-		fmt.Printf("match found: %v\n", wif2)
+		fmt.Printf("match found: %s\n", wif2)
 		os.Exit(0)
 	}, 0)
 
