@@ -4,9 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
-	"os"
 
-	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcutil/base58"
 )
 
 var nRandomSeedFlag = flag.Int64("s", 0, "random seed")
@@ -39,30 +38,25 @@ func main() {
 	})
 	fmt.Printf("%s (scrambled)\n", wif)
 
-	perm(indexes, wif, func(wif2 []byte) {
-		// fmt.Printf("%s\n", wif2)
-		_, err := btcutil.DecodeWIF(string(wif2))
+	search(indexes, wif, 0)
+}
+
+func search(idx []int, a []byte, i int) {
+	if i > len(idx) {
+		// fmt.Printf("%s\n", a)
+		// _, err := btcutil.DecodeWIF(string(wif))
+		_, _, err := base58.CheckDecode(string(a))
 		if err != nil {
 			return
 		}
-		fmt.Printf("match found: %s\n", wif2)
-		os.Exit(0)
-	}, 0)
-
-	fmt.Printf("no match found\n")
-	os.Exit(1)
-}
-
-func perm(idx []int, a []byte, f func([]byte), i int) {
-	if i > len(idx) {
-		f(a)
+		fmt.Printf("match: %s\n", a)
 		return
 	}
-	perm(idx, a, f, i+1)
+	search(idx, a, i+1)
 	for j := i + 1; j < len(idx); j++ {
 		m, n := idx[i], idx[j]
 		a[m], a[n] = a[n], a[m]
-		perm(idx, a, f, i+1)
+		search(idx, a, i+1)
 		a[m], a[n] = a[n], a[m]
 	}
 }

@@ -1,0 +1,44 @@
+
+$ time go run shieldcrypt.go -s 2 -n 18
+5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+00000000000000x00u050Dku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+5HueCGU8rMjxEXiPDB (replaced 18 letters)
+B5UxrHDC8EMPXGuije (scrambled)
+^Csignal: interrupt
+
+real	288m51.076s
+user	308m10.079s
+sys	5m32.273s
+
+---
+after swapping the original byte slice to remove allocations
+
+$ time go run shieldcrypt.go -s 2 -n 10
+5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+5HueCGU8rM (replacement letters)
+8MrGC5uUHejxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ (scrambled)
+match found: 5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+
+real	0m8.113s
+user	0m8.549s
+sys	0m0.250s
+
+$ time go run shieldcrypt.go -s 2 -n 11
+5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+5HueCGU8rMj (replacement letters)
+rjMuUGHe8C5xEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ (scrambled)
+match found: 5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+
+real	2m23.585s
+user	2m29.941s
+sys	0m2.683s
+
+$ time go run shieldcrypt.go -s 2 -n 11
+5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+5HueCGU8rMj (replacement letters)
+rjMuUGHe8C5xEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ (scrambled)
+match found: 5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ
+
+real	2m20.760s
+user	2m27.154s
+sys	0m2.615s
