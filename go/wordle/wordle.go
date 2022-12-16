@@ -28,13 +28,28 @@ func main() {
 func loadWords() []string {
 	words := []string{}
 
-	file, err := os.Open("words-answers.txt")
+	f1, err := os.Open("words-allowed.txt")
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
+	defer f1.Close()
 
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(f1)
+	for scanner.Scan() {
+		words = append(words, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	f2, err := os.Open("words-answers.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer f2.Close()
+
+	scanner = bufio.NewScanner(f2)
 	for scanner.Scan() {
 		words = append(words, scanner.Text())
 	}
