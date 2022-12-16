@@ -1,0 +1,35 @@
+https://bnfplayground.pauliankline.com/?bnf=%2F*%20%3Cdate%3E%20-%3E%20DATE%20*%2F%0A%2F*%20%3Cdate%3E%20%2B%20%3Cdelta%3E%20-%3E%20DATE%20*%2F%0A%2F*%20%3Cdate%3E%20-%20%3Cdelta%3E%20-%3E%20DATE%20*%2F%0A%0A%2F*%20%3Cdelta%3E%20-%3E%20DELTA%20*%2F%0A%2F*%20%3Cdelta%3E%20%2B%20%3Cdelta%3E%20-%3E%20DELTA%20*%2F%0A%2F*%20%3Cdelta%3E%20-%20%3Cdelta%3E%20-%3E%20DELTA%20*%2F%0A%2F*%20%3Cdate%3E%20-%20%3Cdate%3E%20-%3E%20DELTA%20*%2F%0A%0A%3Cprogram%3E%20%3A%3A%3D%20%3CdateExpr%3E%0A%09%7C%20%3CdeltaExpr%3E%20(%3Ccast%3E)%3F%0A%0A%3CdateExpr%3E%20%3A%3A%3D%20%3Cdate%3E%20(%3CplusOrMinus%3E%20%3CdeltaExpr%3E)%3F%0A%0A%3CdeltaExpr%3E%20%3A%3A%3D%20%3Cdelta%3E%20(%3CplusOrMinus%3E%20%3CdeltaExpr%3E)%3F%0A%09%7C%20%3Cdate%3E%20%22%20-%20%22%20%3CdateExpr%3E%0A%0A%3Cdelta%3E%20%3A%3A%3D%20%3Camount%3E%20%22%20%22%20%3Cunit%3E%0A%3Ccast%3E%20%3A%3A%3D%20%22%20as%20%22%20%3Cunit%3E%0A%0A%3Cdate%3E%20%3A%3A%3D%20%3Cmonth%3E%20%22%2F%22%20%3Cday%3E%20%22%2F%22%20%3Cyear%3E%0A%3Cmonth%3E%20%3A%3A%3D%20%5B0-9%5D%2B%0A%3Cday%3E%20%3A%3A%3D%20%5B0-9%5D%2B%0A%3Cyear%3E%20%3A%3A%3D%20%5B0-9%5D%2B%0A%3Camount%3E%20%3A%3A%3D%20%5B0-9%5D%2B%0A%3Cunit%3E%20%3A%3A%3D%20(%22second%22%20%7C%20%22minute%22%20%7C%20%22hour%22%20%7C%20%22day%22%20%7C%20%22week%22%20%7C%20%22month%22%20%7C%20%22year%22)%20%22s%22%3F%0A%3CplusOrMinus%3E%20%3A%3A%3D%20%22%20%2B%20%22%20%7C%20%22%20-%20%22&name=Date%20Format
+
+/* <date> -> DATE */
+/* <date> + <delta> -> DATE */
+/* <date> - <delta> -> DATE */
+
+/* <delta> -> DELTA */
+/* <delta> + <delta> -> DELTA */
+/* <delta> - <delta> -> DELTA */
+/* <date> - <date> -> DELTA */
+
+today - tomorrow as minutes
+
+
+<program> ::= <dateExpr>
+	| <deltaExpr>
+
+<dateExpr> ::= <date> (<plusOrMinus> <deltaExpr>)?
+
+<deltaExpr> ::= <delta> <cast>?
+    | <delta> <plusOrMinus> <deltaExpr> <cast>?
+	| <dateDiffExpr> <cast>?
+
+<dateDiffExpr> ::= <date> " - " <dateExpr>
+
+<delta> ::= <amount> " " <unit>
+<cast> ::= " as " <unit>
+
+<date> ::= <month> "/" <day> "/" <year>
+<month> ::= [0-9]+
+<day> ::= [0-9]+
+<year> ::= [0-9]+
+<amount> ::= [0-9]+
+<unit> ::= ("second" | "minute" | "hour" | "day" | "week" | "month" | "year") "s"?
+<plusOrMinus> ::= " + " | " - "
