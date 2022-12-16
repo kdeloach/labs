@@ -22,4 +22,9 @@ func TestDay1(t *testing.T) {
 		t.Logf("want 24000 but got %v", ans)
 		t.Fail()
 	}
+	ans = Top3Calories(input)
+	if ans != 45000 {
+		t.Logf("want 45000 but got %v", ans)
+		t.Fail()
+	}
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -30,8 +30,35 @@ func MostCalories(calories string) int {
 	return hi
 }
 
-func main() {
-	input := `7844
+func Top3Calories(calories string) int {
+	sum := 0
+	cals := []int{}
+	lines := strings.Split(calories, "\n")
+	for _, line := range lines {
+		if line == "" {
+			cals = append(cals, sum)
+			sum = 0
+		} else {
+			n, err := strconv.Atoi(line)
+			if err != nil {
+				panic(err)
+			}
+			sum += n
+		}
+	}
+	cals = append(cals, sum)
+
+	sort.Ints(cals)
+	top3 := cals[len(cals)-3:]
+
+	sum = 0
+	for _, n := range top3 {
+		sum += n
+	}
+	return sum
+}
+
+const Day1Input = `7844
 1892
 10928
 4800
@@ -2279,6 +2306,3 @@ func main() {
 4122
 1303
 5054`
-	ans := MostCalories(input)
-	fmt.Println(ans)
-}
