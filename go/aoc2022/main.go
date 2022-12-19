@@ -33,8 +33,13 @@ func main() {
 	// ans = StartOfMessageMarker(Day6Input)
 	// fmt.Printf("Day 6 Part 2: %v\n", ans)
 
-	ans := RunDay7Part1(Day7Input)
-	fmt.Printf("Day 7 Part 1: %v\n", ans)
-	ans = RunDay7Part2(Day7Input)
-	fmt.Printf("Day 7 Part 2: %v\n", ans)
+	// ans := RunDay7Part1(Day7Input)
+	// fmt.Printf("Day 7 Part 1: %v\n", ans)
+	// ans = RunDay7Part2(Day7Input)
+	// fmt.Printf("Day 7 Part 2: %v\n", ans)
+
+	ans := RunDay8Part1(Day8Input)
+	fmt.Printf("Day 8 Part 1: %v\n", ans)
+	ans = RunDay8Part2(Day8Input)
+	fmt.Printf("Day 8 Part 2: %v\n", ans)
 }
