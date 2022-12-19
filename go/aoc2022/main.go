@@ -28,8 +28,13 @@ func main() {
 	// ans = RunSupplyStacks2(Day5Input)
 	// fmt.Printf("Day 5 Part 2: %v\n", ans)
 
-	ans := StartOfPacketMarker(Day6Input)
-	fmt.Printf("Day 6 Part 1: %v\n", ans)
-	ans = StartOfMessageMarker(Day6Input)
-	fmt.Printf("Day 6 Part 2: %v\n", ans)
+	// ans := StartOfPacketMarker(Day6Input)
+	// fmt.Printf("Day 6 Part 1: %v\n", ans)
+	// ans = StartOfMessageMarker(Day6Input)
+	// fmt.Printf("Day 6 Part 2: %v\n", ans)
+
+	ans := RunDay7Part1(Day7Input)
+	fmt.Printf("Day 7 Part 1: %v\n", ans)
+	ans = RunDay7Part2(Day7Input)
+	fmt.Printf("Day 7 Part 2: %v\n", ans)
 }
