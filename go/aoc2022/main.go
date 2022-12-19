@@ -38,8 +38,13 @@ func main() {
 	// ans = RunDay7Part2(Day7Input)
 	// fmt.Printf("Day 7 Part 2: %v\n", ans)
 
-	ans := RunDay8Part1(Day8Input)
-	fmt.Printf("Day 8 Part 1: %v\n", ans)
-	ans = RunDay8Part2(Day8Input)
-	fmt.Printf("Day 8 Part 2: %v\n", ans)
+	// ans := RunDay8Part1(Day8Input)
+	// fmt.Printf("Day 8 Part 1: %v\n", ans)
+	// ans = RunDay8Part2(Day8Input)
+	// fmt.Printf("Day 8 Part 2: %v\n", ans)
+
+	ans := RunDay9Part1(Day9Input)
+	fmt.Printf("Day 9 Part 1: %v\n", ans)
+	ans = RunDay9Part2(Day9Input)
+	fmt.Printf("Day 9 Part 2: %v\n", ans)
 }
