@@ -10,6 +10,9 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/basicfont"
 )
 
 var people []Person
@@ -20,7 +23,7 @@ const (
 	windowHeight = 768
 	circleRadius = 250
 	personRadius = 30
-	numPeople    = 20 + 1 // +1 for origin (invisible)
+	numPeople    = 10 + 1 // +1 for origin (invisible)
 )
 
 var colorBlack = parseHex("000000") // origin
@@ -43,6 +46,7 @@ type Person struct {
 	Vel   pixel.Vec
 	Color pixel.RGBA
 	Love  map[*Person]float64
+	Name  string
 }
 
 func main() {
@@ -69,8 +73,10 @@ func run() {
 
 	paused := false
 
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+
 	for !win.Closed() {
-		win.Clear(pixel.RGB(1, 1, 1)) // Clear the screen
+		win.Clear(colornames.White)
 
 		imd := imdraw.New(nil)
 
@@ -101,7 +107,17 @@ func run() {
 			// imd.Push(person.Pos.Add(person.Vel.Scaled(5)))
 			// imd.Line(2)
 		}
+
 		imd.Draw(win)
+
+		for _, person := range people {
+			basicTxt := text.New(person.Pos, basicAtlas)
+			basicTxt.Color = colornames.Black
+			basicTxt.Dot.X -= basicTxt.BoundsOf(person.Name).W() / 2
+			basicTxt.Dot.Y -= 4
+			fmt.Fprintln(basicTxt, person.Name)
+			basicTxt.Draw(win, pixel.IM)
+		}
 
 		win.Update()
 
@@ -144,15 +160,49 @@ func reset() {
 		}
 
 		// Assign attraction levels
-		for j := 1; j < numPeople; j++ {
-			if i != j {
-				// // Randomly assign attraction levels between -1 and 1
-				// people[i].Love[&people[j]] = rand.Float64()*2 - 1
+		// for j := 1; j < numPeople; j++ {
+		// 	if i != j {
+		// 		// // Randomly assign attraction levels between -1 and 1
+		// 		// people[i].Love[&people[j]] = rand.Float64()*2 - 1
 
-				// By color
-				p2 := &people[j]
-				people[i].Love[p2] = ColorDistance(people[i].Color, p2.Color)
+		// 		// By color
+		// 		p2 := &people[j]
+		// 		people[i].Love[p2] = ColorDistance(people[i].Color, p2.Color)
+		// 	}
+		// }
+	}
+
+	love := +1.0
+	frnd := +0.5 // friend
+	peer := +0.2
+	self := +0.0
+	strg := -0.2 // stranger
+	avod := -0.5 // avoid
+	hate := -1.0
+
+	names := []string{"Clark", "Lex", "Lana", "Lois", "Chloe", "Pete", "Jimmy", "Oliver", "Martha", "Jonathan"}
+
+	characters := [][]float64{
+		{self, hate, love, love, frnd, frnd, peer, frnd, love, love}, // 0. Clark
+		{hate, self, love, strg, peer, avod, avod, peer, peer, peer}, // 1. Lex
+		{love, hate, self, frnd, love, frnd, strg, strg, peer, peer}, // 2. Lana
+		{love, hate, frnd, self, love, strg, peer, love, peer, peer}, // 3. Lois
+		{love, hate, love, love, self, frnd, love, love, peer, peer}, // 4. Chloe
+		{frnd, hate, frnd, strg, love, self, strg, strg, peer, peer}, // 5. Pete
+		{peer, avod, strg, peer, love, strg, self, strg, strg, strg}, // 6. Jimmy
+		{frnd, hate, strg, love, love, strg, strg, self, strg, strg}, // 7. Oliver
+		{love, hate, peer, peer, peer, peer, strg, strg, self, love}, // 8. Martha
+		{love, hate, peer, peer, peer, peer, strg, strg, love, self}, // 9. Jonathan
+	}
+
+	for i, others := range characters {
+		for j, v := range others {
+			if i == j {
+				continue
 			}
+			// +1 to skip origin
+			people[i+1].Love[&people[j+1]] = v
+			people[i+1].Name = names[i]
 		}
 	}
 }
