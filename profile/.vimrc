@@ -1,4 +1,19 @@
-" # Vundle Begin
+" All system-wide defaults are set in $VIMRUNTIME/debian.vim and sourced by
+" the call to :runtime you can find below.  If you wish to change any of those
+" settings, you should do it in this file (/etc/vim/vimrc), since debian.vim
+" will be overwritten everytime an upgrade of the vim packages is performed.
+" It is recommended to make changes after sourcing debian.vim since it alters
+" the value of the 'compatible' option.
+
+" This line should not be removed as it ensures that various options are
+" properly set to work with the Vim-related packages available in Debian.
+runtime! debian.vim
+
+" Uncomment the next line to make Vim more Vi-compatible
+" NOTE: debian.vim sets 'nocompatible'.  Setting 'compatible' changes numerous
+" options, so any other options should be set AFTER setting 'compatible'.
+" set compatible
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -9,21 +24,15 @@ call vundle#begin()
 "call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 
-" Plugins go here:
-" ...
-" Enable vim-indent-guides after plugins have been loaded
-autocmd VimEnter * IndentGuidesEnable
-let g:indent_guides_auto_colors = 0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=gray
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=100
-Plugin 'nathanaelkane/vim-indent-guides'
-
-Plugin 'bronson/vim-trailing-whitespace'
-Plugin 'vim-scripts/restore_view.vim'
 Plugin 'kien/ctrlp.vim'
 Plugin 'scrooloose/nerdtree'
+Plugin 'ambv/black'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'fatih/vim-go'
+Plugin 'prettier/vim-prettier'
+Plugin 'simnalamburt/vim-mundo'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -32,129 +41,108 @@ filetype plugin indent on    " required
 "filetype plugin on
 "
 " Brief help
-" :PluginList          - list configured plugins
-" :PluginInstall(!)    - install (update) plugins
-" :PluginSearch(!) foo - search (or refresh cache first) for foo
-" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
-" # Vundle End
 
-" An example for a vimrc file.
-"
-" Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last change:	2011 Apr 15
-"
-" To use it, copy it to
-"     for Unix and OS/2:  ~/.vimrc
-"	      for Amiga:  s:.vimrc
-"  for MS-DOS and Win32:  $VIM\_vimrc
-"	    for OpenVMS:  sys$login:.vimrc
-
-" When started as "evim", evim.vim will already have done these settings.
-if v:progname =~? "evim"
-  finish
-endif
-
-" Use Vim settings, rather than Vi settings (much better!).
-" This must be first, because it changes other options as a side effect.
-set nocompatible
-
-" allow backspacing over everything in insert mode
-set backspace=indent,eol,start
-
-if has("vms")
-  set nobackup		" do not keep a backup file, use versions instead
-else
-  set backup		" keep a backup file
-endif
-set history=50		" keep 50 lines of command line history
-set ruler		" show the cursor position all the time
-set showcmd		" display incomplete commands
-set incsearch		" do incremental searching
-
-" For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
-" let &guioptions = substitute(&guioptions, "t", "", "g")
-
-" Don't use Ex mode, use Q for formatting
-map Q gq
-
-" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
-" so that you can undo CTRL-U after inserting a line break.
-inoremap <C-U> <C-G>u<C-U>
-
-" In many terminal emulators the mouse works just fine, thus enable it.
-if has('mouse')
-  set mouse=a
-endif
-
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
+" Vim5 and later versions support syntax highlighting. Uncommenting the next
+" line enables syntax highlighting by default.
+if has("syntax")
   syntax on
-  set hlsearch
 endif
 
-" Only do this part when compiled with support for autocommands.
+" If using a dark background within the editing area and syntax highlighting
+" turn on this option as well
+"set background=dark
+
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
 if has("autocmd")
-
-  " Enable file type detection.
-  " Use the default filetype settings, so that mail gets 'tw' set to 72,
-  " 'cindent' is on in C files, etc.
-  " Also load indent files, to automatically do language-dependent indenting.
-  filetype plugin indent on
-
-  " Put these in an autocmd group, so that we can delete them easily.
-  augroup vimrcEx
-  au!
-
-  " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
-
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  " Also don't do it when the mark is in the first line, that is the default
-  " position when opening a file.
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-
-  augroup END
-
-else
-
-  set autoindent		" always set autoindenting on
-
-endif " has("autocmd")
-
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-" Only define it when not defined already.
-if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-		  \ | wincmd p | diffthis
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-syntax on
+" Uncomment the following to have Vim load indentation rules and plugins
+" according to the detected filetype.
+if has("autocmd")
+  filetype plugin indent on
+endif
 
-colorscheme delek
+" The following are commented out as they cause vim to behave a lot
+" differently from regular Vi. They are highly recommended though.
+set showcmd		" Show (partial) command in status line.
+set showmatch		" Show matching brackets.
+set ignorecase		" Do case insensitive matching
+set smartcase		" Do smart case matching
+set incsearch		" Incremental search
+set autowrite		" Automatically save before commands like :next and :make
+set hidden		" Hide buffers when they are abandoned
+set mouse=a		" Enable mouse usage (all modes)
+
+" Source a global configuration file if available
+if filereadable("/etc/vim/vimrc.local")
+  source /etc/vim/vimrc.local
+endif
+
 set nowrap
 set number
 
 set colorcolumn=80
-highlight ColorColumn ctermbg=6
+highlight ColorColumn ctermbg=7
+highlight MatchParen ctermbg=7 ctermfg=none
 
-set smartindent
+set nosmartindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set so=999
 
 set undofile
-set undodir=~/.vimundo
+set undodir=~/.vim/undo
+
+set backupdir=~/.vim/swp
+set directory=~/.vim/swp
+
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
 
 map <C-e> :NERDTreeToggle<CR>
 map <C-f> :NERDTreeFind<CR>
+let NERDTreeIgnore = ['\.pyc$']
 
+" Highlight search matches
+set hlsearch
+
+" Reload file when it changes on disk
+set autoread
+
+" Format Python code upon save
+autocmd BufWritePre *.py execute ':Black'
+
+" vim-prettier
+let g:prettier#autoformat = 0
+
+" use .prettierrc  instead of plugin defaults
+let g:prettier#config#config_precedence = 'prefer-file'
+
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.graphql,*.vue PrettierAsync
+
+" don't override default buffer on paste
+vnoremap p "_dP
+
+autocmd FileType javascript setlocal shiftwidth=2 tabstop=2
+
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git\|land_scrub_output\|exported_tiles'
+
+" https://stackoverflow.com/questions/18902537/why-does-vim-automatically-change-comma-delimited-csv-to-pipes
+let g:csv_no_conceal = 1
+
+" Replace entire file contents with X clipboard
+nnoremap <leader>p :%d<CR>:r !xclip -selection clipboard -o<CR>
